@@ -1,0 +1,238 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "Psychonauts",
+    "year": 2005,
+    "developer": "Double Fine",
+    "engine": "bespoke in-house",
+    "renderer": "Direct3D 9",
+    "distribution": "Steam",
+    "build_notes": "Verified against the Steam build on Windows 10, 2026-08-27. Key bindings and level codes may differ on other releases."
+  },
+
+  "input": {
+    "api": "DirectInput8",
+    "api_notes": [
+      "Polls the mouse with immediate-mode GetDeviceState on GUID_SysMouse (vtable slot 9). Confirmed by hooking the chain DirectInput8Create -> IDirectInput8::CreateDevice -> IDirectInputDevice8::GetDeviceState and seeing all three install.",
+      "Window-level SendInput with scancodes works for menus and gameplay, provided the game window is genuinely foreground.",
+      "Forging keyboard input at the DirectInput buffer / key-state level was tried and refuted twice on this game: the keyboard is not read via buffered GetDeviceData, and a correctly-forged polled-buffer press reaches the input state machine but the title screen does not consume it. Use window-level SendInput instead.",
+      "See UNIVERSAL.md on the shared-vtable trap before hooking any DirectInput device method here."
+    ],
+    "bindings": [
+      {
+        "action": "confirm / action / activate",
+        "keys": [ { "name": "SPACE", "dik": "0x39", "extended": false } ],
+        "context": "door prompts, menu selection, 'Press A to begin'",
+        "confidence": "verified-live",
+        "verified": "2026-08-27",
+        "notes": "This is the controller-A equivalent. The in-game prompts show a controller glyph, not a key."
+      },
+      {
+        "action": "confirm — does NOT work on door prompts",
+        "keys": [ { "name": "ENTER", "dik": "0x1C", "extended": false } ],
+        "context": "brain-vault door prompts",
+        "confidence": "disproved",
+        "verified": "2026-08-27",
+        "notes": "Pressed repeatedly on a door prompt with no effect. SPACE is the action key. ENTER *does* select dialogue options, so it is not simply inert everywhere."
+      },
+      {
+        "action": "select dialogue option",
+        "keys": [ { "name": "ENTER", "dik": "0x1C", "extended": false } ],
+        "context": "conversation option list",
+        "confidence": "verified-live",
+        "verified": "2026-08-27"
+      },
+      {
+        "action": "move selection down",
+        "keys": [ { "name": "DOWN", "dik": "0xD0", "extended": true } ],
+        "context": "dialogue option list, menus, save-slot list",
+        "confidence": "verified-live",
+        "verified": "2026-08-27",
+        "notes": "Arrow keys MUST be sent as extended or DirectInput sees the numpad variant."
+      },
+      {
+        "action": "walk / move character",
+        "keys": [
+          { "name": "UP", "dik": "0xC8", "extended": true },
+          { "name": "DOWN", "dik": "0xD0", "extended": true },
+          { "name": "LEFT", "dik": "0xCB", "extended": true },
+          { "name": "RIGHT", "dik": "0xCD", "extended": true }
+        ],
+        "context": "gameplay, and the brain-vault menu",
+        "confidence": "verified-live",
+        "verified": "2026-08-27",
+        "notes": "Movement is camera-relative. In the brain vault the camera orbits as the character walks, so the same key does not map to the same world direction twice. Hold ~300-600ms for a small step; taps often do nothing."
+      },
+      {
+        "action": "open / close the Journal (pause menu)",
+        "keys": [ { "name": "ESC", "dik": "0x01", "extended": false } ],
+        "context": "gameplay",
+        "confidence": "verified-live",
+        "verified": "2026-08-27",
+        "notes": "TOGGLES. It does NOT dismiss popups. Mistaking this for a dismiss key silently invalidated three experiments in one session — the Journal was open and the game was ignoring camera input."
+      },
+      {
+        "action": "dismiss tutorial popup",
+        "keys": [ { "name": "X", "dik": "0x2D" }, { "name": "C", "dik": "0x2E" } ],
+        "context": "figment / journal tutorial popups showing a 'B Exit' glyph",
+        "confidence": "reported",
+        "verified": "2026-08-27",
+        "notes": "PARTIALLY ESTABLISHED. One of X or C cleared it; which was not isolated because ESC was pressed in the same sequence. BACKSPACE (0x0E) definitely does NOT work. Worth pinning down — these popups block input and will stall an unattended run."
+      }
+    ]
+  },
+
+  "states": [
+    {
+      "id": "title",
+      "description": "Attract screen, 'Press A to begin'.",
+      "detect": [ { "method": "screenshot", "cue": "'Press (A) to begin.' text at the bottom; credits may be cycling" } ],
+      "confidence": "verified-live",
+      "verified": "2026-08-27"
+    },
+    {
+      "id": "brain-vault",
+      "description": "The 3D brain menu with coloured doors.",
+      "detect": [
+        { "method": "screenshot", "cue": "large pink brain; character walkable on its surface" },
+        { "method": "telemetry", "cue": "camera position approx (2549.95, 856.33, 277.44) — 'menu space', values in the low thousands" }
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-08-27",
+      "notes": "The menu-space vs level-space position split is a reliable machine-checkable cue: real levels report coordinates in the tens of thousands."
+    },
+    {
+      "id": "journal",
+      "description": "Pause menu — CONTINUE / OPTIONS / LOAD / SAVE / QUIT TO TITLE / CREDITS.",
+      "detect": [ { "method": "screenshot", "cue": "green spiral notebook filling the screen" } ],
+      "confidence": "verified-live",
+      "verified": "2026-08-27",
+      "notes": "The game ignores camera and mouse-look input entirely in this state. ALWAYS confirm you are not here before any camera test."
+    },
+    {
+      "id": "gameplay",
+      "description": "Player has control.",
+      "detect": [
+        { "method": "screenshot", "cue": "PSI-power HUD icons in the lower right; character visible" },
+        { "method": "telemetry", "cue": "camera position in the tens of thousands" }
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-08-27"
+    },
+    {
+      "id": "dialogue",
+      "description": "Conversation with an option list.",
+      "detect": [ { "method": "screenshot", "cue": "purple speech bubble with a vertical list of options; a marker beside the selected one" } ],
+      "confidence": "verified-live",
+      "verified": "2026-08-27",
+      "notes": "Player movement is locked. The camera may still be written to."
+    }
+  ],
+
+  "routes": [
+    {
+      "id": "title-to-loaded-save",
+      "goal": "From the title screen to a loaded save game.",
+      "from_state": "title",
+      "to_state": "gameplay",
+      "reliability": "needs-verification-between-steps",
+      "steps": [
+        { "action": "key", "key": "SPACE", "note": "begin — enters the brain vault" },
+        { "action": "wait", "seconds": 6 },
+        { "action": "verify", "expect_state": "brain-vault" },
+        { "action": "navigate", "note": "Walk the character to the GREEN door. Arrow keys orbit the brain, so this cannot be a fixed key sequence — capture a screenshot between steps and steer. Yellow = New Game, blue = Continue, green = Load a Saved Game." },
+        { "action": "verify", "expect_cue": "on-screen prompt reads 'Press (A) to Load a Saved Game'" },
+        { "action": "key", "key": "SPACE" },
+        { "action": "wait", "seconds": 6, "note": "'Loading' screen" },
+        { "action": "verify", "expect_cue": "'LOAD FROM WHICH PROFILE?' — bunk select" },
+        { "action": "key", "key": "SPACE", "note": "Select Bunk" },
+        { "action": "wait", "seconds": 4 },
+        { "action": "verify", "expect_cue": "green notepad headed 'LOAD GAME' with numbered slots" },
+        { "action": "key", "key": "DOWN", "repeat": 1, "note": "cursor starts on slot A; one DOWN reaches slot 1" },
+        { "action": "verify", "expect_cue": "selection box around the intended slot" },
+        { "action": "key", "key": "SPACE", "note": "LOAD" },
+        { "action": "wait", "seconds": 20 }
+      ],
+      "notes": "The brain-vault leg is the fragile part. It was completed once and then NOT reproducible an hour later from a different starting orientation, because the camera orbits with the character. Treat it as steer-with-feedback, not replay."
+    },
+    {
+      "id": "journal-load",
+      "goal": "Load a save from inside gameplay, avoiding the brain vault entirely.",
+      "from_state": "gameplay",
+      "to_state": "gameplay",
+      "reliability": "needs-verification-between-steps",
+      "steps": [
+        { "action": "key", "key": "ESC", "note": "opens the Journal" },
+        { "action": "verify", "expect_state": "journal" },
+        { "action": "navigate", "note": "menu order is CONTINUE / OPTIONS / LOAD / SAVE / QUIT TO TITLE / CREDITS" }
+      ],
+      "notes": "PROBABLY THE BEST ROUTE and it is under-explored. The Journal also offers SAVE, so making one save in a convenient location removes the navigation problem permanently."
+    },
+    {
+      "id": "exit-conversation",
+      "goal": "End a conversation and return to gameplay.",
+      "from_state": "dialogue",
+      "to_state": "gameplay",
+      "reliability": "deterministic",
+      "steps": [
+        { "action": "key", "key": "DOWN", "note": "repeat until the last option is selected — it is the polite exit line" },
+        { "action": "verify", "expect_cue": "marker beside the final option" },
+        { "action": "key", "key": "ENTER" }
+      ],
+      "confidence": "verified-live"
+    }
+  ],
+
+  "entry_points": {
+    "saves": [
+      {
+        "slot": 1,
+        "label": "The Milkman Conspiracy — The Neighborhood",
+        "lands": "OUTDOORS on the suburban street",
+        "confidence": "verified-live",
+        "verified": "2026-08-27",
+        "notes": "The open outdoor area. Prefer this over a level-code jump when an open space is needed."
+      }
+    ],
+    "level_codes": [
+      {
+        "code": "MMI1",
+        "lands": "Boyd's house INTERIOR — enclosed rooms, not the street",
+        "confidence": "verified-live",
+        "verified": "2026-08-27",
+        "notes": "The name suggests the Milkman level; it is an interior. Jumping here to reach the open neighbourhood wasted a large part of a session."
+      },
+      {
+        "code": "CAJA",
+        "lands": "an underground sanctuary — the NPC there is Ford Cruller",
+        "confidence": "verified-live",
+        "verified": "2026-08-27",
+        "notes": "Catalogued elsewhere as 'Sasha's Lab' from a loading-screen filename match, which the actual content contradicts. Treat filename-derived level labels as hypotheses. A level jump also runs the level's opening script, so it can land mid-cutscene or mid-dialogue rather than in free control."
+      }
+    ],
+    "notes": "Level-code jumps load a level fresh and do NOT restore save progress."
+  },
+
+  "hazards": [
+    {
+      "id": "tutorial-popups-block-input",
+      "description": "Figment and journal tutorial popups take over input until dismissed, and can appear from ordinary play such as collecting a figment.",
+      "impact": "Stalls unattended automation; also silently invalidates tests because the game stops responding to camera input.",
+      "confidence": "verified-live"
+    },
+    {
+      "id": "journal-opens-unexpectedly",
+      "description": "The Journal was observed open at the start of tests where no key had been sent.",
+      "impact": "Three consecutive camera experiments produced meaningless results.",
+      "root_cause": "In that session it was self-inflicted — a DirectInput hook corrupting the keyboard state array and synthesising Escape (see UNIVERSAL.md). Whether the game also opens it on its own is unestablished.",
+      "mitigation": "Verify state visually immediately before every test.",
+      "confidence": "verified-live"
+    },
+    {
+      "id": "camera-frozen-in-menus",
+      "description": "Camera does not respond to mouse-look or to camera memory writes while a menu is open.",
+      "impact": "Produces false negatives that look like technical failure.",
+      "confidence": "verified-live"
+    }
+  ]
+}
