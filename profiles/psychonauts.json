@@ -73,11 +73,19 @@
       },
       {
         "action": "dismiss tutorial popup",
-        "keys": [ { "name": "X", "dik": "0x2D" }, { "name": "C", "dik": "0x2E" } ],
+        "keys": [ { "name": "X", "dik": "0x2D", "extended": false } ],
         "context": "figment / journal tutorial popups showing a 'B Exit' glyph",
-        "confidence": "reported",
+        "confidence": "verified-live",
         "verified": "2026-08-27",
-        "notes": "PARTIALLY ESTABLISHED. One of X or C cleared it; which was not isolated because ESC was pressed in the same sequence. BACKSPACE (0x0E) definitely does NOT work. Worth pinning down — these popups block input and will stall an unattended run."
+        "notes": "X ALONE dismisses it — isolated by sending X on its own and confirming by screenshot. BACKSPACE (0x0E) does NOT work. These popups block input and will stall an unattended run, so this is worth having."
+      },
+      {
+        "action": "rotate the camera with the mouse",
+        "keys": [],
+        "context": "outdoor gameplay",
+        "confidence": "disproved",
+        "verified": "2026-08-27",
+        "notes": "UNRESOLVED and important. Plain relative mouse movement does NOT rotate the camera, tested carefully: (a) synthetic deltas injected at IDirectInputDevice8::GetDeviceState — no change; (b) real SendInput MOUSEEVENTF_MOVE with the foreground grab VERIFIED — no change; (c) control, walking with the arrow keys — the camera forward vector swung hard, proving the field is live, keyboard input arrives, and the state is genuine gameplay. So the mouse path specifically does not reach the camera. The game is reported to have mouse-look, so the likely missing piece is a modifier (a held button?), an options setting, or DirectInput mouse re-acquisition after a focus change. Do not conclude 'injection is impossible' from this — the injection hook installs correctly and the same test fails for a real mouse."
       }
     ]
   },
