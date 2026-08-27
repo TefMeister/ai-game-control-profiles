@@ -1,0 +1,104 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "XIII",
+    "year": 2003,
+    "developer": "Ubisoft Paris",
+    "engine": "Unreal Engine 2",
+    "renderer": "Direct3D 8",
+    "distribution": "Steam (\"XIII - Classic\")",
+    "build_notes": "Verified against the Steam 'XIII - Classic' build on Windows 10, 2026-08-27. The engine build is ANSI, not Unicode — console commands pass as plain char*."
+  },
+
+  "input": {
+    "api": "Unreal Engine 2 native input",
+    "api_notes": [
+      "This game does not need synthetic input for most automation: it has a real console and an internal command dispatcher that can be driven directly (see `commands`).",
+      "A native console exists on F2."
+    ],
+    "bindings": [
+      {
+        "action": "open the in-game console",
+        "keys": [ { "name": "F2", "dik": "0x3C", "extended": false } ],
+        "confidence": "reported",
+        "verified": "2026-08-25",
+        "notes": "From a community wiki. The command set it exposes has since been verified directly (see `commands`), but the F2 binding itself was not exercised — commands were issued programmatically instead."
+      }
+    ]
+  },
+
+  "states": [
+    {
+      "id": "gameplay",
+      "description": "Player has control.",
+      "detect": [ { "method": "telemetry", "cue": "the camera-view function is being called each frame; camera position updates" } ],
+      "confidence": "verified-live",
+      "verified": "2026-08-27"
+    },
+    {
+      "id": "menu",
+      "description": "Any menu, including the save menu.",
+      "detect": [ { "method": "telemetry", "cue": "the per-frame camera-view function STOPS being called — position telemetry goes silent" } ],
+      "confidence": "verified-live",
+      "verified": "2026-08-27",
+      "notes": "Useful and slightly counter-intuitive: the absence of telemetry is itself the state signal. A queued command will sit unconsumed until gameplay resumes."
+    }
+  ],
+
+  "commands": {
+    "dispatch_notes": [
+      "Commands resolve against DIFFERENT objects, and this is the single most useful fact in this profile. Sending a cheat to the wrong one silently returns 'unhandled'.",
+      "Player-owned commands resolve on APlayerController. Cheats resolve on UCheatManager, which the console reaches by hopping from the controller — calling the controller alone finds only its own commands.",
+      "Engine-level commands (open, start) resolve on the game engine object.",
+      "IMPORTANT: dispatch must happen in the GAME-LOGIC phase. Executing a console command from a render-path hook caused an immediate general protection fault — see UNIVERSAL.md."
+    ],
+    "available": [
+      { "name": "God", "resolves_on": "UCheatManager", "effect": "invulnerability", "confidence": "verified-live", "verified": "2026-08-27" },
+      { "name": "Fly", "resolves_on": "UCheatManager", "effect": "free flight, gravity off, collision kept", "confidence": "verified-live", "verified": "2026-08-27" },
+      { "name": "Ghost", "resolves_on": "UCheatManager", "effect": "free flight, collision off", "confidence": "verified-live", "verified": "2026-08-27" },
+      { "name": "Walk", "resolves_on": "UCheatManager", "effect": "cancels Fly/Ghost", "confidence": "verified-live", "verified": "2026-08-27" },
+      { "name": "MaxAmmo", "resolves_on": "UCheatManager", "confidence": "verified-live", "verified": "2026-08-27" },
+      { "name": "HealMe <n>", "resolves_on": "UCheatManager", "effect": "sets health", "confidence": "verified-live", "verified": "2026-08-27", "notes": "Observed raising health 50 -> 100 in game — the end-to-end proof that external command injection worked." },
+      { "name": "PlayersOnly", "resolves_on": "UCheatManager", "effect": "freezes NPCs; toggles", "confidence": "verified-live", "verified": "2026-08-27" },
+      { "name": "Fov <n>", "resolves_on": "APlayerController", "effect": "field of view", "confidence": "verified-live", "verified": "2026-08-27" },
+      { "name": "BehindView <0|1>", "resolves_on": "APlayerController", "effect": "third/first person toggle", "confidence": "verified-live", "verified": "2026-08-27" }
+    ],
+    "absent": [
+      {
+        "names": [ "Teleport", "AllAmmo", "Loaded", "Invisible", "SetSpeed", "ChangeSize", "Slomo" ],
+        "confidence": "disproved",
+        "verified": "2026-08-27",
+        "notes": "All standard Unreal Engine 2 commands, all returning unhandled on both the controller and the cheat manager in this build. 'It is a standard UE2 command, therefore it is here' does NOT hold. Teleport's absence is the most limiting — there is no console-driven way to reposition the player."
+      }
+    ]
+  },
+
+  "entry_points": {
+    "notes": "Level codes exist for this engine but were not catalogued for this game."
+  },
+
+  "hazards": [
+    {
+      "id": "engine-stops-ticking-when-unfocused",
+      "description": "The main loop polls the foreground window every iteration and stops ticking the engine when the game is not foreground.",
+      "impact": "Any automation waiting on the game to advance stalls the moment focus is lost — including when the operator alt-tabs to type.",
+      "mitigation": "Redirect the game's own foreground query so it always sees its own window.",
+      "confidence": "verified-live",
+      "verified": "2026-08-27"
+    },
+    {
+      "id": "menus-stall-queued-commands",
+      "description": "Command dispatch runs from the per-frame player tick, which does not run while a menu is open.",
+      "impact": "A queued command sits unexecuted, which can look like the harness being broken.",
+      "confidence": "verified-live",
+      "verified": "2026-08-27"
+    },
+    {
+      "id": "windowed-vs-fullscreen",
+      "description": "All verified work on this build was done windowed. A fullscreen device re-acquire crashed the game while a graphics proxy was loaded.",
+      "impact": "Unclear whether fullscreen is genuinely unsafe — the crash was later traced to a different cause — but windowed is the only configuration with a track record here.",
+      "confidence": "reported",
+      "verified": "2026-08-27"
+    }
+  ]
+}
