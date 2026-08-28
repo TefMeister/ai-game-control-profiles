@@ -237,6 +237,31 @@
       "confidence": "verified-live"
     },
     {
+      "id": "milkman-interior-has-no-exit-until-gated-sequence",
+      "description": "Inside Boyd's house (level code MMI1) there is NO exit door until a sequence is completed: open the fridge, take the merit badge, use it, and only then does a door appear.",
+      "impact": "An exit that does not exist yet is indistinguishable from a navigation failure. A session spent a long stretch searching the interior for a door, steering a free camera through walls to scout for it, when none existed.",
+      "mitigation": "Do not search for an exit in a gated area. Prefer loading a save that already starts outdoors (slot 1) over level-jumping into an interior.",
+      "confidence": "reported",
+      "verified": "2026-08-28",
+      "notes": "From the user, who knows the game. Generalises: in any game, check whether an exit is gated before concluding the navigation is broken."
+    },
+    {
+      "id": "camera-free-look-is-clamped",
+      "description": "The camera can be turned by injecting gamepad axes (axis 5 = yaw, axis 2 = pitch on the DIJOYSTATE the game polls), but the range is CLAMPED to roughly 100-150 degrees total. It cannot be turned to face behind the player.",
+      "impact": "Bounds any attempt to drive the camera from a head tracker: within the clamp the engine culls correctly, beyond it the camera simply stops.",
+      "evidence": "The axis is an absolute clamped offset, not a rate - held at full deflection for 12 seconds the camera sat byte-identical. Over-driving the value does not help: 1000 / 5000 / 20000 / 100000 all give yaw -55.6 degrees, so the game clamps on input. Four camera-object fields were also tried and rejected as drivers.",
+      "confidence": "verified-live",
+      "verified": "2026-08-28"
+    },
+    {
+      "id": "camera-injection-stalls-when-camera-is-jammed",
+      "description": "Gamepad axis injection stops affecting the camera while it is pressed hard against the player or level geometry.",
+      "impact": "Produces a false 'the injection stopped working' result.",
+      "mitigation": "Walk the character a few steps to let the follow camera re-settle, then retry.",
+      "confidence": "verified-live",
+      "verified": "2026-08-28"
+    },
+    {
       "id": "camera-frozen-in-menus",
       "description": "Camera does not respond to mouse-look or to camera memory writes while a menu is open.",
       "impact": "Produces false negatives that look like technical failure.",
