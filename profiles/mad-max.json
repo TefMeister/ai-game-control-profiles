@@ -1,0 +1,191 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "Mad Max",
+    "year": 2015,
+    "developer": "Avalanche Studios",
+    "engine": "Apex (Avalanche Open World Engine)",
+    "renderer": "Direct3D 11",
+    "distribution": "Steam",
+    "build_notes": "Verified on Windows 10, 2026-09-03, with our dxgi.dll proxy present. Ran windowed at 784x561. Driven entirely by external synthetic input."
+  },
+  "input": {
+    "api": "Win32 SendInput (scancode keyboard + relative mouse)",
+    "api_notes": [
+      "Standard primitives: scancodes, KEYEVENTF_EXTENDEDKEY for arrows, foreground first, BitBlt for capture.",
+      "The window title is exactly 'Mad Max'. NOTE the process owns several windows (DIEmWin, Default IME, MSCTFIME UI); match on the VISIBLE one.",
+      "The window does not exist for the first several seconds after launch - the process starts, then creates it. A find-window failure right after launch means 'still starting', not 'wrong title'.",
+      "PROBE HOTKEYS ARE NUMPAD AND NUMLOCK-INDEPENDENT: the cbfp probe reads GetAsyncKeyState and accepts either the numpad VK or the navigation VK (NUMPAD4 or LEFT = mark A, NUMPAD5 or CLEAR = mark B, NUMPAD3 or PGUP = dump). Send NON-EXTENDED scancodes 0x4B/0x4C/0x51 and it works whatever NumLock is set to."
+    ],
+    "bindings": [
+      {
+        "action": "advance the title screen ('PRESS ANY BUTTON')",
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-03"
+      },
+      {
+        "action": "select the highlighted menu item",
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "notes": "Menus show 'NAVIGATE / SELECT' hints; Esc backs out."
+      },
+      {
+        "action": "move the menu selection",
+        "keys": [
+          {
+            "name": "Down",
+            "dik": "0x50",
+            "extended": true
+          },
+          {
+            "name": "Up",
+            "dik": "0x48",
+            "extended": true
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-03"
+      },
+      {
+        "action": "open the pause menu",
+        "keys": [
+          {
+            "name": "Escape",
+            "dik": "0x01",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-03"
+      },
+      {
+        "action": "move character / look",
+        "keys": [
+          {
+            "name": "W/A/S/D",
+            "dik": "0x11/0x1E/0x1F/0x20",
+            "extended": false
+          }
+        ],
+        "device": "keyboard + relative mouse",
+        "confidence": "verified-live",
+        "verified": "2026-09-03"
+      }
+    ]
+  },
+  "states": [
+    {
+      "name": "legal_splash",
+      "detect": "Publisher/middleware logos with a spinner bottom-right. Frame delta near 0.1 - nearly static.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "title_screen",
+      "detect": "'MAD MAX' with 'PRESS ANY BUTTON'.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "main_menu",
+      "detect": "RESUME GAME / NEW GAME / LOAD GAME / SETTINGS / WBPLAY / DOWNLOADABLE CONTENT / CREDITS / EXIT GAME over a desert vista.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "pause_menu",
+      "detect": "Tabbed screen (PAUSE / BIOS / MAX / GARAGE / LEGEND / COLLECTIBLES). GAME column: RESUME GAME / AUTOSAVES / SETTINGS / EXIT TO MAIN MENU. Log column includes CAPTURE MODE.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "gameplay",
+      "detect": "Third-person over-shoulder, minimap bottom-left, objective text top-left, weapon indicator bottom-right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    }
+  ],
+  "routes": [
+    {
+      "from": "launch",
+      "to": "gameplay",
+      "steps": [
+        "wait ~40s through the legal splash (the window may not exist for the first seconds)",
+        "Enter at the title screen",
+        "main menu appears with RESUME GAME already highlighted",
+        "Enter",
+        "wait ~60s for the world to load"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "from": "gameplay",
+      "to": "process_exit",
+      "steps": [
+        "Escape (pause menu, RESUME GAME highlighted)",
+        "Down x3 to EXIT TO MAIN MENU - VERIFY the highlight",
+        "Enter",
+        "confirm dialog: Enter = YES directly, Esc = NO (no navigation needed)",
+        "wait ~25s for the main menu",
+        "Down x7 to EXIT GAME - VERIFY, NEW GAME sits directly under RESUME GAME",
+        "Enter, then Enter to confirm"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "Process exits ~2s after the final confirm."
+    }
+  ],
+  "entry_points": {
+    "process_name": "MadMax.exe",
+    "window_title_substring": "Mad Max"
+  },
+  "commands": {
+    "console": {
+      "available": null,
+      "confidence": "hypothesis",
+      "verified": "2026-09-03",
+      "notes": "Not investigated. This project drives the game through its own dxgi.dll proxy, whose probes are triggered by numpad hotkeys and which writes madmax_vr_proxy_log.txt in the game folder."
+    },
+    "capture_mode": {
+      "available": null,
+      "confidence": "inferred-static",
+      "verified": "2026-09-03",
+      "notes": "CAPTURE MODE is listed in the pause menu's Log column. Photo modes usually carry a free camera, which is what a VR conversion wants. NOT opened - this is a menu label, i.e. a lead and not evidence."
+    }
+  },
+  "hazards": [
+    {
+      "hazard": "NEW GAME sits directly under RESUME GAME on the main menu",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "Both the title menu default and the exit path pass by it. Navigate, capture, verify the highlight, then commit."
+    },
+    {
+      "hazard": "The window does not exist immediately after launch",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "MadMax.exe appears in the process list several seconds before it creates its visible window. A find-window failure at that moment is a timing artefact, not a wrong title - retry rather than concluding the game did not start."
+    },
+    {
+      "hazard": "The process owns several non-game windows",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "DIEmWin, Default IME (x2) and MSCTFIME UI all belong to MadMax.exe and are invisible. Filter on IsWindowVisible or you may attach to the wrong one."
+    }
+  ]
+}
