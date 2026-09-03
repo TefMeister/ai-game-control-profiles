@@ -1,0 +1,206 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "ENSLAVED: Odyssey to the West",
+    "year": 2013,
+    "developer": "Ninja Theory",
+    "engine": "Unreal Engine 3 (Ninja Theory 'NTEngine' layer)",
+    "renderer": "Direct3D 9 (plain D3D9, not D3D9Ex)",
+    "distribution": "Steam, Premium Edition",
+    "build_notes": "Verified on Windows 10, 2026-09-03. During testing the window was forced to 1280x720 windowed by a d3d9 proxy; this build ships no windowed mode of its own. Everything below was driven externally against the game window - no in-process code was required for any of it."
+  },
+
+  "input": {
+    "api": "Win32 SendInput (scancode keyboard + relative mouse)",
+    "api_notes": [
+      "SendInput is the route that works. Use SCANCODES rather than virtual keys: it keeps keyboard layout out of the path, which is the trap that cost a sibling project (doom-2016-vr) a session.",
+      "ARROW KEYS REQUIRE KEYEVENTF_EXTENDEDKEY. Without it, scancode 0x50 is numpad-2, the menu ignores it, and nothing errors - it simply reads as 'this game ignores the keyboard'. Observed directly: three Down presses moved the menu selection not at all; with the flag it moved on the first try.",
+      "Foreground the window before sending anything, and re-check it. Synthetic input follows focus.",
+      "PostMessage(WM_KEYDOWN) was attempted but never soundly measured. Treat as UNKNOWN, not as a negative."
+    ],
+    "bindings": [
+      {
+        "action": "move character forward",
+        "keys": [{ "name": "W", "dik": "0x11", "extended": false }],
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "notes": "Held 2.2s; the character visibly advanced. Confirmed by comparing two screenshots, not by a pixel statistic."
+      },
+      {
+        "action": "turn the camera",
+        "device": "mouse (relative)",
+        "keys": [],
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "notes": "SendInput MOUSEEVENTF_MOVE. About 120 steps of dx=40 swung the view through a large arc onto entirely different scenery."
+      },
+      {
+        "action": "pause / open the pause menu, and back out of a menu",
+        "keys": [{ "name": "Escape", "dik": "0x01", "extended": false }],
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "notes": "ESC IS NOT A NEUTRAL KEY HERE. It opens the pause menu and the game stops presenting. Found the hard way: an ESC sent as 'cleanup' after a probe silently froze rendering for several subsequent captures."
+      },
+      {
+        "action": "select the highlighted menu item",
+        "keys": [{ "name": "Enter", "dik": "0x1C", "extended": false }],
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "notes": "Both menus print their own controls on screen: 'ENTER SELECT, ESCAPE BACK'."
+      },
+      {
+        "action": "move the menu selection",
+        "keys": [
+          { "name": "Down", "dik": "0x50", "extended": true },
+          { "name": "Up", "dik": "0x48", "extended": true }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "notes": "MUST carry KEYEVENTF_EXTENDEDKEY. Non-extended 0x50 and the 'S' key were both tested and did nothing at all."
+      }
+    ]
+  },
+
+  "states": [
+    {
+      "name": "gameplay",
+      "detect": "Frame-to-frame screen difference is continuously non-zero (idle animation, grass, water). HUD present: health/shield bars top-left, ability radial bottom-left, item count bottom-right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "paused",
+      "detect": "'PAUSED' top-right; items RESUME GAME / OPTIONS / RESTART FROM LAST CHECKPOINT / EXIT TO MAIN MENU. Frame-to-frame difference is exactly 0.00 because the game stops presenting.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "The zero-difference signature is a reliable paused detector, but ONLY if frames are captured with BitBlt. See hazards: PrintWindow keeps serving a stale frame and will show gameplay while the game is actually paused."
+    },
+    {
+      "name": "main_menu",
+      "detect": "Items CONTINUE JOURNEY / CHAPTER SELECT / NEW JOURNEY / EXTRAS / OPTIONS / CREDITS / QUIT over a character-portrait background.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "loading",
+      "detect": "Large sustained frame differences (100+) for tens of seconds after selecting CONTINUE JOURNEY. Reaching gameplay took roughly 20-40s.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "cutscene",
+      "detect": "Gameplay-like motion but NO HUD.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "ESC during a checkpoint cutscene did not obviously skip it; the pause menu appeared once the cutscene had ended."
+    }
+  ],
+
+  "routes": [
+    {
+      "from": "gameplay",
+      "to": "main_menu",
+      "steps": [
+        "Escape",
+        "Down x3 (extended)",
+        "VERIFY 'EXIT TO MAIN MENU' is highlighted",
+        "Enter",
+        "Enter (confirms the warning that progress since the last checkpoint will be lost)"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "from": "main_menu",
+      "to": "gameplay",
+      "steps": [
+        "ensure CONTINUE JOURNEY is highlighted (it is the default on entry)",
+        "Enter",
+        "wait 20-40s for the load"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "Lands at the last checkpoint, often inside a cutscene."
+    },
+    {
+      "from": "main_menu",
+      "to": "process_exit",
+      "steps": [
+        "Down x6 (extended)",
+        "VERIFY 'QUIT' is highlighted before committing",
+        "Enter"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "Process exits in about 4 seconds. This is the graceful close and should be preferred to terminating the process."
+    },
+    {
+      "from": "main_menu",
+      "to": "arbitrary_chapter",
+      "steps": ["CHAPTER SELECT"],
+      "confidence": "inferred-static",
+      "verified": "2026-09-03",
+      "notes": "CHAPTER SELECT is present on the main menu but was NOT exercised. If it works it gives varied scenes on demand, which is valuable for reverse-engineering."
+    }
+  ],
+
+  "entry_points": {
+    "process_name": "Enslaved.exe",
+    "window_title_substring": "ENSLAVED",
+    "notes": "The window title contains trademark symbols and a line break. Match on the substring 'ENSLAVED' rather than the full string."
+  },
+
+  "commands": {
+    "console": {
+      "available": false,
+      "confidence": "disproved",
+      "verified": "2026-09-03",
+      "notes": "DOES NOT OPEN BY KEYPRESS. Tilde (0x29, bound as ConsoleKey), Tab (0x0F, bound as TypeKey) and F10 (0x44) were each sent as scancodes to the focused window with a capture taken after; the scene was unchanged every time. Consistent with the console class being stripped from this shipping build, which is common in UE3 releases. This is n=3 keys, so it rules out the cheap route rather than every route. KEPT AS A DISPROVED ENTRY so the next reader does not repeat it."
+    },
+    "keybinding_exec": {
+      "available": null,
+      "confidence": "hypothesis",
+      "verified": "2026-09-03",
+      "notes": "UE3 can bind a key directly to an exec command string, which is a DIFFERENT mechanism from the console - there is no prompt to type into. MonkeyInput.ini ships a DEVELOPER binding, Bindings=(Name=\"F9\",Command=\"shot\"), which is why this looks promising: 'shot' is an ordinary exec command bound to a key by the developers. Pressing F9 and looking for a screenshot file is the cheapest decisive test of the whole channel. Untested as of 2026-09-03 because input inis are read at load and the test needs a relaunch."
+    },
+    "debug_camera": {
+      "available": null,
+      "confidence": "inferred-static",
+      "verified": "2026-09-03",
+      "notes": "MonkeyInput.ini ships a complete debug free-camera input map under [NTGameFramework.NTCam_DebugInput]: ToggleDebugCamera (Alt+C), WASD plus Q/E to fly including vertically, mouse look, LeftShift MoreSpeed, F FreezeRendering, End Pause, PageDown Step (frame stepping). If live, this is the engine's OWN free camera and solves most of 'move the camera to reverse-engineer the engine'. IMPORTANT: in normal gameplay its entry point is a CONTROLLER thumbstick chord (CheckDebugCamChord / DoDebugCamChord in [Engine.PlayerInput]), not a key - which is why pressing keys never finds it. Rebind it to a key in the ini instead. UNTESTED: a binding surviving in a shipped ini is NOT evidence the feature is live, because the console's bindings survive in this same file and the console is dead."
+    }
+  },
+
+  "hazards": [
+    {
+      "hazard": "PrintWindow returns a STALE frame once the game stops presenting",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "PrintWindow(PW_RENDERFULLCONTENT) is correct while the game renders, then keeps serving the last DWM-composited frame indefinitely, with no error, whenever the game pauses or sits in a menu. It is wrong exactly when the picture matters most. Tell: identical consecutive captures, and a delta that repeats at a constant value. Use BitBlt from the screen DC instead (it needs the window unoccluded); a proxy-side backbuffer readback beats both."
+    },
+    {
+      "hazard": "NEW JOURNEY sits two rows below CONTINUE JOURNEY on the main menu",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "A miscounted Down keypress overwrites the save. Never blind key-count past a destructive item: navigate, capture, verify the highlight visually, and only then send Enter."
+    },
+    {
+      "hazard": "ESC is not a neutral key",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "It opens the pause menu and stops rendering. Read the screen after any key you are not certain about, rather than assuming a keypress did nothing."
+    },
+    {
+      "hazard": "Config inis exist in TWO places, and the engine rewrites them on exit",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "The live copy is under Documents\\My Games\\UnrealEngine3\\MonkeyGame\\Config\\; the game folder holds a template plus Default*.ini. Editing only the game-folder copy does nothing. Set both, and edit them while the game is CLOSED, or the engine can overwrite the change on exit."
+    },
+    {
+      "hazard": "Whole-frame mean-luma difference is too blunt to score input routes in this game",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "Animated grass, water and idle animation put a no-input control between 3.4 and 23.3, which is ABOVE the signal from a working keypress. That method scored a key which demonstrably walks the character as 'no effect'. Keep the no-input control - it is the right instinct - but prefer a large unmistakable action plus reading two screenshots. If a number is genuinely needed, camera motion is a coherent global translation (phase correlation), not a mean difference."
+    }
+  ]
+}
