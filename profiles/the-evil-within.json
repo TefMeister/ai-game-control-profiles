@@ -1,0 +1,186 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "The Evil Within",
+    "year": 2014,
+    "developer": "Tango Gameworks",
+    "engine": "id Tech 5 derivative (STEM)",
+    "renderer": "Direct3D 11",
+    "distribution": "Steam (appid 268050)",
+    "build_notes": "Verified on Windows 10, 2026-09-03, with our winmm.dll proxy present. Driven entirely by external synthetic input against the game window; no in-process code was needed for navigation."
+  },
+  "input": {
+    "api": "Win32 SendInput (scancode keyboard + relative mouse)",
+    "api_notes": [
+      "Same primitives as the ENSLAVED profile: scancodes, KEYEVENTF_EXTENDEDKEY for arrows, foreground the window first, and capture with BitBlt rather than PrintWindow.",
+      "The game window is titled exactly 'The Evil Within' and BitBlt captures it cleanly."
+    ],
+    "bindings": [
+      {
+        "action": "dismiss the photosensitivity splash",
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "notes": "The splash says PRESS ANY KEY and appears before the title menu on every launch."
+      },
+      {
+        "action": "select the highlighted menu item",
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "notes": "Menus print their controls on screen: '[ENTER] SELECT [ESC] BACK'."
+      },
+      {
+        "action": "move the menu selection",
+        "keys": [
+          {
+            "name": "Down",
+            "dik": "0x50",
+            "extended": true
+          },
+          {
+            "name": "Up",
+            "dik": "0x48",
+            "extended": true
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "notes": "Extended-key flag required, as everywhere."
+      },
+      {
+        "action": "open the pause menu",
+        "keys": [
+          {
+            "name": "Escape",
+            "dik": "0x01",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-03"
+      },
+      {
+        "action": "move character / look",
+        "keys": [
+          {
+            "name": "W/A/S/D",
+            "dik": "0x11/0x1E/0x1F/0x20",
+            "extended": false
+          }
+        ],
+        "device": "keyboard + relative mouse",
+        "confidence": "verified-live",
+        "verified": "2026-09-03"
+      }
+    ]
+  },
+  "states": [
+    {
+      "name": "photosensitivity_splash",
+      "detect": "Black screen, red 'PHOTOSENSITIVITY WARNING', 'PRESS ANY KEY'. Frame delta is ~0 - it does not animate.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "title_menu",
+      "detect": "'TITLE MENU' with CONTINUE / NEW GAME / LOAD GAME / OPTIONS / CREDITS / EXIT over a corridor scene.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "pause_menu",
+      "detect": "'PAUSE' plus the chapter name top-left; ARCHIVE / TUTORIAL / LOAD GAME / RESTART CHAPTER / OPTIONS / TITLE MENU.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "gameplay",
+      "detect": "Third-person over-shoulder view, continuous non-zero frame delta.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    }
+  ],
+  "routes": [
+    {
+      "from": "launch",
+      "to": "gameplay",
+      "steps": [
+        "Enter (dismiss photosensitivity splash)",
+        "title menu appears with CONTINUE already highlighted",
+        "Enter",
+        "wait ~45-60s for the load"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "from": "gameplay",
+      "to": "process_exit",
+      "steps": [
+        "Escape (pause menu, ARCHIVE highlighted)",
+        "Down x5 (extended) to TITLE MENU - VERIFY the highlight, RESTART CHAPTER is in the path",
+        "Enter",
+        "confirm dialog appears with NO highlighted - press Up to select YES, verify, Enter",
+        "wait for the title menu to load",
+        "Down x5 to EXIT - VERIFY, NEW GAME sits two rows above",
+        "Enter",
+        "second confirm dialog, again defaulting to NO - Up, verify, Enter"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "Process exits ~2s after the final confirm. This is the graceful close."
+    }
+  ],
+  "entry_points": {
+    "process_name": "EvilWithin.exe",
+    "window_title_substring": "The Evil Within",
+    "steam_appid": 268050
+  },
+  "commands": {
+    "console": {
+      "available": null,
+      "confidence": "hypothesis",
+      "verified": "2026-09-03",
+      "notes": "Not investigated. This project drives the game through its own winmm proxy (env vars read at process start, results in %LOCALAPPDATA%\\TEWVR\\*.log), so a console has not been needed."
+    },
+    "proxy_env_vars": {
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "The project's winmm.dll proxy is configured by environment variables read AT PROCESS START: TEWVR_TEST_YAW, TEWVR_DUMP, TEWVR_SHADERDUMP, TEWVR_SEQDUMP, TEWVR_CBPEEK, TEWVR_FINDCAM, TEWVR_FRAMECAPTURE, TEWVR_TARGETOFF, TEWVR_TARGETSIZE, TEWVR_SEQDUMP_ARMFILE. Because they are read at start, none can be armed mid-session - each needs a fresh launch. Launcher: staging/the-evil-within-vr/tools/launch-yaw-test.bat"
+    }
+  },
+  "hazards": [
+    {
+      "hazard": "BOTH confirmation dialogs default to NO",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "'Are you sure you want to quit? Any unsaved progress will be lost.' highlights NO, in the pause-menu route AND again on the title-menu EXIT. A blind Enter cancels and reads exactly like an ignored keypress. Press Up first and verify the highlight before committing."
+    },
+    {
+      "hazard": "Destructive items sit in the navigation path",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "NEW GAME is directly below CONTINUE on the title menu, and RESTART CHAPTER is in the path from ARCHIVE down to TITLE MENU on the pause menu. Navigate, capture, verify the highlight, then commit."
+    },
+    {
+      "hazard": "TITLE MENU from the pause menu says 'quit' but returns to the title screen",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "The confirm text reads 'Are you sure you want to quit?', but it unloads to the title menu rather than exiting the process. Exiting to desktop needs a second pass through EXIT on the title menu. Do not conclude the process failed to close."
+    }
+  ]
+}
