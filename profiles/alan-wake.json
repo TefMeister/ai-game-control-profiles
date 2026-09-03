@@ -1,0 +1,79 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "Alan Wake",
+    "developer": "Remedy Entertainment",
+    "engine": "Remedy engine (custom, D3D9)",
+    "renderer": "Direct3D 9",
+    "platform": "Windows (Steam)",
+    "notes": "32-bit exe (AlanWake.exe, PE machine=0x14C). Ships a from-scratch d3d9.dll forwarding proxy in this project (exports exactly Direct3DCreate9, no hook code as of 2026-09-03)."
+  },
+  "input": {
+    "api_notes": [
+      "Window title is exactly 'Alan Wake - v<version>' (version string embedded, changes per patch - match on 'Alan Wake' substring, not the full title).",
+      "SendInput scancode keyboard + relative mouse work for basic capture/focus operations; menu navigation not yet mapped (Esc tried once, inconclusive - see hazards)."
+    ]
+  },
+  "states": [
+    {
+      "name": "gameplay",
+      "detect": "Third-person over-shoulder view, objective text + flashlight-battery dial HUD top-left, continuous non-zero frame delta via BitBlt capture.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03"
+    },
+    {
+      "name": "minimized (fullscreen-exclusive focus-loss)",
+      "detect": "GetWindowRect returns the Windows sentinel (-32000,-32000)-(-31840,-31972); IsIconic() == True. BitBlt capture at the window's client origin returns a near-black/tiny image even though the process is alive and CPU/GPU-active.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "See hazards: this build auto-minimizes on ANY external focus steal while running D3D9 exclusive fullscreen (resolution.xml fullscreen=1). Fix: ShowWindow(hwnd, SW_RESTORE) then SetForegroundWindow - confirmed twice to fully recover the running session with no state loss (same scene, same HUD, same character position both times)."
+    }
+  ],
+  "routes": [],
+  "entry_points": {
+    "process_name": "AlanWake.exe",
+    "window_title_substring": "Alan Wake",
+    "config_files": {
+      "resolution.xml": {
+        "path": "%USERPROFILE%\\Documents\\Remedy\\AlanWake\\resolution.xml",
+        "purpose": "width/height/fullscreen. Read at process start only - editing it while the game is running has no live effect; takes effect on the NEXT launch.",
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "example": "<screen_resolution><width value=\"1920\"/><height value=\"1080\"/><fullscreen value=\"1\"/></screen_resolution>"
+      }
+    },
+    "documented_launch_flags": {
+      "-window / -w <n> / -h <n> / -novsync / -showfps / -sensscale <n> / -locale=xx / -forcesurround / -forcestereo": "[reported, external-research - Fandom wiki + fan reference, NOT independently verified this session]",
+      "-freecamera": "[reported] a real, official free-camera tool, controller-driven, right-thumbstick toggle - no confirmed keyboard/mouse equivalent. Not tested live yet.",
+      "-developermenu": "[reported] adds a Developer Menu (episode/difficulty/ammo, unconfirmed if more). Not tested live yet."
+    }
+  },
+  "commands": {
+    "console": {
+      "available": null,
+      "confidence": "hypothesis",
+      "verified": "2026-09-03",
+      "notes": "Not investigated. Esc was sent once mid-session; the follow-up capture landed on what was probably a menu-transition frame (came back near-black) and a re-capture a moment later showed unchanged gameplay with no visible menu - genuinely inconclusive, not a negative result. Window/process state was healthy throughout (not minimized, not crashed)."
+    }
+  },
+  "hazards": [
+    {
+      "hazard": "This build auto-minimizes on ANY external focus steal while D3D9-exclusive-fullscreen",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "Reproduced twice, from two unrelated causes: (1) sending Alt+Enter - the ALT key alone generates WM_SYSKEYDOWN, which this build appears to treat as losing exclusive-mode focus; (2) merely launching an unrelated GUI application (x32dbg.exe) nearby, with no attach ever made. Both times GetWindowRect reported the Windows-minimized sentinel (-32000,-32000)-(-31840,-31972) and IsIconic()==True, and both times ShowWindow(hwnd, SW_RESTORE) + SetForegroundWindow fully recovered the exact running state with no loss (same scene, same HUD, same character position). DO NOT send Alt+Enter to this game live to try to toggle windowed mode - it does not toggle, it minimizes. Use resolution.xml + a relaunch instead (see entry_points.config_files)."
+    },
+    {
+      "hazard": "A game-window close (WM_CLOSE) produced a Windows crash-report minidump, despite a fast, non-hanging process exit",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "PostMessage(hwnd, WM_CLOSE, 0, 0) made the process leave the process list within ~4s with no visible hang - insufficient evidence to call it 'graceful', corrected in-session. A fresh minidump (15,718 bytes) appeared at the exact close time. NOTE for future sessions: that exact byte size also matches ONE of nine pre-existing dumps from an unrelated 2026-08-25 session (the other eight were 216-254 KB, a visibly different/larger fault), which hints this specific small dump may be a repeatable, likely-benign exception the shutdown path always trips - not proven, n=2. Do not copy dump FILE CONTENTS into any repo (a minidump is a memory snapshot that can contain the game's own compiled code/assets - treat it like any other original game file, never distribute it). Recording only size/timestamp metadata is fine. A verified in-game quit route (through a menu) is still unknown and would be worth finding before assuming WM_CLOSE is the best available method."
+    },
+    {
+      "hazard": "The x64dbg MCP automation bridge did not connect on this machine",
+      "confidence": "reported",
+      "verified": "2026-09-03",
+      "notes": "start_session reported a timeout even though x32dbg.exe (32-bit, matching AlanWake.exe's bitness) did launch and run standalone; list_sessions never showed it. Six pre-existing, apparently-stale x64dbg-automate-mcp.exe helper processes were already running on this machine before this attempt, suggesting an estate-wide bridge issue rather than something specific to this game or session. Not a game-specific finding - flagged here because it blocked a live camera-matrix read this session and will block the same approach again until fixed."
+    }
+  ]
+}
