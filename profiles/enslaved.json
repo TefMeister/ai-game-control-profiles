@@ -126,6 +126,13 @@
       "confidence": "verified-live",
       "verified": "2026-09-03",
       "notes": "ESC during a checkpoint cutscene did not obviously skip it; the pause menu appeared once the cutscene had ended."
+    },
+    {
+      "name": "loading / transition (lens-warped)",
+      "detect": "A strong barrel/fisheye warp with heavy vignetting and a circular ring motif, over a scene view. Appears after selecting CONTINUE JOURNEY or a chapter, and on some transitions.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "IMPORTANT, user-confirmed 2026-09-03: THIS DISTORTION IS PART OF THE GAME - a deliberate authored effect, not an artifact of the d3d9 proxy, the stereo offset, or the forced windowed mode. Do NOT chase it as a rendering bug, and do not treat it as evidence a mod is warping the projection. It is also a useful state marker: if the frame is lens-warped, the game is loading or transitioning rather than in normal gameplay."
     }
   ],
   "routes": [
