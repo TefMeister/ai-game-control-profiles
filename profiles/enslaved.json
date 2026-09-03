@@ -15,7 +15,8 @@
       "SendInput is the route that works. Use SCANCODES rather than virtual keys: it keeps keyboard layout out of the path, which is the trap that cost a sibling project (doom-2016-vr) a session.",
       "ARROW KEYS REQUIRE KEYEVENTF_EXTENDEDKEY. Without it, scancode 0x50 is numpad-2, the menu ignores it, and nothing errors - it simply reads as 'this game ignores the keyboard'. Observed directly: three Down presses moved the menu selection not at all; with the flag it moved on the first try.",
       "Foreground the window before sending anything, and re-check it. Synthetic input follows focus.",
-      "PostMessage(WM_KEYDOWN) was attempted but never soundly measured. Treat as UNKNOWN, not as a negative."
+      "PostMessage(WM_KEYDOWN) was attempted but never soundly measured. Treat as UNKNOWN, not as a negative.",
+      "VIRTUAL XINPUT PAD WORKS (ViGEmBus). Verified live 2026-09-03: a virtual X360 pad hot-plugged into the running game drives movement (left stick) and camera (right stick) with no restart. This is a third input route, useful for anything gated behind a controller. Tool: flat-to-vr-RE-toolkit/tools/virtual-pad.py"
     ],
     "bindings": [
       {
@@ -82,6 +83,14 @@
         "confidence": "verified-live",
         "verified": "2026-09-03",
         "notes": "MUST carry KEYEVENTF_EXTENDEDKEY. Non-extended 0x50 and the 'S' key were both tested and did nothing at all."
+      },
+      {
+        "action": "move / look via a VIRTUAL XInput controller",
+        "device": "ViGEmBus virtual X360 pad",
+        "keys": [],
+        "confidence": "verified-live",
+        "verified": "2026-09-03",
+        "notes": "Left stick full-forward 2.5s moved the character (frame delta 48.9); right stick 2.0s swung the camera onto entirely different scenery (delta 62.5), against an idle baseline of ~2. Hot-plugged into a running game, no restart needed."
       }
     ]
   },
@@ -161,11 +170,16 @@
       "from": "main_menu",
       "to": "arbitrary_chapter",
       "steps": [
-        "CHAPTER SELECT"
+        "main menu -> CHAPTER SELECT",
+        "pick the chapter (VERIFY the highlight - NEW JOURNEY is adjacent on the menu above)",
+        "DIFFICULTY SELECT appears - NORMAL is the default highlight",
+        "Enter",
+        "a warning appears: 'This will reset your last checkpoint' - Enter to confirm",
+        "wait ~60-90s including the chapter's opening cutscene"
       ],
-      "confidence": "inferred-static",
+      "confidence": "verified-live",
       "verified": "2026-09-03",
-      "notes": "CHAPTER SELECT is present on the main menu but was NOT exercised. If it works it gives varied scenes on demand, which is valuable for reverse-engineering."
+      "notes": "VERIFIED 2026-09-03: loaded Chapter 2 'The Old City' this way. Five chapters were unlocked. NOTE the DIFFICULTY SELECT step, which is not obvious from the menu name. See hazards: this RESETS THE LAST CHECKPOINT."
     }
   ],
   "entry_points": {
@@ -190,7 +204,7 @@
       "available": false,
       "confidence": "disproved",
       "verified": "2026-09-03",
-      "notes": "The [NTGameFramework.NTCam_DebugInput] map is real and shipped (ToggleDebugCamera on Alt+C, WASD/QE fly, MoreSpeed, FreezeRendering, Pause/Step) but it is NOT REACHABLE by key: ToggleDebugCamera is an exec command and exec dispatch is stripped (see keybinding_exec). Bound to F5 and pressed - no effect, W continued to walk the character. STILL UNTESTED, and the only remaining input route: the normal-play entry point is a CONTROLLER thumbstick chord (CheckDebugCamChord / DoDebugCamChord in [Engine.PlayerInput]), which a real or emulated pad (ViGEmBus) could send. The stronger route is in-process: a d3d9 proxy already runs inside this process every frame, so locating the engine's exec entry point by pattern and calling it directly bypasses input, bindings and the console entirely."
+      "notes": "The [NTGameFramework.NTCam_DebugInput] map is real and shipped (ToggleDebugCamera on Alt+C, WASD/QE fly, MoreSpeed, FreezeRendering, Pause/Step) but it is NOT REACHABLE by key: ToggleDebugCamera is an exec command and exec dispatch is stripped (see keybinding_exec). Bound to F5 and pressed - no effect, W continued to walk the character. STILL UNTESTED, and the only remaining input route: the normal-play entry point is a CONTROLLER thumbstick chord (CheckDebugCamChord / DoDebugCamChord in [Engine.PlayerInput]), which a real or emulated pad (ViGEmBus) could send. The stronger route is in-process: a d3d9 proxy already runs inside this process every frame, so locating the engine's exec entry point by pattern and calling it directly bypasses input, bindings and the console entirely. || CLOSED 2026-09-03c: the CONTROLLER CHORD ROUTE IS ALSO DEAD. LS+RS held 1.2s via a ViGEmBus virtual pad produced no debug camera - W still walked the character. The control passed, which is what makes this a real negative: the SAME pad object then moved the character with the left stick and swung the camera with the right, so the game reads the pad and the chord genuinely does nothing. CONCLUSION: the debug camera is unreachable by ANY input route, pad or key, because ToggleDebugCamera is an exec command and exec dispatch is stripped. The only remaining routes are in-process: call the engine's exec entry point from our own d3d9 proxy, or override the view-projection at c0 (which the proxy already does for stereo)."
     },
     "exec_dispatch_summary": {
       "available": false,
@@ -235,6 +249,18 @@
       "confidence": "verified-live",
       "verified": "2026-09-03",
       "notes": "Measuring whether the HUD moves under a stereo offset: the top-left health/shield box read a false +4 to -6 px shift in one scene because that box is about 70% world seen through a translucent overlay, and the correlation locked onto moving foliage behind the bars. Cropping and magnifying both eye frames showed the bars holding position while the background moved. In a second scene, with a static dark trunk behind, the same box read exactly 0. Pick HUD probe regions with static backgrounds, or verify visually before believing the number."
+    },
+    {
+      "hazard": "CHAPTER SELECT resets the player's last checkpoint",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "The game warns 'This will reset your last checkpoint.' before loading a chosen chapter. Chapter UNLOCKS survive, so it is recoverable by re-selecting the old chapter, but the player's position inside their current chapter is lost. Do not use it casually on someone's live save - ask, or use it only when varied scenes are explicitly wanted."
+    },
+    {
+      "hazard": "One eye-pair is not a measurement (phase correlation)",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "While hunting un-offset screen-space effects, a single tile measured dx=+0 while its whole row moved +22 - exactly the signature of the bug being hunted, and sitting right on a wet floor's caustics. Re-measured across four eye-pairs the same tile read +24/-22/+18/-18, tracking its neighbour within ~2px with signs flipping together. The +0 was one low-confidence correlation failure. A correlation peak on a low-contrast or fast-changing tile can land anywhere, and it can land on a value that looks precisely like the defect you expect. Repeat across pairs and require the sign to flip before believing it."
     }
   ]
 }
