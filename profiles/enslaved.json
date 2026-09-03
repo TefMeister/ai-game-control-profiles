@@ -9,7 +9,6 @@
     "distribution": "Steam, Premium Edition",
     "build_notes": "Verified on Windows 10, 2026-09-03. During testing the window was forced to 1280x720 windowed by a d3d9 proxy; this build ships no windowed mode of its own. Everything below was driven externally against the game window - no in-process code was required for any of it."
   },
-
   "input": {
     "api": "Win32 SendInput (scancode keyboard + relative mouse)",
     "api_notes": [
@@ -21,7 +20,13 @@
     "bindings": [
       {
         "action": "move character forward",
-        "keys": [{ "name": "W", "dik": "0x11", "extended": false }],
+        "keys": [
+          {
+            "name": "W",
+            "dik": "0x11",
+            "extended": false
+          }
+        ],
         "confidence": "verified-live",
         "verified": "2026-09-03",
         "notes": "Held 2.2s; the character visibly advanced. Confirmed by comparing two screenshots, not by a pixel statistic."
@@ -36,14 +41,26 @@
       },
       {
         "action": "pause / open the pause menu, and back out of a menu",
-        "keys": [{ "name": "Escape", "dik": "0x01", "extended": false }],
+        "keys": [
+          {
+            "name": "Escape",
+            "dik": "0x01",
+            "extended": false
+          }
+        ],
         "confidence": "verified-live",
         "verified": "2026-09-03",
         "notes": "ESC IS NOT A NEUTRAL KEY HERE. It opens the pause menu and the game stops presenting. Found the hard way: an ESC sent as 'cleanup' after a probe silently froze rendering for several subsequent captures."
       },
       {
         "action": "select the highlighted menu item",
-        "keys": [{ "name": "Enter", "dik": "0x1C", "extended": false }],
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
         "confidence": "verified-live",
         "verified": "2026-09-03",
         "notes": "Both menus print their own controls on screen: 'ENTER SELECT, ESCAPE BACK'."
@@ -51,8 +68,16 @@
       {
         "action": "move the menu selection",
         "keys": [
-          { "name": "Down", "dik": "0x50", "extended": true },
-          { "name": "Up", "dik": "0x48", "extended": true }
+          {
+            "name": "Down",
+            "dik": "0x50",
+            "extended": true
+          },
+          {
+            "name": "Up",
+            "dik": "0x48",
+            "extended": true
+          }
         ],
         "confidence": "verified-live",
         "verified": "2026-09-03",
@@ -60,7 +85,6 @@
       }
     ]
   },
-
   "states": [
     {
       "name": "gameplay",
@@ -95,7 +119,6 @@
       "notes": "ESC during a checkpoint cutscene did not obviously skip it; the pause menu appeared once the cutscene had ended."
     }
   ],
-
   "routes": [
     {
       "from": "gameplay",
@@ -137,19 +160,19 @@
     {
       "from": "main_menu",
       "to": "arbitrary_chapter",
-      "steps": ["CHAPTER SELECT"],
+      "steps": [
+        "CHAPTER SELECT"
+      ],
       "confidence": "inferred-static",
       "verified": "2026-09-03",
       "notes": "CHAPTER SELECT is present on the main menu but was NOT exercised. If it works it gives varied scenes on demand, which is valuable for reverse-engineering."
     }
   ],
-
   "entry_points": {
     "process_name": "Enslaved.exe",
     "window_title_substring": "ENSLAVED",
     "notes": "The window title contains trademark symbols and a line break. Match on the substring 'ENSLAVED' rather than the full string."
   },
-
   "commands": {
     "console": {
       "available": false,
@@ -158,19 +181,24 @@
       "notes": "DOES NOT OPEN BY KEYPRESS. Tilde (0x29, bound as ConsoleKey), Tab (0x0F, bound as TypeKey) and F10 (0x44) were each sent as scancodes to the focused window with a capture taken after; the scene was unchanged every time. Consistent with the console class being stripped from this shipping build, which is common in UE3 releases. This is n=3 keys, so it rules out the cheap route rather than every route. KEPT AS A DISPROVED ENTRY so the next reader does not repeat it."
     },
     "keybinding_exec": {
-      "available": null,
-      "confidence": "hypothesis",
+      "available": false,
+      "confidence": "disproved",
       "verified": "2026-09-03",
-      "notes": "UE3 can bind a key directly to an exec command string, which is a DIFFERENT mechanism from the console - there is no prompt to type into. MonkeyInput.ini ships a DEVELOPER binding, Bindings=(Name=\"F9\",Command=\"shot\"), which is why this looks promising: 'shot' is an ordinary exec command bound to a key by the developers. Pressing F9 and looking for a screenshot file is the cheapest decisive test of the whole channel. Untested as of 2026-09-03 because input inis are read at load and the test needs a relaunch."
+      "notes": "TESTED AND DEAD. Three ways: F9='shot' (a DEVELOPER binding shipped in MonkeyInput.ini, not one we added) wrote no file anywhere under the game tree or Documents/My Games; F6='FOV 120' produced no framing change at all; F5='ToggleDebugCamera' produced no change and W still walked the character with the chase-cam behind him. The added bindings were verified still present in the live ini after launch (mtime unchanged, so the engine had not rewritten it), so the test could have produced a positive. CONCLUSION: this build kept its input/action bindings and stripped its exec-command dispatch - action and axis bindings drive the game fine, console-style exec commands dispatch nowhere. That is what a shipping UE3 build looks like with the console/cheat-manager path compiled out."
     },
     "debug_camera": {
-      "available": null,
-      "confidence": "inferred-static",
+      "available": false,
+      "confidence": "disproved",
       "verified": "2026-09-03",
-      "notes": "MonkeyInput.ini ships a complete debug free-camera input map under [NTGameFramework.NTCam_DebugInput]: ToggleDebugCamera (Alt+C), WASD plus Q/E to fly including vertically, mouse look, LeftShift MoreSpeed, F FreezeRendering, End Pause, PageDown Step (frame stepping). If live, this is the engine's OWN free camera and solves most of 'move the camera to reverse-engineer the engine'. IMPORTANT: in normal gameplay its entry point is a CONTROLLER thumbstick chord (CheckDebugCamChord / DoDebugCamChord in [Engine.PlayerInput]), not a key - which is why pressing keys never finds it. Rebind it to a key in the ini instead. UNTESTED: a binding surviving in a shipped ini is NOT evidence the feature is live, because the console's bindings survive in this same file and the console is dead."
+      "notes": "The [NTGameFramework.NTCam_DebugInput] map is real and shipped (ToggleDebugCamera on Alt+C, WASD/QE fly, MoreSpeed, FreezeRendering, Pause/Step) but it is NOT REACHABLE by key: ToggleDebugCamera is an exec command and exec dispatch is stripped (see keybinding_exec). Bound to F5 and pressed - no effect, W continued to walk the character. STILL UNTESTED, and the only remaining input route: the normal-play entry point is a CONTROLLER thumbstick chord (CheckDebugCamChord / DoDebugCamChord in [Engine.PlayerInput]), which a real or emulated pad (ViGEmBus) could send. The stronger route is in-process: a d3d9 proxy already runs inside this process every frame, so locating the engine's exec entry point by pattern and calling it directly bypasses input, bindings and the console entirely."
+    },
+    "exec_dispatch_summary": {
+      "available": false,
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "LESSON WORTH CARRYING TO OTHER UE3 TITLES: a binding surviving in a shipped config file is NOT evidence the feature behind it is live. This game ships console bindings with no console AND a complete debug-camera map with no reachable debug camera. Config is a lead; running it is the evidence. Six keys across two sessions is enough - do not keep trying keys."
     }
   },
-
   "hazards": [
     {
       "hazard": "PrintWindow returns a STALE frame once the game stops presenting",
@@ -201,6 +229,12 @@
       "confidence": "verified-live",
       "verified": "2026-09-03",
       "notes": "Animated grass, water and idle animation put a no-input control between 3.4 and 23.3, which is ABOVE the signal from a working keypress. That method scored a key which demonstrably walks the character as 'no effect'. Keep the no-input control - it is the right instinct - but prefer a large unmistakable action plus reading two screenshots. If a number is genuinely needed, camera motion is a coherent global translation (phase correlation), not a mean difference."
+    },
+    {
+      "hazard": "A HUD probe region must be checked for what is BEHIND it",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "Measuring whether the HUD moves under a stereo offset: the top-left health/shield box read a false +4 to -6 px shift in one scene because that box is about 70% world seen through a translucent overlay, and the correlation locked onto moving foliage behind the bars. Cropping and magnifying both eye frames showed the bars holding position while the background moved. In a second scene, with a static dark trunk behind, the same box read exactly 0. Pick HUD probe regions with static backgrounds, or verify visually before believing the number."
     }
   ]
 }
