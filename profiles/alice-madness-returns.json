@@ -1,0 +1,271 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "Alice: Madness Returns",
+    "year": 2011,
+    "developer": "Spicy Horse",
+    "publisher": "Electronic Arts",
+    "engine": "Unreal Engine 3",
+    "renderer": "Direct3D 9",
+    "distribution": "Steam (EA/Origin activation; SteamStub-wrapped exe)",
+    "build_notes": "Verified 2026-09-04 dev PC, windowed 1280x720, with our d3d9.dll proxy present. Driven by external synthetic keyboard (SendInput scancodes) for menus and the proxy's own F-key hotkeys for stereo. MUST be windowed (see hazards)."
+  },
+  "input": {
+    "api": "Win32 SendInput (scancode keyboard) for menus; proxy F-key hotkeys (GetAsyncKeyState, polled each Present) for stereo controls",
+    "api_notes": [
+      "The window title is 'Alice Madness Returns' (match substring 'Alice').",
+      "MUST run windowed: Fullscreen=True gives fullscreen-exclusive which BitBlt captures as solid black, so the harness cannot see or drive it. Set Fullscreen=False in the live config while the game is CLOSED (UE3 rewrites config on exit). [verified-live 2026-09-04]",
+      "Menus take Enter / arrow keys / Esc. Some menu screens are radial (Configuration categories arranged around a head; Left/Right/Down move between them) while others are vertical lists.",
+      "The proxy's stereo hotkeys are read via GetAsyncKeyState in the Present hook: F9 toggle stereo, F10 swap eye, F11/F12 ipd -/+, F7/F8 convergence. F9 confirmed to register from external SendInput 2026-09-04. Their effect is logged to Binaries\\Win32\\alice_vr_proxy_log.txt.",
+      "Capture with BitBlt from the screen DC, window focused first."
+    ],
+    "bindings": [
+      {
+        "action": "advance the title / copyright screen",
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "select the highlighted menu item",
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "move the menu selection (vertical lists and radial category menus)",
+        "keys": [
+          {
+            "name": "Up",
+            "dik": "0x48",
+            "extended": true
+          },
+          {
+            "name": "Down",
+            "dik": "0x50",
+            "extended": true
+          },
+          {
+            "name": "Left",
+            "dik": "0x4B",
+            "extended": true
+          },
+          {
+            "name": "Right",
+            "dik": "0x4D",
+            "extended": true
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "In a yes/no dialog, Left=NO, Right=YES (dialogs default to NO). In the Video sliders, Left/Right change the highlighted row's value."
+      },
+      {
+        "action": "back out of a menu / open the in-game pause menu",
+        "keys": [
+          {
+            "name": "Escape",
+            "dik": "0x01",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "Esc in a settings sub-screen raises a 'Cancel? All changes will be lost' dialog (NO default)."
+      },
+      {
+        "action": "toggle stereo (proxy)",
+        "keys": [
+          {
+            "name": "F9",
+            "dik": "0x43",
+            "extended": false
+          }
+        ],
+        "device": "proxy hotkey",
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "Logs 'HOTKEY F9: stereo ON/OFF (... p00=known|NOT SEEN YET)'. p00 is only recovered while enabled, so read it on a SECOND toggle after enabled frames have run."
+      },
+      {
+        "action": "eye swap / ipd / convergence (proxy)",
+        "keys": [
+          {
+            "name": "F10 eye, F11/F12 ipd, F7/F8 convergence",
+            "dik": "0x44/0x57/0x58/0x41/0x42",
+            "extended": false
+          }
+        ],
+        "device": "proxy hotkey",
+        "confidence": "inferred-static",
+        "verified": "2026-09-04",
+        "notes": "Present in pollHotkeys; only F9 exercised live so far. All are inert until p00 is recovered (shear stays 0)."
+      }
+    ]
+  },
+  "states": [
+    {
+      "name": "title",
+      "detect": "ALICE MADNESS RETURNS logo with a pocket watch and 'Press ENTER'; an autosave warning.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "copyright",
+      "detect": "ALICE logo over damask; 'Game code (c) 2011 Spicy Horse ... Electronic Arts' at the bottom.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "profile_select",
+      "detect": "PROFILE SELECT with a profile row (name, Play Time, Overall Completion) and NEW / ENTER / DELETE actions.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "main_menu",
+      "detect": "Alice portrait on the left; CONTINUE GAME / MEMORIES / EXTRA CONTENT / CONFIGURATION / GAME MANUAL / EXIT GAME on a red curve; eQUIP / bACK bottom-right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "pause_menu",
+      "detect": "Chapter stats book on the left (SNOUTS PEPPERED, MEMORIES RECOVERED, ...); MEMORIES / CONFIGURATION / RESTART / MAIN MENU on a curve at right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "configuration_categories",
+      "detect": "CONFIGURATION over a head diagram; AUDIO / CONTROLS / VIDEO / GAME AND DATA arranged radially.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "video_options",
+      "detect": "Video: GAMMA, RESOLUTION, ANTI-ALIAS, 3D STEREO, MOTION BLUR, POST PROCESS, DYNAMIC SHADOWS; an eyeball diagram at left; CONFIRM / DEFAULTS / BACK.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "gameplay",
+      "detect": "Third-person Alice; in Chapter 1 real-world London (Whitechapel Market brick arch).",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    }
+  ],
+  "routes": [
+    {
+      "from": "launch",
+      "to": "gameplay",
+      "steps": [
+        "wait for the window (fullscreen-exclusive if Fullscreen=True - fix to windowed first, see hazards)",
+        "Enter at the title (autosave warning)",
+        "Enter at the copyright screen",
+        "PROFILE SELECT: the profile is highlighted, Enter (this is ENTER=load, not DELETE)",
+        "main menu: CONTINUE GAME highlighted, Enter",
+        "wait ~30 s for the level load",
+        "gameplay"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "from": "gameplay",
+      "to": "video_options",
+      "steps": [
+        "Esc (pause menu)",
+        "Down to CONFIGURATION, Enter",
+        "radial categories: Right to CONTROLS then Down to VIDEO (or navigate to VIDEO), Enter"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "3D STEREO is the 4th row; Left/Right toggles it OFF<->ON. Esc raises a 'Cancel? changes lost' dialog (Right=YES to discard)."
+    },
+    {
+      "from": "gameplay",
+      "to": "process_exit",
+      "steps": [
+        "Esc (pause menu)",
+        "Down x2 to MAIN MENU - VERIFY the highlight (RESTART is passed)",
+        "Enter; confirm dialog Right=YES, Enter",
+        "wait for the main menu",
+        "Down x5 to EXIT GAME - VERIFY",
+        "Enter; 'Are you sure you want to quit?' Right=YES, Enter"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Quits gracefully to desktop. Both dialogs default to NO."
+    }
+  ],
+  "entry_points": {
+    "process_name": "AliceMadnessReturns.exe",
+    "window_title_substring": "Alice",
+    "config_path": "Documents\\My Games\\Alice Madness Returns\\AliceGame\\Config\\AliceEngine.ini"
+  },
+  "commands": {
+    "proxy_hotkeys": {
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "The d3d9.dll proxy polls F7-F12 via GetAsyncKeyState each Present; answers in alice_vr_proxy_log.txt. F9 toggle stereo (confirmed live). No in-game developer console investigated."
+    },
+    "console": {
+      "available": null,
+      "confidence": "hypothesis",
+      "verified": "2026-09-04",
+      "notes": "Not investigated. The engine exposes Exec* config identifiers (ExecStereo3D etc.) but reached via the menu, not a typed console, as far as tested."
+    }
+  },
+  "hazards": [
+    {
+      "hazard": "Fullscreen-exclusive is invisible to BitBlt",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Fullscreen=True in AliceEngine.ini gives fullscreen-exclusive; the capture is solid black and the game cannot be driven or seen. Set Fullscreen=False while the game is CLOSED (UE3 rewrites config on exit); relaunch comes up windowed."
+    },
+    {
+      "hazard": "PROFILE SELECT has a DELETE action",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "NEW / ENTER / DELETE on the profile screen. Enter on the highlighted profile loads it (ENTER), but do not stray onto DELETE."
+    },
+    {
+      "hazard": "The pause menu has RESTART above MAIN MENU",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Order MEMORIES / CONFIGURATION / RESTART / MAIN MENU. Verify the highlight before Enter when heading for MAIN MENU."
+    },
+    {
+      "hazard": "Yes/No dialogs default to NO",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Cancel-changes, return-to-main-menu and quit dialogs all start on NO (left); press Right for YES and verify before Enter."
+    },
+    {
+      "hazard": "The proxy never frees the real d3d9.dll (latent reload-past)",
+      "confidence": "inferred-static",
+      "verified": "2026-09-04",
+      "notes": "If the game ever FreeLibrary's the proxy, the system d3d9 stays resident by name and the proxy never reloads. Did NOT bite on 2026-09-04 (proxy resident all session). See dossier section 4."
+    }
+  ],
+  "disproved": [
+    {
+      "claim": "The F9 shear test on the 2026-09-03 M0 build gives a clean read of the c0 delivery path",
+      "result": "inconclusive: the stats line fires before F9, vp_writes is gated behind g_st.enabled, and the F9 log samples p00 at the toggle instant; the frame diff was scene animation, not a shear",
+      "date": "2026-09-04",
+      "notes": "Not a disproof of c0 delivery - a disproof of the TEST. Use the F9 double-toggle retest or ungate the instrumentation."
+    }
+  ]
+}
