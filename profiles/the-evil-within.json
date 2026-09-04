@@ -131,17 +131,16 @@
       "to": "process_exit",
       "steps": [
         "Escape (pause menu, ARCHIVE highlighted)",
-        "Down x5 (extended) to TITLE MENU - VERIFY the highlight, RESTART CHAPTER is in the path",
-        "Enter",
-        "confirm dialog appears with NO highlighted - press Up to select YES, verify, Enter",
-        "wait for the title menu to load",
-        "Down x5 to EXIT - VERIFY, NEW GAME sits two rows above",
-        "Enter",
-        "second confirm dialog, again defaulting to NO - Up, verify, Enter"
+        "Down x5 (extended) to TITLE MENU - VERIFY the highlight (RESTART CHAPTER is passed at position 3)",
+        "Enter; confirm dialog defaults to NO - Up to YES, verify, Enter",
+        "wait ~12 s for the TITLE screen",
+        "on the title menu, Down x5 to EXIT - VERIFY",
+        "Enter; 'Are you sure you want to exit game?' defaults to NO - Up to YES, verify, Enter",
+        "process exits to desktop"
       ],
       "confidence": "verified-live",
-      "verified": "2026-09-03",
-      "notes": "Process exits ~2s after the final confirm. This is the graceful close."
+      "verified": "2026-09-04",
+      "notes": "TWO-STAGE: pause TITLE MENU returns to the title SCREEN (not desktop); EXIT from the title menu then quits to desktop. Both confirm dialogs default to NO. [verified-live 2026-09-04]"
     }
   ],
   "entry_points": {
@@ -188,5 +187,6 @@
       "verified": "2026-09-03",
       "notes": "A scene plays with 'PRESS ANY KEY' overlaid. It looks like gameplay in a screenshot but accepts only a keypress, and a frame delta against it can be large enough to be mistaken for a real state change. Press any key to return to the title menu."
     }
-  ]
+  ],
+  "notes": []
 }
