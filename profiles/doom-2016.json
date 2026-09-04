@@ -1,0 +1,309 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "DOOM",
+    "year": 2016,
+    "developer": "id Software",
+    "publisher": "Bethesda Softworks",
+    "engine": "id Tech 6",
+    "renderer": "Vulkan (r_renderAPI 1) or OpenGL (0)",
+    "distribution": "Steam (app 379720)",
+    "build_notes": "Verified 2026-09-04 dev PC, windowed 1280x720, Vulkan, with our vulkan-1.dll proxy present. Launched via staging/doom-2016-vr/proxy-vulkan/scripts/install-and-launch.bat (sets r_renderAPI 1, enables the file command channel). Driven by external synthetic keyboard/mouse AND a ViGEm virtual XInput pad."
+  },
+  "input": {
+    "api": "Win32 SendInput (scancode kbd + relative mouse) for menus/look; ViGEm virtual XInput pad for in-game movement+look",
+    "api_notes": [
+      "DOOM imports DINPUT8, XINPUT1_4 (directly), the Win32 key-state calls and GetCursorPos/SetCursorPos; ZERO raw-input imports. [measured 2026-08-31]",
+      "sendinput drives menus, movement and look but ONLY while DOOM is the foreground window. [verified-live 2026-08-31]",
+      "inproc-keystate does NOT work: gameplay keyboard goes through DirectInput 8, which our key-state hooks do not feed. [disproved 2026-08-31]",
+      "Console toggle is on physical SCANCODE 0x29 and the VK that reaches it is layout-dependent and can differ between two launches of the same game. Send the scancode (scan 0x29), do not send a VK. It is also a dead key: after opening, send space then backspace before typing. [measured 2026-09-01]",
+      "The window title is 'DOOM'. The window does not exist for the first several seconds after launch (process starts, then creates it) - a find-window failure then is 'still starting', not 'wrong title'.",
+      "Capture with BitBlt from the screen DC and foreground the window first; an unfocused grab returns the whole desktop.",
+      "VIRTUAL XInput PAD (flat-to-vr-RE-toolkit/tools/virtual-pad.py, ViGEmBus + vgamepad) is the best in-game route: XInput is imported directly, so the game binds the virtual pad as a real Xbox 360 controller regardless of focus rules or DirectInput exclusive mode. left stick = move, right stick = look. [verified-live 2026-09-04, n=2 per axis with reversal]"
+    ],
+    "bindings": [
+      {
+        "action": "clear the promo overlay / open the quit prompt at the main menu",
+        "keys": [
+          {
+            "name": "Escape",
+            "dik": "0x01",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "At the main menu Esc raises a NOTICE quit prompt (default No). Pick No (highlighted) to stay."
+      },
+      {
+        "action": "move focus up to the CAMPAIGN/MULTIPLAYER/SNAPMAP tab row from the promo tiles",
+        "keys": [
+          {
+            "name": "Up",
+            "dik": "0x48",
+            "extended": true
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "move between the top tabs",
+        "keys": [
+          {
+            "name": "Left",
+            "dik": "0x4B",
+            "extended": true
+          },
+          {
+            "name": "Right",
+            "dik": "0x4D",
+            "extended": true
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "move the vertical menu selection",
+        "keys": [
+          {
+            "name": "Down",
+            "dik": "0x50",
+            "extended": true
+          },
+          {
+            "name": "Up",
+            "dik": "0x48",
+            "extended": true
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "select the highlighted item",
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "continue past the level-load screen",
+        "keys": [
+          {
+            "name": "Space",
+            "dik": "0x39",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "'Press [SPACE] to continue' after the loading animation."
+      },
+      {
+        "action": "open the in-game pause menu",
+        "keys": [
+          {
+            "name": "Escape",
+            "dik": "0x01",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "move / look on foot (keyboard+mouse route)",
+        "keys": [
+          {
+            "name": "W/A/S/D + relative mouse",
+            "dik": "0x11/0x1E/0x1F/0x20",
+            "extended": false
+          }
+        ],
+        "device": "keyboard + relative mouse",
+        "confidence": "verified-live",
+        "verified": "2026-08-31"
+      },
+      {
+        "action": "move (in-game, virtual pad)",
+        "keys": [
+          {
+            "name": "left stick",
+            "dik": "vigem",
+            "extended": false
+          }
+        ],
+        "device": "ViGEm virtual XInput pad",
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "virtual-pad.py stick left 0 1.0 <secs>; ~820-unit pure translation for a 2 s forward hold, basis unchanged, reversible."
+      },
+      {
+        "action": "look (in-game, virtual pad)",
+        "keys": [
+          {
+            "name": "right stick",
+            "dik": "vigem",
+            "extended": false
+          }
+        ],
+        "device": "ViGEm virtual XInput pad",
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "virtual-pad.py stick right 1.0 0 <secs>; ~98 deg pure yaw for a 1.5 s hold, position unchanged, reversible."
+      },
+      {
+        "action": "open the console (in-game)",
+        "keys": [
+          {
+            "name": "scancode 0x29",
+            "dik": "0x29",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-01",
+        "notes": "Send the scancode via the proxy scan 0x29, then space+backspace (dead key). Needs +com_allowconsole 1 at launch to be ungated; retail gates it."
+      }
+    ]
+  },
+  "states": [
+    {
+      "name": "main_menu",
+      "detect": "DOOM logo top-left; CAMPAIGN / MULTIPLAYER / SNAPMAP tabs; large 'The Dark Ages' promo tiles below; [ENTER] SELECT / [ESC] EXIT / [R] CREDITS at the bottom.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "quit_prompt",
+      "detect": "NOTICE 'Are you sure you want to quit the game?' with Yes / No; No highlighted by default.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "select_campaign",
+      "detect": "SELECT CAMPAIGN; list GAME SLOT 1 / GAME SLOT 2 / NEW SLOT / ARCADE MODE; [R] DELETE GAME SLOT at the bottom.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "campaign_main_menu",
+      "detect": "MAIN MENU; CONTINUE GAME / MISSION SELECT / RUNE TRIAL SELECT / CLASSIC MAPS / COLLECTIBLES / SETTINGS; slot summary (The UAC, last played, difficulty) on the right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "loading_press_space",
+      "detect": "Level name top-left (e.g. 'The UAC'), a UAC glyph animation, 'Press [SPACE] to continue' top-right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "gameplay",
+      "detect": "First-person, weapon bottom-right, health/armor bottom-left, waypoint distance top-center.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "pause_menu",
+      "detect": "IN GAME; RESUME / SETTINGS / LOAD CHECKPOINT / RESTART MISSION / EXIT TO MAIN MENU / EXIT TO DESKTOP.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    }
+  ],
+  "routes": [
+    {
+      "from": "launch",
+      "to": "gameplay",
+      "steps": [
+        "run install-and-launch.bat (Vulkan + automation on); wait for the window (~20 s)",
+        "the game opens on the main menu with a promo tile focused",
+        "Esc raises a quit prompt -> Enter on No to dismiss (or just Up to the tabs)",
+        "Up to the CAMPAIGN/MULTIPLAYER/SNAPMAP tab row",
+        "Left to CAMPAIGN if needed, Enter",
+        "SELECT CAMPAIGN: GAME SLOT 1 highlighted, Enter",
+        "MAIN MENU: CONTINUE GAME highlighted, Enter",
+        "wait ~40 s for the loading screen, then Space at 'Press [SPACE] to continue'"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Drive the menu by KEYBOARD, not mouse: a click on a promo tile opens the Steam store overlay (see hazards)."
+    },
+    {
+      "from": "gameplay",
+      "to": "process_exit",
+      "steps": [
+        "Esc (pause menu, RESUME highlighted)",
+        "Down x5 to EXIT TO DESKTOP - VERIFY the highlight (RESTART MISSION is passed on the way)",
+        "Enter",
+        "quit dialog defaults to No: Up to Yes - VERIFY - then Enter",
+        "process exits in ~5 s"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    }
+  ],
+  "entry_points": {
+    "process_name": "DOOMx64vk.exe (Vulkan) or DOOMx64.exe (GL)",
+    "window_title_substring": "DOOM",
+    "launch_note": "Direct launch needs SteamAppId=379720 in the environment (no steam_appid.txt exists); install-and-launch.bat sets it."
+  },
+  "commands": {
+    "file_channel": {
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "The proxy reads doom_automation_cmds.txt beside the exe and answers in doom_vk_proxy_log.txt; helper scripts/doom-auto.ps1. Opt-in (DOOM_AUTOMATION=1 or doom_automation_enable.txt). Commands: status/help/mappings, snapa/snapb/dump, ringlearn/ringstat/ringyaw/ringeye/ringoff, framespy, probe, backend <name>, move/look, key/type/scan/console, tol. NUMPAD 1/2/3 are a manual fallback."
+    },
+    "console": {
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-01",
+      "notes": "In-game console opens on scancode 0x29 (send scan 0x29, then space+backspace). Retail GATES most cvars; +com_allowconsole 1 at launch ungates the console itself. The stereo switch is a call argument, not a cvar (dossier 6a), so a won gate yields parameters, not an on-switch."
+    }
+  },
+  "hazards": [
+    {
+      "hazard": "Clicking a promo tile on the main menu opens the Steam store overlay",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "A left-click aimed at the CAMPAIGN tab (155,140 at 1280x720) hit a 'DOOM: The Dark Ages' promo tile instead and opened the Steam overlay. Drive the main menu by keyboard (Up to the tabs), not mouse clicks on tiles."
+    },
+    {
+      "hazard": "SELECT CAMPAIGN can DELETE a save",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "[R] DELETE GAME SLOT is bound on that screen, and NEW SLOT / ARCADE MODE sit below the real slots. Navigate, capture, verify the highlight, then Enter."
+    },
+    {
+      "hazard": "The pause menu has RESTART MISSION",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Two rows above EXIT TO MAIN MENU. Verify the highlight before Enter when heading for an exit row."
+    },
+    {
+      "hazard": "Both quit dialogs default to No",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "The main-menu Esc quit prompt and the EXIT TO DESKTOP confirm both start on No; press Up to reach Yes and verify before Enter."
+    },
+    {
+      "hazard": "DOOM must be the foreground window for synthetic keyboard/mouse",
+      "confidence": "verified-live",
+      "verified": "2026-08-31",
+      "notes": "sendinput follows focus. The virtual XInput pad does NOT need focus, which is one reason it is the better in-game route."
+    },
+    {
+      "hazard": "The window does not exist for several seconds after launch",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    }
+  ]
+}
