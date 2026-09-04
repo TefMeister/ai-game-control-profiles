@@ -27,9 +27,46 @@
       "confidence": "verified-live",
       "verified": "2026-09-03",
       "notes": "See hazards: this build auto-minimizes on ANY external focus steal while running D3D9 exclusive fullscreen (resolution.xml fullscreen=1). Fix: ShowWindow(hwnd, SW_RESTORE) then SetForegroundWindow - confirmed twice to fully recover the running session with no state loss (same scene, same HUD, same character position both times)."
+    },
+    {
+      "name": "title",
+      "detect": "ALAN WAKE logo over a foggy forest; 'Press any key to play' (takes Space); Nitro/Remedy credits and version at the bottom.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "main_menu",
+      "detect": "Lighthouse scene; vertical list Continue Game / New Game / Episodes / Options / Extras / Quit; 'Select' prompt bottom-right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
     }
   ],
-  "routes": [],
+  "routes": [
+    {
+      "from": "launch",
+      "to": "main_menu",
+      "steps": [
+        "wait for the window (windowed if resolution.xml fullscreen=0)",
+        "title screen: press Space ('Press any key to play' - Enter may not register)",
+        "main menu appears with Continue Game highlighted"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "from": "main_menu",
+      "to": "process_exit",
+      "steps": [
+        "Down x5 to Quit - VERIFY the highlight",
+        "Enter",
+        "'Are you sure you want to Quit?' - Enter accepts (Esc cancels)",
+        "process exits to desktop in a few seconds"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Reached from gameplay via Esc to the pause menu then to the main menu (pause route not exercised 2026-09-04)."
+    }
+  ],
   "entry_points": {
     "process_name": "AlanWake.exe",
     "window_title_substring": "Alan Wake",
@@ -75,5 +112,8 @@
       "verified": "2026-09-03",
       "notes": "start_session reported a timeout even though x32dbg.exe (32-bit, matching AlanWake.exe's bitness) did launch and run standalone; list_sessions never showed it. Six pre-existing, apparently-stale x64dbg-automate-mcp.exe helper processes were already running on this machine before this attempt, suggesting an estate-wide bridge issue rather than something specific to this game or session. Not a game-specific finding - flagged here because it blocked a live camera-matrix read this session and will block the same approach again until fixed."
     }
+  ],
+  "notes": [
+    "2026-09-04b: the FreeLibrary-at-detach fix is confirmed live - the proxy's second d3d9 load now stays resident and the game renders through it (title + main menu). The proxy owns the real device. [verified-live 2026-09-04]"
   ]
 }
