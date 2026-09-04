@@ -1,0 +1,75 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "Resident Evil 2 (2019 remake)",
+    "year": 2019,
+    "developer": "Capcom",
+    "engine": "RE Engine",
+    "renderer": "Direct3D 12 (REFramework in front of it)",
+    "distribution": "Steam (app id 883710)",
+    "build_notes": "Verified 2026-09-04 on the Steam build with REFramework rev 76298bd (pd-upscaler fork, 2026-03-11) installed as dinput8.dll. The game runs WINDOWED on this machine (1920x1421 client area at screen offset 768,31); all captures are BitBlt of that client rectangle after SetForegroundWindow. The REFramework overlay opens on every boot and is closed with INSERT before anything else; keyboard input still reaches the game while it is open, mouse does not."
+  },
+  "input": {
+    "api": "Win32 keyboard via REFramework's hooked message loop reaches the game; mouse buttons do NOT arrive through SendInput (see disproved binding). Gamepad untested.",
+    "api_notes": "SendInput with SCANCODES works for every keyboard key tried. Numpad keys must be sent by VIRTUAL KEY (wVk 0x60+n, no SCANCODE flag): a numpad scancode with NumLock off reports as HOME/END/PGUP to GetAsyncKeyState, so a plugin polling VK_NUMPADn never sees it. Mouse: MOUSEEVENTF_RIGHTDOWN/RIGHTUP via SendInput produced no aim (SurvivorCondition.IsHold stayed false through a 2 s hold, twice); the engine appears to take mouse buttons from a path SendInput does not feed. Use the game's own input system instead (see commands).",
+    "bindings": [
+      { "action": "pass title screen", "keys": [ { "name": "ENTER", "dik": "0x1C", "extended": false } ], "context": "title screen 'START GAME'", "confidence": "verified-live", "verified": "2026-09-04" },
+      { "action": "confirm", "keys": [ { "name": "SPACE", "dik": "0x39", "extended": false } ], "context": "main menu and Story submenu", "confidence": "verified-live", "verified": "2026-09-04", "notes": "The menu footer says 'Space: Confirm'. Return is the right mouse button, so there is no keyboard 'back' proven yet; ESC untested." },
+      { "action": "walk forward", "keys": [ { "name": "W", "dik": "0x11", "extended": false } ], "context": "gameplay", "confidence": "verified-live", "verified": "2026-09-04", "notes": "Motion layer 0 switches to pl10_0190_KFF_GazingWalk_F_Loop." },
+      { "action": "walk back", "keys": [ { "name": "S", "dik": "0x1F", "extended": false } ], "context": "gameplay", "confidence": "verified-live", "verified": "2026-09-04" },
+      { "action": "run", "keys": [ { "name": "SHIFT", "dik": "0x2A", "extended": false }, { "name": "W", "dik": "0x11", "extended": false } ], "context": "gameplay, chord (SHIFT held)", "confidence": "verified-live", "verified": "2026-09-04", "notes": "Layer 0 goes Jog_Start -> Jog_Straight_Loop -> Jog_End." },
+      { "action": "aim (hold)", "keys": [ { "name": "RMB", "dik": "n/a" } ], "context": "gameplay", "confidence": "disproved", "verified": "2026-09-04", "notes": "Synthetic right-mouse via SendInput never raised IsHold. Aim is reachable natively: app.ropeway.InputSystem.setForce(64 /*HOLD*/, true) from a REFramework plugin or Lua raises the full aim state (animation bank, IsHold) and setForce(64,false) drops it cleanly." },
+      { "action": "toggle REFramework overlay", "keys": [ { "name": "INSERT", "dik": "0xD2", "extended": true } ], "context": "any", "confidence": "verified-live", "verified": "2026-09-04", "notes": "Overlay is OPEN at every boot on this install. Close it first: it swallows mouse input while open." }
+    ]
+  },
+  "states": [
+    { "id": "title", "description": "Title screen with the RESIDENT EVIL 2 logo and 'START GAME'. REFramework overlay usually open on top.", "detect": [ { "method": "screenshot", "cue": "large logo centred, 'START GAME' below it" }, { "method": "log", "cue": "re2_framework_log.txt has 'PluginLoader' lines but no player bind from the Visceral plugin" } ], "confidence": "verified-live", "verified": "2026-09-04" },
+    { "id": "main-menu", "description": "Story / Extra Modes / Bonuses / Online Store / Options / Exit over a rainy city.", "detect": [ { "method": "screenshot", "cue": "vertical list on the left, footer 'Space Confirm'" } ], "confidence": "verified-live", "verified": "2026-09-04" },
+    { "id": "story-menu", "description": "STORY: Continue / Load Game / New Game / New Game [2nd Run] / Results / Costumes, over the parking garage.", "detect": [ { "method": "screenshot", "cue": "'STORY' header, 'Continue' highlighted first" } ], "confidence": "verified-live", "verified": "2026-09-04" },
+    { "id": "gameplay", "description": "Player has control.", "detect": [ { "method": "log", "cue": "Visceral plugin logs 'PLAYER BOUND' (app.ropeway.PlayerManager.get_CurrentPlayer non-null) about 25 s after Continue" }, { "method": "screenshot", "cue": "third-person over-the-shoulder view, no menu text" } ], "confidence": "verified-live", "verified": "2026-09-04" }
+  ],
+  "routes": [
+    {
+      "id": "title-to-last-save",
+      "goal": "From boot to a loaded game via Continue (last save; never overwrites).",
+      "from_state": "title",
+      "to_state": "gameplay",
+      "reliability": "needs-verification-between-steps",
+      "steps": [
+        { "action": "wait", "ms": 30000, "note": "from launch to a responsive title screen" },
+        { "action": "key", "key": "INSERT", "note": "close the REFramework overlay" },
+        { "action": "key", "key": "ENTER", "note": "pass the title" },
+        { "action": "wait", "ms": 4000 },
+        { "action": "verify", "expect_state": "main-menu" },
+        { "action": "key", "key": "SPACE", "note": "Story" },
+        { "action": "wait", "ms": 3000 },
+        { "action": "verify", "expect_state": "story-menu", "note": "one run out of three stopped here because SPACE landed before the submenu was ready; verify, do not blind-chain" },
+        { "action": "key", "key": "SPACE", "note": "Continue" },
+        { "action": "wait", "ms": 26000, "note": "load; the plugin's PLAYER BOUND line is the real signal" }
+      ]
+    },
+    {
+      "id": "process-exit",
+      "goal": "Close the game without killing it.",
+      "from_state": "any",
+      "to_state": "exited",
+      "reliability": "deterministic",
+      "steps": [
+        { "action": "command", "command": "(Get-Process re2).CloseMainWindow() then WaitForExit", "note": "WM_CLOSE to the main window; exited within 2-3 s from the title screen and from gameplay, three times on 2026-09-04. No confirmation dialog." }
+      ]
+    }
+  ],
+  "entry_points": {
+    "saves": [ { "slot": "Continue (last save)", "lands": "a save room with a typewriter, Claire with the minigun (wp8700) equipped; the typewriter prompt is up, so do not press interact there", "confidence": "verified-live", "verified": "2026-09-04" } ]
+  },
+  "commands": {
+    "notes": "No console. The game's own input system is scriptable through REFramework: app.ropeway.InputSystem (managed singleton) .setForce(kind, bool) with kind HOLD=64 and ATTACK=256 (app.ropeway.InputDefine.Kind). Verified live 2026-09-04 from a native plugin: setForce(64,true) -> SurvivorCondition.IsHold true within a frame, aim animation bank engaged; setForce(64,false) -> back to locomotion. The same call was proven from Lua on 2026-08-27. Managed state (player, weapon, motion layers) is readable through REFramework's TDB reflection; the Visceral repo's dev-archive/plugin is a worked example."
+  },
+  "hazards": [
+    { "hazard": "REFramework overlay opens at boot and eats mouse input while open; keyboard still passes.", "confidence": "verified-live", "verified": "2026-09-04" },
+    { "hazard": "The Continue save lands next to a typewriter with its prompt active; an interact press opens the save UI.", "confidence": "verified-live", "verified": "2026-09-04" },
+    { "hazard": "Invoking System.GC.KeepAlive (an internal call with no resolvable body in this build) through REFramework's reflection crashes the game about 8 s later inside the native invoker. Hooking it fails first ('Failed to hook … unknown exception'). Use compiled app.ropeway.* methods as hook targets.", "confidence": "verified-live", "verified": "2026-09-04" },
+    { "hazard": "Synthetic mouse buttons via SendInput do not reach the game (no aim on RMB).", "confidence": "disproved", "verified": "2026-09-04" },
+    { "hazard": "The plugin DLL cannot be redeployed while the game runs (file locked); every plugin change costs a graceful close, copy, relaunch and the title-to-save route (~90 s).", "confidence": "verified-live", "verified": "2026-09-04" }
+  ]
+}
