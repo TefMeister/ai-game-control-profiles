@@ -7,7 +7,7 @@
     "engine": "Apex (Avalanche Open World Engine)",
     "renderer": "Direct3D 11",
     "distribution": "Steam",
-    "build_notes": "Verified on Windows 10, 2026-09-03, with our dxgi.dll proxy present. Ran windowed at 784x561. Driven entirely by external synthetic input. Home PC 2026-09-04: windowed 1920x1080, same proxy; driven by the same harness with 0.25-0.3 s key holds."
+    "build_notes": "Verified on Windows 10, 2026-09-03, with our dxgi.dll proxy present. Ran windowed at 784x561. Driven entirely by external synthetic input. Home PC 2026-09-04: windowed 1920x1080, same proxy; driven by the same harness with 0.25-0.3 s key holds. Dev PC 2026-09-04b: 784x561 windowed, staging 4533ec9 build, 0.25-0.3 s holds; full run incl. self-close."
   },
   "input": {
     "api": "Win32 SendInput (scancode keyboard + relative mouse)",
@@ -17,7 +17,9 @@
       "The window does not exist for the first several seconds after launch - the process starts, then creates it. A find-window failure right after launch means 'still starting', not 'wrong title'.",
       "PROBE HOTKEYS ARE NUMPAD AND NUMLOCK-INDEPENDENT: the cbfp probe reads GetAsyncKeyState and accepts either the numpad VK or the navigation VK (NUMPAD4 or LEFT = mark A, NUMPAD5 or CLEAR = mark B, NUMPAD3 or PGUP = dump). Send NON-EXTENDED scancodes 0x4B/0x4C/0x51 and it works whatever NumLock is set to.",
       "HOLD DURATION MATTERS: 70 ms taps were ignored on the home PC at 1920x1080 (two Esc taps, screen unchanged, game rendering and focused) while 250-300 ms holds registered every time (~20 presses). Use `hold <key> 0.3`, not `key`. [verified-live 2026-09-04] The dev PC's 70 ms taps at 784x561 still stand as recorded there.",
-      "Focus BEFORE the first capture: an unfocused BitBlt returned the whole desktop (3424 px wide) around the window; every capture after focusing was the clean 1920x1080 client area. [verified-live 2026-09-04]"
+      "Focus BEFORE the first capture: an unfocused BitBlt returned the whole desktop (3424 px wide) around the window; every capture after focusing was the clean 1920x1080 client area. [verified-live 2026-09-04]",
+      "CAPTURE MODE'S SETTINGS TABS ARE MOUSE-ONLY: click the tab label, click a row label to select it, click the < / > arrows at the ends of its bar to change it. Keyboard Down/Right, clicking the bar, and dragging the knob all do nothing. game-harness.py has a `click <x> <y>` command (client coordinates) for this. [verified-live 2026-09-04b, dev PC]",
+      "KEYMAP DECODING: `Mad Max\\settings.ini` [KeyMapping] stores alphabetical indices A=0..Z=25 (move_forward=22 W, move_left=0 A, move_backward=18 S, move_right=3 D live-verified; vehicle_fp_cam=21 V, enter_vehicle=exit_vehicle=17 R, overview_camera=23 X, action=4 E, cancel_action=16 Q inferred). Read it before guessing a key. [inferred-static 2026-09-04]"
     ],
     "bindings": [
       {
@@ -122,7 +124,34 @@
         ],
         "confidence": "reported",
         "verified": "2026-09-04",
-        "notes": "User-reported 2026-09-04, from community knowledge; not yet pressed by a session. Only applies in the car. Worth verifying with the cbfp probe: does slot 9 / the main-pass matrix jump from the chase camera to the driver seat?"
+        "notes": "User-reported 2026-09-04 and config-backed (settings.ini vehicle_fp_cam = V). Pressed ON FOOT 2026-09-04b: nothing, as expected. IN-CAR PRESS STILL OWED: the early-story garage car is a non-enterable prop (user-confirmed), so a save past the first driving mission is needed. Check with the cbfp probe whether slot 9 / the main-pass matrix jump from the chase camera to the driver seat."
+      },
+      {
+        "action": "enter / exit vehicle",
+        "keys": [
+          {
+            "name": "R",
+            "dik": "0x13",
+            "extended": false
+          }
+        ],
+        "confidence": "inferred-static",
+        "verified": "2026-09-04",
+        "notes": "From settings.ini keymap_group_enter_vehicle=17 (=R). Pressed beside the early-story garage car with no effect - that car is a prop, so this is not a disproof."
+      },
+      {
+        "action": "Capture Mode: CAMERA SETTINGS tab, FIELD OF VIEW slider",
+        "keys": [
+          {
+            "name": "mouse click on tab label / row label / < > arrows",
+            "dik": "n/a",
+            "extended": false
+          }
+        ],
+        "device": "mouse (absolute click)",
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "At 784x561: CAMERA SETTINGS label (452,106); FIELD OF VIEW label (85,174); arrows (55,189) and (272,189). Each > click is ~3 deg of horizontal FOV near the default; range 58.3-116.9 deg hfov; resets when Capture Mode is left with Esc."
       }
     ]
   },
@@ -213,6 +242,19 @@
       "confidence": "verified-live",
       "verified": "2026-09-04",
       "notes": "The Capture Mode camera writes the same GlobalConstants slot 9 and main-pass matrix as gameplay (W for 1.5 s moved the eye 6.34 units along the view forward), so it is a valid testbed for camera-constant experiments."
+    },
+    {
+      "from": "capture_mode",
+      "to": "capture_mode_camera_settings_fov",
+      "steps": [
+        "click the CAMERA SETTINGS tab label (452,106 at 784x561)",
+        "click the FIELD OF VIEW row label (85,174) - it highlights",
+        "click the > arrow (272,189) or < arrow (55,189) repeatedly; ~3 deg hfov per click",
+        "Esc leaves Capture Mode and resets the FOV"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Coordinates are client-area pixels for the 784x561 window; scale them for other window sizes. Verified with the cbfp probe dumping after each change."
     }
   ],
   "entry_points": {
@@ -230,7 +272,7 @@
       "available": true,
       "confidence": "verified-live",
       "verified": "2026-09-04",
-      "notes": "IS a free camera: arrows/WASD move, mouse rotates, U/I tilt, Enter captures, R video mode, Esc exits. Drives the same shared camera constant as gameplay. Tabs CAMERA / FILTERS / CAMERA SETTINGS / VIGNETTE exist; the key that switches them was not found (arrows, E, Tab tried)."
+      "notes": "IS a free camera: arrows/WASD move, mouse rotates, U/I tilt, Enter captures, R video mode, Esc exits. Drives the same shared camera constant as gameplay. Tabs CAMERA / FILTERS / CAMERA SETTINGS / VIGNETTE exist; the key that switches them was not found (arrows, E, Tab tried). 2026-09-04b: tabs switch by MOUSE CLICK on the label (not a key). CAMERA SETTINGS has EXPOSURE / FIELD OF VIEW / BLUR INTENSITY / DOF FOCUS DISTANCE / DEPTH OF FIELD / AUTOFOCUS ON MAX; sliders change via their < > arrows. The FOV slider edits the main-pass projection columns only (58.3-116.9 deg hfov) and resets on Esc."
     }
   },
   "hazards": [
@@ -257,6 +299,30 @@
       "confidence": "verified-live",
       "verified": "2026-09-04",
       "notes": "70 ms scancode taps did nothing on the home PC while 250-300 ms holds worked every time. A key that does nothing may simply be too short - lengthen the hold before concluding the binding is wrong."
+    },
+    {
+      "hazard": "The early-story garage car cannot be entered",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "At objective 'Collect the jag tip' the car in Chumbucket's garage is a prop: no prompt, R does nothing. Vehicle tests need a later save."
+    }
+  ],
+  "disproved": [
+    {
+      "claim": "X on the keyboard opens Capture Mode directly (the keymap's overview_camera)",
+      "result": "nothing happened in gameplay, 0.3 s hold, n=1",
+      "date": "2026-09-04",
+      "notes": "The pause menu's 'enter capture mode by pressing' hint shows controller glyphs, not a key."
+    },
+    {
+      "claim": "Capture Mode sliders can be set by clicking on the bar or dragging the knob",
+      "result": "no change in either case; only the < > arrow clicks move them",
+      "date": "2026-09-04"
+    },
+    {
+      "claim": "Keyboard Down/Right navigate the CAMERA SETTINGS tab",
+      "result": "no row change, no slider change (EXPOSURE stayed highlighted)",
+      "date": "2026-09-04"
     }
   ]
 }
