@@ -7,7 +7,7 @@
     "engine": "Apex (Avalanche Open World Engine)",
     "renderer": "Direct3D 11",
     "distribution": "Steam",
-    "build_notes": "Verified on Windows 10, 2026-09-03, with our dxgi.dll proxy present. Ran windowed at 784x561. Driven entirely by external synthetic input."
+    "build_notes": "Verified on Windows 10, 2026-09-03, with our dxgi.dll proxy present. Ran windowed at 784x561. Driven entirely by external synthetic input. Home PC 2026-09-04: windowed 1920x1080, same proxy; driven by the same harness with 0.25-0.3 s key holds."
   },
   "input": {
     "api": "Win32 SendInput (scancode keyboard + relative mouse)",
@@ -15,7 +15,9 @@
       "Standard primitives: scancodes, KEYEVENTF_EXTENDEDKEY for arrows, foreground first, BitBlt for capture.",
       "The window title is exactly 'Mad Max'. NOTE the process owns several windows (DIEmWin, Default IME, MSCTFIME UI); match on the VISIBLE one.",
       "The window does not exist for the first several seconds after launch - the process starts, then creates it. A find-window failure right after launch means 'still starting', not 'wrong title'.",
-      "PROBE HOTKEYS ARE NUMPAD AND NUMLOCK-INDEPENDENT: the cbfp probe reads GetAsyncKeyState and accepts either the numpad VK or the navigation VK (NUMPAD4 or LEFT = mark A, NUMPAD5 or CLEAR = mark B, NUMPAD3 or PGUP = dump). Send NON-EXTENDED scancodes 0x4B/0x4C/0x51 and it works whatever NumLock is set to."
+      "PROBE HOTKEYS ARE NUMPAD AND NUMLOCK-INDEPENDENT: the cbfp probe reads GetAsyncKeyState and accepts either the numpad VK or the navigation VK (NUMPAD4 or LEFT = mark A, NUMPAD5 or CLEAR = mark B, NUMPAD3 or PGUP = dump). Send NON-EXTENDED scancodes 0x4B/0x4C/0x51 and it works whatever NumLock is set to.",
+      "HOLD DURATION MATTERS: 70 ms taps were ignored on the home PC at 1920x1080 (two Esc taps, screen unchanged, game rendering and focused) while 250-300 ms holds registered every time (~20 presses). Use `hold <key> 0.3`, not `key`. [verified-live 2026-09-04] The dev PC's 70 ms taps at 784x561 still stand as recorded there.",
+      "Focus BEFORE the first capture: an unfocused BitBlt returned the whole desktop (3424 px wide) around the window; every capture after focusing was the clean 1920x1080 client area. [verified-live 2026-09-04]"
     ],
     "bindings": [
       {
@@ -84,6 +86,30 @@
         "device": "keyboard + relative mouse",
         "confidence": "verified-live",
         "verified": "2026-09-03"
+      },
+      {
+        "action": "Capture Mode: move / rotate / tilt / exit",
+        "keys": [
+          {
+            "name": "Arrows or W/A/S/D = move",
+            "dik": "0x48/0x50/0x4B/0x4D (extended) or 0x11/0x1E/0x1F/0x20",
+            "extended": "mixed"
+          },
+          {
+            "name": "U = tilt left, I = tilt right",
+            "dik": "0x16 / 0x17",
+            "extended": false
+          },
+          {
+            "name": "Esc = exit, Enter = capture image, R = video mode",
+            "dik": "0x01 / 0x1C / 0x13",
+            "extended": false
+          }
+        ],
+        "device": "keyboard + relative mouse (rotate)",
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "On-screen hints: MOVE / ROTATE / U TILT LEFT / I TILT RIGHT / Enter CAPTURE IMAGE / R VIDEO MODE / Esc EXIT. Tab switching (CAMERA / FILTERS / CAMERA SETTINGS / VIGNETTE) is NOT on arrows (they move the camera), E or Tab - untested: mouse on the chevrons, Q."
       }
     ]
   },
@@ -117,6 +143,18 @@
       "detect": "Third-person over-shoulder, minimap bottom-left, objective text top-left, weapon indicator bottom-right.",
       "confidence": "verified-live",
       "verified": "2026-09-03"
+    },
+    {
+      "name": "capture_mode",
+      "detect": "Tab bar CAMERA / FILTERS / CAMERA SETTINGS / VIGNETTE with chevrons at both ends; bottom hint row MOVE / ROTATE / TILT LEFT / TILT RIGHT / CAPTURE IMAGE / VIDEO MODE / EXIT; the HUD is gone and the scene is frozen.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "settings_graphics",
+      "detect": "GRAPHICS header, PRESETS/FULLSCREEN/RESOLUTION rows, Apply / Revert Changes / AUTO DETECT PRESET buttons; SETTINGS column GAME/CONTROLLER/AUDIO/GAMMA/GRAPHICS/KEYMAPPING on the left. Esc backs out to the menu that opened it.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
     }
   ],
   "routes": [
@@ -148,6 +186,20 @@
       "confidence": "verified-live",
       "verified": "2026-09-03",
       "notes": "Process exits ~2s after the final confirm."
+    },
+    {
+      "from": "gameplay",
+      "to": "capture_mode",
+      "steps": [
+        "Escape (pause menu, RESUME GAME highlighted)",
+        "Down x7 - the highlight SKIPS greyed rows (WASTELAND MISSIONS, ENCOUNTERS): RESUME > AUTOSAVES > SETTINGS > EXIT TO MAIN MENU > STORY MISSIONS > TUTORIALS > STATISTICS > CAPTURE MODE",
+        "VERIFY the highlight is on CAPTURE MODE (EXIT TO MAIN MENU is passed on the way)",
+        "Enter; the free camera is live in ~2 s",
+        "Esc returns to gameplay (not exercised this session)"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "The Capture Mode camera writes the same GlobalConstants slot 9 and main-pass matrix as gameplay (W for 1.5 s moved the eye 6.34 units along the view forward), so it is a valid testbed for camera-constant experiments."
     }
   ],
   "entry_points": {
@@ -162,10 +214,10 @@
       "notes": "Not investigated. This project drives the game through its own dxgi.dll proxy, whose probes are triggered by numpad hotkeys and which writes madmax_vr_proxy_log.txt in the game folder."
     },
     "capture_mode": {
-      "available": null,
-      "confidence": "inferred-static",
-      "verified": "2026-09-03",
-      "notes": "CAPTURE MODE is listed in the pause menu's Log column. Photo modes usually carry a free camera, which is what a VR conversion wants. NOT opened - this is a menu label, i.e. a lead and not evidence."
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "IS a free camera: arrows/WASD move, mouse rotates, U/I tilt, Enter captures, R video mode, Esc exits. Drives the same shared camera constant as gameplay. Tabs CAMERA / FILTERS / CAMERA SETTINGS / VIGNETTE exist; the key that switches them was not found (arrows, E, Tab tried)."
     }
   },
   "hazards": [
@@ -186,6 +238,12 @@
       "confidence": "verified-live",
       "verified": "2026-09-03",
       "notes": "DIEmWin, Default IME (x2) and MSCTFIME UI all belong to MadMax.exe and are invisible. Filter on IsWindowVisible or you may attach to the wrong one."
+    },
+    {
+      "hazard": "Short synthetic taps can be silently ignored",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "70 ms scancode taps did nothing on the home PC while 250-300 ms holds worked every time. A key that does nothing may simply be too short - lengthen the hold before concluding the binding is wrong."
     }
   ]
 }
