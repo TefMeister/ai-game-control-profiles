@@ -138,9 +138,9 @@
           }
         ],
         "context": "gameplay",
-        "confidence": "reported",
-        "verified": "2026-09-04",
-        "notes": "From the player. A '1' press with the handgun already equipped produced no weapon change in the plugin log, which is consistent but not a proof; untested on another slot."
+        "confidence": "verified-live",
+        "verified": "2026-09-05",
+        "notes": "2026-09-05, from outside via SendInput scancodes: '2' equipped the minigun (wp8700, WeaponType 252) and '4' equipped wp2200 (WeaponType 23), each confirmed by the plugin's WEAPON CHANGED line; '1' produced no change with the handgun already equipped (consistent with slot 1 = handgun, not a proof); '3' produced no change on this save (slot empty or unbound)."
       },
       {
         "action": "reload",
@@ -152,9 +152,22 @@
           }
         ],
         "context": "gameplay",
-        "confidence": "reported",
-        "verified": "2026-09-04",
-        "notes": "Pressed once with a full magazine: no reload animation played, so the key itself is unproven."
+        "confidence": "verified-live",
+        "verified": "2026-09-05",
+        "notes": "With a partly empty magazine (one shot fired first) R played pl10_1200_HG_Hold_Reload on motion layer 3 and refilled the counter. With a full magazine nothing plays (2026-09-04), so a reload test needs a shot first."
+      },
+      {
+        "action": "fire (native)",
+        "keys": [
+          {
+            "name": "n/a",
+            "dik": "n/a"
+          }
+        ],
+        "context": "gameplay, from a REFramework plugin or Lua, with HOLD forced first",
+        "confidence": "verified-live",
+        "verified": "2026-09-05",
+        "notes": "app.ropeway.InputSystem.setForce(256 /*ATTACK*/, true) held for 8 frames then false, while setForce(64 /*HOLD*/, true) is active, fires a real shot: ammo counter 13 -> 12, pl00_1100_HG_Hold_Shoot on layer 4, muzzle flash in the capture. A 2-frame pulse was never tested; 8 frames behaves like a real trigger press."
       }
     ]
   },
@@ -282,8 +295,8 @@
       "steps": [
         {
           "action": "command",
-          "command": "(Get-Process re2).CloseMainWindow() then WaitForExit",
-          "note": "WM_CLOSE to the main window; exited within 2-3 s from the title screen and from gameplay, five times on 2026-09-04. No confirmation dialog."
+          "command": "(Get-Process re2).CloseMainWindow() then WaitForExit  (or PostMessage WM_CLOSE from Python: visceral-re2-vr/dev-archive/tools/re2drive.py close)",
+          "note": "WM_CLOSE to the main window; the window closes within 2-3 s from the title screen and from gameplay, seven times by 2026-09-05. No confirmation dialog. The process itself lingers a few seconds after the window is gone (Steam/DRM teardown) - wait for it before redeploying the plugin DLL."
         }
       ]
     }
@@ -334,8 +347,19 @@
     },
     {
       "hazard": "In flat play both hands stay on the gun at all times, running included (player report). Any test that needs the support hand off the weapon must use a reload with a partly empty magazine.",
-      "confidence": "reported",
-      "verified": "2026-09-04"
+      "confidence": "verified-live",
+      "verified": "2026-09-05",
+      "notes": "Confirmed 2026-09-05: |l_arm_wrist - aid joint| stayed 0.000 through idle, walk and aim, and only opened (to 0.349 m) during the reload clip."
+    },
+    {
+      "hazard": "An 'autosave feature' notice (OK / Space: Next) can appear BEFORE the title screen on a boot - seen on the second launch of the night, not the first. It swallows the ENTER meant for the title, and the SPACE meant for Story then dismisses it instead, leaving the run at the title with the route one step behind. Verify the title screen by capture before ENTER; if the notice is up, SPACE dismisses it.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "hazard": "The REFramework log contains a non-UTF-8 byte in the plugin's own bridge line; grep treats the file as binary unless given -a.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
     }
   ]
 }
