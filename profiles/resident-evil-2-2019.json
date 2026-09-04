@@ -112,6 +112,49 @@
         "confidence": "verified-live",
         "verified": "2026-09-04",
         "notes": "Overlay is OPEN at every boot on this install. Close it first: it swallows mouse input while open."
+      },
+      {
+        "action": "weapon slot 1-4",
+        "keys": [
+          {
+            "name": "1",
+            "dik": "0x02",
+            "extended": false
+          },
+          {
+            "name": "2",
+            "dik": "0x03",
+            "extended": false
+          },
+          {
+            "name": "3",
+            "dik": "0x04",
+            "extended": false
+          },
+          {
+            "name": "4",
+            "dik": "0x05",
+            "extended": false
+          }
+        ],
+        "context": "gameplay",
+        "confidence": "reported",
+        "verified": "2026-09-04",
+        "notes": "From the player. A '1' press with the handgun already equipped produced no weapon change in the plugin log, which is consistent but not a proof; untested on another slot."
+      },
+      {
+        "action": "reload",
+        "keys": [
+          {
+            "name": "R",
+            "dik": "0x13",
+            "extended": false
+          }
+        ],
+        "context": "gameplay",
+        "confidence": "reported",
+        "verified": "2026-09-04",
+        "notes": "Pressed once with a full magazine: no reload animation played, so the key itself is unproven."
       }
     ]
   },
@@ -287,6 +330,11 @@
     {
       "hazard": "Weapon selection from the inventory is NOT automated yet (no proven key route into the inventory grid and onto 'Equip'); the Continue save lands on the minigun, and a handgun run needed a human to equip it before walking away.",
       "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "hazard": "In flat play both hands stay on the gun at all times, running included (player report). Any test that needs the support hand off the weapon must use a reload with a partly empty magazine.",
+      "confidence": "reported",
       "verified": "2026-09-04"
     }
   ]
