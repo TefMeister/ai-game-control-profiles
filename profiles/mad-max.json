@@ -110,6 +110,19 @@
         "confidence": "verified-live",
         "verified": "2026-09-04",
         "notes": "On-screen hints: MOVE / ROTATE / U TILT LEFT / I TILT RIGHT / Enter CAPTURE IMAGE / R VIDEO MODE / Esc EXIT. Tab switching (CAMERA / FILTERS / CAMERA SETTINGS / VIGNETTE) is NOT on arrows (they move the camera), E or Tab - untested: mouse on the chevrons, Q."
+      },
+      {
+        "action": "first-person view while DRIVING (toggle)",
+        "keys": [
+          {
+            "name": "V",
+            "dik": "0x2F",
+            "extended": false
+          }
+        ],
+        "confidence": "reported",
+        "verified": "2026-09-04",
+        "notes": "User-reported 2026-09-04, from community knowledge; not yet pressed by a session. Only applies in the car. Worth verifying with the cbfp probe: does slot 9 / the main-pass matrix jump from the chase camera to the driver seat?"
       }
     ]
   },
