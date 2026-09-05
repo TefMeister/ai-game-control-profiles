@@ -12,46 +12,321 @@
   "input": {
     "api": "SendInput scancode keyboard reaches the game (Enter, F, Up, Insert). Numpad must be sent by VIRTUAL KEY for the scope plugin's GetAsyncKeyState polling. Synthetic mouse does not reach the game, but it DOES reach the REFramework overlay (imgui): buttons in the overlay can be clicked by SetCursorPos + mouse_event at client coordinates.",
     "bindings": [
-      {"action": "pass title screen", "keys": [{"name": "ENTER", "dik": "0x1C", "extended": false}], "context": "title 'Start Game'", "confidence": "verified-live", "verified": "2026-09-05"},
-      {"action": "confirm / OK", "keys": [{"name": "F", "dik": "0x21", "extended": false}], "context": "main menu, dialogs, the 'Stronghold' load splash (footer says 'F OK' / 'F Continue')", "confidence": "verified-live", "verified": "2026-09-05"},
-      {"action": "menu up / down", "keys": [{"name": "UP", "dik": "0x48", "extended": true}, {"name": "DOWN", "dik": "0x50", "extended": true}], "context": "menus and dialogs", "confidence": "verified-live", "verified": "2026-09-05"},
-      {"action": "toggle REFramework overlay", "keys": [{"name": "INSERT", "dik": "0xD2", "extended": true}], "context": "any; open at every boot", "confidence": "verified-live", "verified": "2026-09-05"},
-      {"action": "quit (main menu)", "keys": [{"name": "DEL", "dik": "0xD3", "extended": true}], "context": "main menu footer says 'Del Quit'", "confidence": "reported", "verified": "2026-09-05", "notes": "Seen in the footer, not pressed."},
-      {"action": "aim (ADS), from a REFramework Lua script", "keys": [{"name": "n/a", "dik": "n/a"}], "context": "gameplay", "confidence": "verified-live", "verified": "2026-09-05", "notes": "Hook app.HIDPadManager.doUpdate (the seam praydog's re8_vr.lua uses), take padman:get_mergedPad() / get_activePad(), its Device field, OR via.hid.GamePadButton.LTrigBottom (=512) into get_Button/set_Button + set_ButtonDown, set_AnalogL(1.0), and set app.HIDManager input mode to Pad. Held ADS raised the rifle into the scope view within a frame (fov 51.3 -> 49.3, the scope plugin's aim pixel centred). The game switches to pad input mode while held, so keyboard/mouse are ignored until released. Implemented in re-village-scope-vr's re8_scope_harness.lua ('ads 1|0' in the command file)."}
+      {
+        "action": "pass title screen",
+        "keys": [
+          {
+            "name": "ENTER",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "context": "title 'Start Game'",
+        "confidence": "verified-live",
+        "verified": "2026-09-05"
+      },
+      {
+        "action": "confirm / OK",
+        "keys": [
+          {
+            "name": "F",
+            "dik": "0x21",
+            "extended": false
+          }
+        ],
+        "context": "main menu, dialogs, the 'Stronghold' load splash (footer says 'F OK' / 'F Continue')",
+        "confidence": "verified-live",
+        "verified": "2026-09-05"
+      },
+      {
+        "action": "menu up / down",
+        "keys": [
+          {
+            "name": "UP",
+            "dik": "0x48",
+            "extended": true
+          },
+          {
+            "name": "DOWN",
+            "dik": "0x50",
+            "extended": true
+          }
+        ],
+        "context": "menus and dialogs",
+        "confidence": "verified-live",
+        "verified": "2026-09-05"
+      },
+      {
+        "action": "toggle REFramework overlay",
+        "keys": [
+          {
+            "name": "INSERT",
+            "dik": "0xD2",
+            "extended": true
+          }
+        ],
+        "context": "any; open at every boot",
+        "confidence": "verified-live",
+        "verified": "2026-09-05"
+      },
+      {
+        "action": "quit (main menu)",
+        "keys": [
+          {
+            "name": "DEL",
+            "dik": "0xD3",
+            "extended": true
+          }
+        ],
+        "context": "main menu footer says 'Del Quit'",
+        "confidence": "reported",
+        "verified": "2026-09-05",
+        "notes": "Seen in the footer, not pressed."
+      },
+      {
+        "action": "aim (ADS), from a REFramework Lua script",
+        "keys": [
+          {
+            "name": "n/a",
+            "dik": "n/a"
+          }
+        ],
+        "context": "gameplay",
+        "confidence": "verified-live",
+        "verified": "2026-09-05",
+        "notes": "Hook app.HIDPadManager.doUpdate (the seam praydog's re8_vr.lua uses), take padman:get_mergedPad() / get_activePad(), its Device field, OR via.hid.GamePadButton.LTrigBottom (=512) into get_Button/set_Button + set_ButtonDown, set_AnalogL(1.0), and set app.HIDManager input mode to Pad. Held ADS raised the rifle into the scope view within a frame (fov 51.3 -> 49.3, the scope plugin's aim pixel centred). The game switches to pad input mode while held, so keyboard/mouse are ignored until released. Implemented in re-village-scope-vr's re8_scope_harness.lua ('ads 1|0' in the command file)."
+      },
+      {
+        "action": "re-arm the mirror latch (scope project)",
+        "keys": [
+          {
+            "name": "NUMPAD .",
+            "vk": "0x6E",
+            "note": "VIRTUAL KEY, not scancode"
+          }
+        ],
+        "context": "gameplay, part of the scope cold order",
+        "confidence": "verified-live",
+        "verified": "2026-09-05",
+        "notes": "The plugin polls GetAsyncKeyState, so the numpad must go as a virtual key. re8drive.py's `num` only covers the digits (0x60+n); VK_DECIMAL and VK_MULTIPLY need a separate sender - see vk.py in re-village-scope-vr/dev-archive/recon/2026-09-05e-*/."
+      },
+      {
+        "action": "bind the glass / compositor onto the lens (scope project)",
+        "keys": [
+          {
+            "name": "NUMPAD *",
+            "vk": "0x6A",
+            "note": "VIRTUAL KEY, not scancode"
+          }
+        ],
+        "context": "gameplay, after `fn p10` and `fn drive_on`",
+        "confidence": "verified-live",
+        "verified": "2026-09-05",
+        "notes": "Cold order that works end to end: NUMPAD . -> `fn p10` -> `fn drive_on` -> NUMPAD * -> `ads 1`."
+      }
     ]
   },
   "states": [
-    {"id": "title", "description": "VILLAGE logo over scarecrows, 'Start Game'. REFramework overlay open on top at boot.", "detect": [{"method": "screenshot", "cue": "'Start Game' centred"}], "confidence": "verified-live", "verified": "2026-09-05"},
-    {"id": "main-menu", "description": "New Game / Load Game / Continue / Options / Bonuses / Online Store; Continue highlighted by default when a save exists; footer 'F OK  Del Quit'.", "detect": [{"method": "screenshot", "cue": "vertical centred list, Continue underlined"}], "confidence": "verified-live", "verified": "2026-09-05"},
-    {"id": "load-confirm", "description": "'Load most recent saved data?' with Yes / No - NO is highlighted by default. Up moves to Yes.", "detect": [{"method": "screenshot", "cue": "dialog with Yes / No"}], "confidence": "verified-live", "verified": "2026-09-05"},
-    {"id": "load-splash", "description": "Chapter card (e.g. 'Stronghold') with 'F Continue' after the load; gameplay does not start until F.", "detect": [{"method": "screenshot", "cue": "monochrome card, 'F Continue' bottom centre"}], "confidence": "verified-live", "verified": "2026-09-05"},
-    {"id": "gameplay", "description": "First person, weapon in view.", "detect": [{"method": "log", "cue": "the scope plugin logs 'world[ok-body]: ... LOCK' once the rifle joint is resolvable"}], "confidence": "verified-live", "verified": "2026-09-05"}
+    {
+      "id": "title",
+      "description": "VILLAGE logo over scarecrows, 'Start Game'. REFramework overlay open on top at boot.",
+      "detect": [
+        {
+          "method": "screenshot",
+          "cue": "'Start Game' centred"
+        }
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "id": "main-menu",
+      "description": "New Game / Load Game / Continue / Options / Bonuses / Online Store; Continue highlighted by default when a save exists; footer 'F OK  Del Quit'.",
+      "detect": [
+        {
+          "method": "screenshot",
+          "cue": "vertical centred list, Continue underlined"
+        }
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "id": "load-confirm",
+      "description": "'Load most recent saved data?' with Yes / No - NO is highlighted by default. Up moves to Yes.",
+      "detect": [
+        {
+          "method": "screenshot",
+          "cue": "dialog with Yes / No"
+        }
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "id": "load-splash",
+      "description": "Chapter card (e.g. 'Stronghold') with 'F Continue' after the load; gameplay does not start until F.",
+      "detect": [
+        {
+          "method": "screenshot",
+          "cue": "monochrome card, 'F Continue' bottom centre"
+        }
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "id": "gameplay",
+      "description": "First person, weapon in view.",
+      "detect": [
+        {
+          "method": "log",
+          "cue": "the scope plugin logs 'world[ok-body]: ... LOCK' once the rifle joint is resolvable"
+        }
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    }
   ],
   "routes": [
-    {"id": "title-to-last-save", "goal": "boot to gameplay on the last save", "from_state": "title", "to_state": "gameplay", "reliability": "verified twice with a capture at each step", "steps": [
-      {"action": "command", "command": "start steam://rungameid/1196590", "note": "title responsive ~40 s after the process appears"},
-      {"action": "key", "key": "INSERT", "note": "close the overlay"},
-      {"action": "key", "key": "ENTER", "note": "pass the title"},
-      {"action": "wait", "ms": 5000},
-      {"action": "key", "key": "F", "note": "Continue"},
-      {"action": "verify", "expect_state": "load-confirm"},
-      {"action": "key", "key": "UP", "note": "No -> Yes (verify the highlight)"},
-      {"action": "key", "key": "F"},
-      {"action": "wait", "ms": 55000, "note": "load"},
-      {"action": "verify", "expect_state": "load-splash"},
-      {"action": "key", "key": "F", "note": "into gameplay; the plugin's world[ok-body] LOCK line follows within ~15 s"}
-    ]},
-    {"id": "process-exit", "goal": "close the game", "from_state": "any", "to_state": "exited", "reliability": "deterministic, n=2", "steps": [
-      {"action": "command", "command": "PostMessage WM_CLOSE to the main window (re8drive.py close)", "note": "window gone in ~2 s, process exits ~12 s later; do not relaunch through Steam until the process is gone or Steam just focuses the dying one. The game's own quit from gameplay is unmapped; the main menu shows Del = Quit."}
-    ]}
+    {
+      "id": "title-to-last-save",
+      "goal": "boot to gameplay on the last save",
+      "from_state": "title",
+      "to_state": "gameplay",
+      "reliability": "verified twice with a capture at each step",
+      "steps": [
+        {
+          "action": "command",
+          "command": "start steam://rungameid/1196590",
+          "note": "title responsive ~40 s after the process appears"
+        },
+        {
+          "action": "key",
+          "key": "INSERT",
+          "note": "close the overlay"
+        },
+        {
+          "action": "key",
+          "key": "ENTER",
+          "note": "pass the title"
+        },
+        {
+          "action": "wait",
+          "ms": 5000
+        },
+        {
+          "action": "key",
+          "key": "F",
+          "note": "Continue"
+        },
+        {
+          "action": "verify",
+          "expect_state": "load-confirm"
+        },
+        {
+          "action": "key",
+          "key": "UP",
+          "note": "No -> Yes (verify the highlight)"
+        },
+        {
+          "action": "key",
+          "key": "F"
+        },
+        {
+          "action": "wait",
+          "ms": 55000,
+          "note": "load"
+        },
+        {
+          "action": "verify",
+          "expect_state": "load-splash"
+        },
+        {
+          "action": "key",
+          "key": "F",
+          "note": "into gameplay; the plugin's world[ok-body] LOCK line follows within ~15 s"
+        }
+      ]
+    },
+    {
+      "id": "process-exit",
+      "goal": "close the game",
+      "from_state": "any",
+      "to_state": "exited",
+      "reliability": "deterministic, n=2",
+      "steps": [
+        {
+          "action": "command",
+          "command": "PostMessage WM_CLOSE to the main window (re8drive.py close)",
+          "note": "window gone in ~2 s, process exits ~12 s later; do not relaunch through Steam until the process is gone or Steam just focuses the dying one. The game's own quit from gameplay is unmapped; the main menu shows Del = Quit."
+        }
+      ]
+    }
   ],
-  "entry_points": {"saves": [{"slot": "Continue (last save)", "lands": "village near the well/scarecrows, sniper rifle equipped, daylight (2026-09-05 save)", "confidence": "verified-live", "verified": "2026-09-05"}]},
-  "commands": {"notes": "No console. The scope project drives its Lua through a command file the harness polls twice a second (reframework/data/re_scope_cmd.txt via REFramework's fs API - the Lua sandbox has no io): pitch/yaw/dpitch/dyaw, steer, ads, fn <published function>. REFramework's overlay is mouse-clickable from SendInput, so 'Reset scripts' (ScriptRunner) reloads Lua in-session."},
+  "entry_points": {
+    "saves": [
+      {
+        "slot": "Continue (last save)",
+        "lands": "village near the well/scarecrows, sniper rifle equipped, daylight (2026-09-05 save)",
+        "confidence": "verified-live",
+        "verified": "2026-09-05"
+      }
+    ]
+  },
+  "commands": {
+    "notes": "No console. The scope project drives its Lua through a command file the harness polls twice a second (reframework/data/re_scope_cmd.txt via REFramework's fs API - the Lua sandbox has no io): pitch/yaw/dpitch/dyaw, steer, ads, fn <published function>. REFramework's overlay is mouse-clickable from SendInput, so 'Reset scripts' (ScriptRunner) reloads Lua in-session."
+  },
   "hazards": [
-    {"hazard": "The load-confirm dialog defaults to NO; an F straight after Continue cancels the load.", "confidence": "verified-live", "verified": "2026-09-05"},
-    {"hazard": "REFramework Lua has no io library; fs.read/fs.write are relative to reframework/data/.", "confidence": "verified-live", "verified": "2026-09-05"},
-    {"hazard": "Relaunching through Steam while the previous process is still exiting does nothing (Steam focuses the dying process). Wait for re8.exe to leave the process list.", "confidence": "verified-live", "verified": "2026-09-05"},
-    {"hazard": "Scope project: the mirror-source latch is NOT armed at boot. Cold order is numpad . (arm) -> P10 (spawn+adopt+mirror) -> drive -> numpad * (bind). A rig destroyed and rebuilt in-session comes back without render layers and its mirror stays black; relaunch instead.", "confidence": "verified-live", "verified": "2026-09-05"},
-    {"hazard": "In VR mode (headset connected via Virtual Desktop, REFramework VR active) the desktop window does NOT repaint: BitBlt captures stay byte-identical for minutes (watch deltas 0.00) while the log shows the game in gameplay. Screenshots are dead in VR; the REFramework log is the only state oracle. Keyboard (scancode) and numpad (VK) input still reach the game and the plugin, and WM_CLOSE still closes it cleanly.", "confidence": "verified-live", "verified": "2026-09-05", "notes": "n=1 launch, ~3 min of identical captures; the same route drove menus fine flat the same day."}
-  ]
+    {
+      "hazard": "The load-confirm dialog defaults to NO; an F straight after Continue cancels the load.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "hazard": "REFramework Lua has no io library; fs.read/fs.write are relative to reframework/data/.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "hazard": "Relaunching through Steam while the previous process is still exiting does nothing (Steam focuses the dying process). Wait for re8.exe to leave the process list.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "hazard": "Scope project: the mirror-source latch is NOT armed at boot. Cold order is numpad . (arm) -> P10 (spawn+adopt+mirror) -> drive -> numpad * (bind). A rig destroyed and rebuilt in-session comes back without render layers and its mirror stays black; relaunch instead.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "hazard": "In VR mode (headset connected via Virtual Desktop, REFramework VR active) the desktop window does NOT repaint: BitBlt captures stay byte-identical for minutes (watch deltas 0.00) while the log shows the game in gameplay. Screenshots are dead in VR; the REFramework log is the only state oracle. Keyboard (scancode) and numpad (VK) input still reach the game and the plugin, and WM_CLOSE still closes it cleanly.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05",
+      "notes": "n=1 launch, ~3 min of identical captures; the same route drove menus fine flat the same day."
+    },
+    {
+      "issue": "`start steam://rungameid/1196590` issued while Steam is still starting is silently lost",
+      "effect": "No game process, no window, and the REFramework log does not grow at all. Nothing errors, so it reads as 'the game failed to launch' rather than 'the handoff was dropped'.",
+      "mitigation": "Make sure Steam is already running before sending the URL, and verify by polling for the process rather than assuming the profile's ~40 s to title.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05",
+      "notes": "n=1. Retrying after Steam was fully up was not tested on its own - the user started the game manually at that point."
+    },
+    {
+      "issue": "Judging a scope-glass change by whole-frame image statistics does not work",
+      "effect": "The scope picture is a small part of a mostly-static tube, and the game world outside it is animated (grass, birds). Whole-frame mean-abs scored 14.6 for two frames that differ unmistakably by eye, against a same-state noise floor of 10.0. Correlator masks built on 'high variance' lock onto the world OUTSIDE the scope and return a confident (0,0).",
+      "mitigation": "Mask to the scope disc geometrically, excluding reticle, bezel and the inner sub-disc; or prefer one large unmistakable action and look at the picture.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05",
+      "notes": "Third instance of an instrument reporting a confident wrong answer on this glass."
+    }
+  ],
+  "automation_scored": {
+    "2026-09-05": {
+      "menu_to_gameplay": "PROVEN - Insert (close REFramework overlay), F on Continue, Up off the default No, F, F on the load splash. Capture and verify the highlight before every commit.",
+      "commands": "PROVEN - reframework/data/re_scope_cmd.txt polled twice a second, plus numpad by virtual key.",
+      "character_and_camera": "NOT EXERCISED",
+      "self_close": "PROVEN - WM_CLOSE, window gone within seconds."
+    }
+  }
 }
