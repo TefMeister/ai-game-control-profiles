@@ -11,7 +11,8 @@
   "input": {
     "api_notes": [
       "Window title is exactly 'Alan Wake - v<version>' (version string embedded, changes per patch - match on 'Alan Wake' substring, not the full title).",
-      "SendInput scancode keyboard + relative mouse work for basic capture/focus operations; menu navigation not yet mapped (Esc tried once, inconclusive - see hazards)."
+      "SendInput scancode keyboard + relative mouse work for basic capture/focus operations; menu navigation not yet mapped (Esc tried once, inconclusive - see hazards).",
+      "2026-09-05 (home PC): SendInput with SCANCODES did NOT reach this game (Space at the title, twice, once held 0.25 s: nothing); the same keys as VIRTUAL-KEY events (wVk, no scancode flag) worked at once. The dev PC record of 2026-09-04 says scancodes worked there - n=1 each way, so try VK first and fall back. Driver: alan-wake-vr/dev-archive/tools/awdrive.py (+ the awvk helper in the notes)."
     ]
   },
   "states": [
@@ -39,6 +40,30 @@
       "detect": "Lighthouse scene; vertical list Continue Game / New Game / Episodes / Options / Extras / Quit; 'Select' prompt bottom-right.",
       "confidence": "verified-live",
       "verified": "2026-09-04"
+    },
+    {
+      "name": "difficulty",
+      "detect": "'Difficulty' label with Easy / Normal / Nightmare over the lighthouse; reached from New Game.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "name": "load_game_slots",
+      "detect": "'Load Game' label with numbered slots ('1: Steam Cloud Alan Wake'); reached from Continue Game once a save exists.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "name": "pause_menu",
+      "detect": "Resume Game / Restart Checkpoint / Manuscript / Options / Statistics / Quit To Menu over the blurred scene; footer 'Esc Back  Enter Select'. Esc during a video also opens it (does not skip the video); Esc again resumes.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "name": "video_playback",
+      "detect": "Letterboxed fly-over / studio logos; the proxy log shows only c0+4 / c0+5 constant uploads (~200/s). The title's forest and the lighthouse main menu are ALSO video, not 3D: a live projection matrix only exists in the studio logos before the title and in the in-engine intro after the fly-over.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
     }
   ],
   "routes": [
@@ -65,6 +90,43 @@
       "confidence": "verified-live",
       "verified": "2026-09-04",
       "notes": "Reached from gameplay via Esc to the pause menu then to the main menu (pause route not exercised 2026-09-04)."
+    },
+    {
+      "from": "main_menu",
+      "to": "gameplay (new game)",
+      "steps": [
+        "Down x1 -> New Game (verify the highlight)",
+        "Enter -> Difficulty screen, Easy highlighted",
+        "Enter -> fly-over video (~60 s) then the in-engine intro; Esc pauses, Esc resumes"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "from": "main_menu",
+      "to": "gameplay (continue)",
+      "steps": [
+        "Enter on Continue Game -> Load Game slot list",
+        "Enter on slot 1 -> load (~30 s) -> the checkpoint's video/cutscene, then gameplay"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-05",
+      "notes": "An Enter sent within ~5 s of the title->menu transition is eaten (twice). Capture-verify the main menu before pressing."
+    },
+    {
+      "from": "gameplay",
+      "to": "process_exit",
+      "steps": [
+        "Esc -> pause menu, Resume Game highlighted",
+        "Down x5 -> Quit To Menu (verify)",
+        "Enter -> 'Are you sure you want to Quit?' -> Enter",
+        "main menu, Continue Game highlighted (~8 s)",
+        "Down x5 -> Quit (verify)",
+        "Enter -> confirm -> Enter; process exits within 2 s, proxy hooks unwound in order"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-05",
+      "notes": "Proven twice on 2026-09-05. This is the graceful route; WM_CLOSE is no longer needed."
     }
   ],
   "entry_points": {
@@ -83,7 +145,8 @@
       "-window / -w <n> / -h <n> / -novsync / -showfps / -sensscale <n> / -locale=xx / -forcesurround / -forcestereo": "[reported, external-research - Fandom wiki + fan reference, NOT independently verified this session]",
       "-freecamera": "[reported] a real, official free-camera tool, controller-driven, right-thumbstick toggle - no confirmed keyboard/mouse equivalent. Not tested live yet.",
       "-developermenu": "[reported] adds a Developer Menu (episode/difficulty/ammo, unconfirmed if more). Not tested live yet."
-    }
+    },
+    "steam_app_id": "108710 (start steam://rungameid/108710). On a fresh install Steam first runs a ~7 s first-run setup that shows in content_log.txt as App Running and exits; the game starts on the SECOND launch attempt (2026-09-05)."
   },
   "commands": {
     "console": {
@@ -111,9 +174,26 @@
       "confidence": "reported",
       "verified": "2026-09-03",
       "notes": "start_session reported a timeout even though x32dbg.exe (32-bit, matching AlanWake.exe's bitness) did launch and run standalone; list_sessions never showed it. Six pre-existing, apparently-stale x64dbg-automate-mcp.exe helper processes were already running on this machine before this attempt, suggesting an estate-wide bridge issue rather than something specific to this game or session. Not a game-specific finding - flagged here because it blocked a live camera-matrix read this session and will block the same approach again until fixed."
+    },
+    {
+      "hazard": "Proxy: a foreign hook layered on IDirect3D9 vtable slot 16 during the first (throwaway) load - most likely the Steam overlay - makes the second load chain into it and recurse CreateDevice until the process dies (~7 s, 1,669 calls in 1 ms). Timing-dependent: it happened once when the first block lived 700 ms, not on three launches where it lived 16 ms.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05",
+      "notes": "Log tells: 'CreateDevice hook: slot 16 holds ..., not ours' at the first unload, then a burst of 'IDirect3D9::CreateDevice called'. Queued fix: never chain into a foreign slot-16 pointer."
+    },
+    {
+      "hazard": "A small (~15.7 KB) crash minidump appears in Documents\\Remedy\\AlanWake at every clean menu quit, with the proxy hooks already removed (n=3: 15,718 / 15,666 B). Benign shutdown-path exception; not ours. Do not commit dump contents.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "hazard": "Pre-creating Documents\\Remedy\\AlanWake\resolution.xml with fullscreen=0 on a never-run install works: the game came up windowed 1920x1080 on its first real launch, no minimise events in four launches.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
     }
   ],
   "notes": [
-    "2026-09-04b: the FreeLibrary-at-detach fix is confirmed live - the proxy's second d3d9 load now stays resident and the game renders through it (title + main menu). The proxy owns the real device. [verified-live 2026-09-04]"
+    "2026-09-04b: the FreeLibrary-at-detach fix is confirmed live - the proxy's second d3d9 load now stays resident and the game renders through it (title + main menu). The proxy owns the real device. [verified-live 2026-09-04]",
+    "2026-09-05: handedness read live - g_mViewToClip is LEFT-handed (clip.w = +view.z), stored with registers as rows of a column-vector matrix (+1 at storage index 14). Main camera at c192 in skinned shaders (16:9, near 0.2, far 1000). The engine uploads constants as whole 128-register blocks (c0+128, c128+128). See the alan-wake-vr dossier 4c."
   ]
 }
