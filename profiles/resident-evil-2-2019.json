@@ -140,7 +140,7 @@
         "context": "gameplay",
         "confidence": "verified-live",
         "verified": "2026-09-05",
-        "notes": "2026-09-05, from outside via SendInput scancodes: '2' equipped the minigun (wp8700, WeaponType 252) and '4' equipped wp2200 (WeaponType 23), each confirmed by the plugin's WEAPON CHANGED line; '1' produced no change with the handgun already equipped (consistent with slot 1 = handgun, not a proof); '3' produced no change on this save (slot empty or unbound)."
+        "notes": "2026-09-05, from outside via SendInput scancodes: '2' equipped the minigun (wp8700, WeaponType 252) and '4' equipped wp2200 (WeaponType 23), each confirmed by the plugin's WEAPON CHANGED line; '1' produced no change with the handgun already equipped (consistent with slot 1 = handgun, not a proof); '3' produced no change on this save (slot empty or unbound). Later on 2026-09-05: from the minigun, '1' returned to the handgun (WEAPON CHANGED -> wp0200), so slot 1 = handgun on this save."
       },
       {
         "action": "reload",
@@ -235,8 +235,13 @@
       "goal": "From boot to a loaded game via Continue (last save; never overwrites).",
       "from_state": "title",
       "to_state": "gameplay",
-      "reliability": "needs-verification-between-steps",
+      "reliability": "needs-verification-between-steps (six clean runs by 2026-09-05 with a capture check at each menu)",
       "steps": [
+        {
+          "action": "command",
+          "command": "start steam://rungameid/883710  (from any shell; Steam must be running)",
+          "note": "launch; the title screen is responsive about 35 s later on this machine (verified 2026-09-05, three launches)"
+        },
         {
           "action": "wait",
           "ms": 30000,
@@ -358,6 +363,11 @@
     },
     {
       "hazard": "The REFramework log contains a non-UTF-8 byte in the plugin's own bridge line; grep treats the file as binary unless given -a.",
+      "confidence": "verified-live",
+      "verified": "2026-09-05"
+    },
+    {
+      "hazard": "Managed getters that return a joint world matrix (Implement.getIKLeftArmMatrix, get_AidTargetWorldMatrix) return a PRE-UPDATE pose when the game calls them mid-frame (0.2 m / ~48 deg from the final pose on the handgun) and the FINAL pose when read from a LockScene pre-hook. Any override must be expressed as an offset in the getter's own space; see the Visceral dossier 8c for the measured mapping.",
       "confidence": "verified-live",
       "verified": "2026-09-05"
     }
