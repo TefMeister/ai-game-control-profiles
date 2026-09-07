@@ -171,9 +171,16 @@
     },
     {
       "hazard": "The x64dbg MCP automation bridge did not connect on this machine",
-      "confidence": "reported",
-      "verified": "2026-09-03",
-      "notes": "start_session reported a timeout even though x32dbg.exe (32-bit, matching AlanWake.exe's bitness) did launch and run standalone; list_sessions never showed it. Six pre-existing, apparently-stale x64dbg-automate-mcp.exe helper processes were already running on this machine before this attempt, suggesting an estate-wide bridge issue rather than something specific to this game or session. Not a game-specific finding - flagged here because it blocked a live camera-matrix read this session and will block the same approach again until fixed."
+      "confidence": "inferred-static",
+      "verified": "2026-09-07",
+      "notes": "SYMPTOM UNCHANGED: start_session reported a timeout even though x32dbg.exe did launch and run standalone, and list_sessions never showed it. THE RECORDED CAUSE WAS WRONG and is corrected here (2026-09-07). It said six 'apparently-stale' x64dbg-automate-mcp.exe helpers suggested an estate-wide bridge issue. Measured 2026-09-07: five such helpers were running and EVERY ONE had a live claude parent process (five distinct, all alive), holding no TCP endpoints - they are one helper per open session, ordinary MCP behaviour, not leaked orphans. WHAT THE CONFIGURATION ACTUALLY IS: X64DBG_PATH (Process and User scope) points at ...\\release\\x96dbg.exe, which is x64dbg's LAUNCHER/SELECTOR, not a debugger - it picks x32 or x64 and starts it. The bridge resolves explicit parameter -> X64DBG_PATH -> shutil.which, then Popen()s that path and waits for a session to register, so if the process it launched is the selector, the handle it holds is not the debugger's: it waits, times out, and list_sessions stays empty while a perfectly good debugger runs. That is the symptom exactly. AND THERE ARE TWO INSTALLS, UNEVENLY PROVISIONED: the WinGet copy has x64dbg-automate.dp32 and .dp64; the AppData\\Local\\x64dbg copy has an EMPTY x32\\plugins. Alan Wake is 32-bit, so it needs x32dbg AND the .dp32 - against the AppData copy a 32-bit session could never register.",
+      "candidate_causes": [
+        "launcher indirection - the bridge holds the selector's handle, not the debugger's",
+        "half-provisioned install - a 32-bit session against the AppData copy has no automate plugin",
+        "contention between several sessions' helpers over the plugin's endpoint"
+      ],
+      "how_to_separate_them": "(1) vs (2): which install did the x32dbg.exe that launched come from? The WinGet copy has the .dp32; the AppData copy does not. (3): retry with only one Claude session open.",
+      "first_thing_to_try": "Point X64DBG_PATH at the actual debugger binary matching the target's bitness - the WinGet install's x32\\x32dbg.exe for this 32-bit game - or pass x64dbg_path explicitly to start_session, which the tool accepts per call. UNTESTED: nothing here has been run against a live session."
     },
     {
       "hazard": "Proxy: a foreign hook layered on IDirect3D9 vtable slot 16 during the first (throwaway) load - most likely the Steam overlay - makes the second load chain into it and recurse CreateDevice until the process dies (~7 s, 1,669 calls in 1 ms). Timing-dependent: it happened once when the first block lived 700 ms, not on three launches where it lived 16 ms.",
