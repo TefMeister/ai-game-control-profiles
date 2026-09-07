@@ -10,14 +10,23 @@
     "build_notes": "Written 2026-09-07 against the Steam build on Windows 10, dev PC. PrinceOfPersia_Launcher.exe is PE32/i386 and is wrapped in SteamStub Variant 2.1 — .text is encrypted at rest, so any string or code scan of the shipped file returns a false negative. Everything below marked inferred-static was read from a Steamless v3.1.0.5-unpacked COPY. The game WAS launched and driven on 2026-09-07 with explicit permission. Windowed mode is verified live; input automation is NOT solved."
   },
   "input": {
-    "api": "unknown — neither SendInput nor posted messages have been shown to reach the game",
+    "api": "DirectInput8 (keyboard + mouse) and XInput (pad). Driven by INJECTION inside GetDeviceState, not by any Windows input API.",
     "api_notes": [
+      "SOLVED 2026-09-07: this game is driven by writing into the state buffer it asks for, inside IDirectInputDevice8::GetDeviceState, via a d3d9-style dinput8.dll proxy plus a shared-memory block. Harness: staging/prince-of-persia-2008-vr/proxy-dinput8/tools/pop_input.py. Verified live - one held key drove the applied counter to 355 in six seconds, the game's own log flipped from 'keys down 0' to 1, and two injected DOWN taps moved the main-menu highlight exactly two rows.",
       "⚠️ THE CORRECTION THIS ENTRY EXISTS FOR: an early 2026-09-07 reading of 'SendInput does nothing, PostMessage works' was WRONG and is withdrawn. The title screen is an ATTRACT/DEMO REEL on an idle timer; a 60-second no-input control advanced it with nothing sent at all. The apparent PostMessage success was the timer.",
       "Two cheap explanations are eliminated. Focus is genuinely held: GetFocus == GetActiveWindow == the game window, read from the game's own thread under AttachThreadInput. UIPI is not blocking: game and injector are both S-1-16-8192 (Medium), neither elevated.",
       "Remaining hypotheses, with the observation that separates each: (1) the game polls a GAMEPAD on this screen — plug in or emulate a pad and see if the attract screen advances; (2) DirectInput8 with an exclusively-acquired keyboard — proxy dinput8.dll and see whether DirectInput8Create/GetDeviceState is called at all, which is the most informative and costs one rebuild since we already own d3d9.dll; (3) input is ignored during the attract sequence specifically — post keys at ~10 Hz for a full cycle and see whether the transition ever happens off-schedule.",
       "Capture works: BitBlt from the screen DC against the window rect. Do NOT use PrintWindow (UNIVERSAL.md)."
     ],
-    "bindings": [],
+    "bindings": [
+      {
+        "action": "anything the keyboard can do",
+        "route": "pop_input.py tap/down/up with DIK_* names",
+        "confidence": "verified-live",
+        "verified": "2026-09-07",
+        "notes": "OR semantics: injection never clears a key the human is physically holding."
+      }
+    ],
     "disproved": [
       {
         "route": "SendInput keyboard scancodes (set 1, extended flag on arrows)",
@@ -31,17 +40,36 @@
         "result": "no observed effect once the attract timer was controlled for",
         "confidence": "disproved",
         "verified": "2026-09-07"
+      },
+      {
+        "route": "any Windows-level input injection at all",
+        "result": "SendInput not seen (22 s held key, four samples, keys-down 0); posted messages impossible by construction (no message-queue key reading imported)",
+        "confidence": "disproved",
+        "verified": "2026-09-07",
+        "notes": "Do not retry these. The injector replaces them entirely."
       }
     ]
   },
   "states": [
     {
       "id": "attract",
-      "description": "Title screen reading PRESS ANY KEY. ⚠️ It advances into a demo reel BY ITSELF on an idle timer and later returns here, so a screen change is NOT evidence that input landed. Always run a no-input control before concluding anything about input on this game.",
+      "description": "Title screen, PRESS ANY KEY. Advances into a demo reel BY ITSELF on an idle timer, and polls NO input at all - not DirectInput, and no XInput call was ever observed. A screen change here is NOT evidence input landed.",
       "detect": [
         {
           "method": "screen",
-          "cue": "the words PRESS ANY KEY centred in the lower third"
+          "cue": "PRESS ANY KEY centred in the lower third"
+        }
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-07"
+    },
+    {
+      "id": "main_menu",
+      "description": "Main menu: New Game / Load game / Options / Extras / Quit. DirectInput IS polled here and the injector drives it - two DOWN taps move the highlight two rows.",
+      "detect": [
+        {
+          "method": "screen",
+          "cue": "the words MAIN MENU on a scroll panel"
         }
       ],
       "confidence": "verified-live",
@@ -49,9 +77,14 @@
     },
     {
       "id": "gameplay",
-      "description": "Never reached by automation. Unknown.",
-      "detect": [],
-      "confidence": "hypothesis",
+      "description": "Player control. Keyboard polled ~200 Hz. Camera is third person.",
+      "detect": [
+        {
+          "method": "screen",
+          "cue": "tutorial prompt text, or the Prince visible behind the shoulder"
+        }
+      ],
+      "confidence": "verified-live",
       "verified": "2026-09-07"
     }
   ],
@@ -299,28 +332,35 @@
       "detail": "PRESS ANY KEY runs a demo reel on an idle timer and returns to the title afterwards. A session that presses a key, sees the screen change and concludes the key worked will be wrong. This already happened on 2026-09-07. Always run a no-input control of at least 60 seconds before crediting any input route.",
       "confidence": "verified-live",
       "verified": "2026-09-07"
+    },
+    {
+      "id": "title-screen-needs-a-pad",
+      "title": "The title screen only responds to a GAMEPAD",
+      "detail": "PRESS ANY KEY polls no DirectInput at all; plugging in a DualSense with Steam Input advanced it immediately. An xinput1_3 proxy that can fabricate a pad is built (proxy-xinput/) and pinned to the ordinals the exe imports by, but it has NEVER FIRED - the game was not observed calling XInputGetState - so unattended launch-to-gameplay is NOT yet proven.",
+      "confidence": "verified-live",
+      "verified": "2026-09-07"
     }
   ],
   "automation_capabilities": {
-    "note": "Scored against the four capabilities in PREFERENCES.md, after a real session on 2026-09-07.",
+    "note": "Scored after the 2026-09-07 session that built the injector.",
     "menu_to_gameplay": {
-      "status": "NOT achieved",
-      "notes": "The Steam launcher dialog can be clicked through (verified live), but the game's own title screen cannot be advanced by any input route tried. Gameplay was never reached.",
+      "status": "PARTIAL",
+      "notes": "Steam launch and the Ubisoft launcher's 'Launch the game!' button are automated (BM_CLICK, n=2). The main menu is fully drivable by injection. The gap is the TITLE screen, which wants a pad - the virtual pad is built but unproven.",
       "verified": "2026-09-07"
     },
     "issue_commands": {
       "status": "NOT achieved",
-      "notes": "no console proven to exist; the 97 command-line switches are static leads, none run",
+      "notes": "no console proven; the 97 command-line switches are static leads, none run",
       "verified": "2026-09-07"
     },
     "move_character_and_camera": {
-      "status": "NOT achieved",
-      "notes": "blocked behind menu_to_gameplay",
+      "status": "NOT demonstrated",
+      "notes": "the keyboard path that drives menus is the same one gameplay uses and is polled at ~200 Hz there, so this is expected to work, but no character or camera motion has actually been driven yet. Mouse injection is host-tested only.",
       "verified": "2026-09-07"
     },
     "self_close": {
       "status": "partial",
-      "notes": "the process can be closed, but no graceful in-game menu route is mapped because the menu was never reached",
+      "notes": "the process can be killed; a graceful route via the menu's Quit entry is now plausible since the menu is drivable, but has not been done",
       "verified": "2026-09-07"
     }
   }
