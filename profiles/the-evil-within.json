@@ -10,80 +10,26 @@
     "build_notes": "Verified on Windows 10, 2026-09-03, with our winmm.dll proxy present. Driven entirely by external synthetic input against the game window; no in-process code was needed for navigation."
   },
   "input": {
-    "api": "Win32 SendInput (scancode keyboard + relative mouse)",
+    "api": "DirectInput8 (+XInput). NOT drivable by SendInput - see disproved.",
     "api_notes": [
+      "WITHDRAWN 2026-09-07: SendInput scancodes do NOT reach this game. Two launches settled it - with a controller connected the splash/title/menu all advanced and it looked like keyboard automation; with the controller unplugged NOTHING advances, with foreground verified before every send. The advances were the pad, and a highlight that crept from CONTINUE to NEW GAME while only Enters were sent was stick drift.",
       "Same primitives as the ENSLAVED profile: scancodes, KEYEVENTF_EXTENDEDKEY for arrows, foreground the window first, and capture with BitBlt rather than PrintWindow.",
       "The game window is titled exactly 'The Evil Within' and BitBlt captures it cleanly."
     ],
     "bindings": [
       {
-        "action": "dismiss the photosensitivity splash",
-        "keys": [
-          {
-            "name": "Enter",
-            "dik": "0x1C",
-            "extended": false
-          }
-        ],
-        "confidence": "verified-live",
-        "verified": "2026-09-03",
-        "notes": "The splash says PRESS ANY KEY and appears before the title menu on every launch."
-      },
+        "action": "(all previously listed keyboard bindings)",
+        "confidence": "disproved",
+        "verified": "2026-09-07",
+        "notes": "These were recorded verified-live 2026-09-03 but could not be reproduced on 2026-09-07 with a controller absent and foreground verified. Kept as a record of what was tried; do not rely on them until a working input route exists."
+      }
+    ],
+    "disproved": [
       {
-        "action": "select the highlighted menu item",
-        "keys": [
-          {
-            "name": "Enter",
-            "dik": "0x1C",
-            "extended": false
-          }
-        ],
-        "confidence": "verified-live",
-        "verified": "2026-09-03",
-        "notes": "Menus print their controls on screen: '[ENTER] SELECT [ESC] BACK'."
-      },
-      {
-        "action": "move the menu selection",
-        "keys": [
-          {
-            "name": "Down",
-            "dik": "0x50",
-            "extended": true
-          },
-          {
-            "name": "Up",
-            "dik": "0x48",
-            "extended": true
-          }
-        ],
-        "confidence": "verified-live",
-        "verified": "2026-09-03",
-        "notes": "Extended-key flag required, as everywhere."
-      },
-      {
-        "action": "open the pause menu",
-        "keys": [
-          {
-            "name": "Escape",
-            "dik": "0x01",
-            "extended": false
-          }
-        ],
-        "confidence": "verified-live",
-        "verified": "2026-09-03"
-      },
-      {
-        "action": "move character / look",
-        "keys": [
-          {
-            "name": "W/A/S/D",
-            "dik": "0x11/0x1E/0x1F/0x20",
-            "extended": false
-          }
-        ],
-        "device": "keyboard + relative mouse",
-        "confidence": "verified-live",
-        "verified": "2026-09-03"
+        "route": "Win32 SendInput scancode keyboard",
+        "result": "no effect at all with the controller unplugged and foreground verified; every apparent success is explained by the connected pad",
+        "confidence": "disproved",
+        "verified": "2026-09-07"
       }
     ]
   },
@@ -186,6 +132,20 @@
       "confidence": "verified-live",
       "verified": "2026-09-03",
       "notes": "A scene plays with 'PRESS ANY KEY' overlaid. It looks like gameplay in a screenshot but accepts only a keypress, and a frame delta against it can be large enough to be mistaken for a real state change. Press any key to return to the title menu."
+    },
+    {
+      "id": "pad-drift-fakes-input",
+      "title": "A connected controller will fake keyboard-automation success",
+      "detail": "On 2026-09-07 a connected DualSense advanced the splash, title and menu while only Enter was being injected, and its stick drift moved the menu highlight from CONTINUE onto NEW GAME - a destructive item - unprompted. Unplug the pad before judging any keyboard route on this game, and never blind-key past NEW GAME.",
+      "confidence": "verified-live",
+      "verified": "2026-09-07"
+    },
+    {
+      "id": "dinput8-is-the-route",
+      "title": "Driving this game needs GetDeviceState injection, not Windows input",
+      "detail": "EvilWithin.exe imports DINPUT8.dll and XINPUT1_3.dll. The generic DirectInput8 GetDeviceState injector built for prince-of-persia-2008 on 2026-09-07 is the fix, needing a 64-bit build; and since this game already ships our winmm.dll proxy with MinHook vendored, the hook belongs inside that proxy rather than as a second DLL. Strong lead not proven cause: the exe also imports GetAsyncKeyState/GetKeyboardState/GetKeyState/GetMessageA/SetWindowsHookEx.",
+      "confidence": "inferred-static",
+      "verified": "2026-09-07"
     }
   ],
   "notes": []
