@@ -232,7 +232,7 @@
   "entry_points": {
     "process_name": "AliceMadnessReturns.exe",
     "window_title_substring": "Alice",
-    "config_path": "MACHINE-DEPENDENT - this game has TWO UE3 config trees and which one is live differs per machine. Dev PC (2026-09-07): Documents\\My Games\\Alice Madness Returns\\AliceGame\\Config\\AliceEngine.ini is LIVE (the game rewrites it on exit; launching from it came up windowed 1280x720). Home PC (2026-09-05): that tree does not exist and the live file is Documents\\My Games\\UnrealEngine3\\MonkeyGame\\Config\\MonkeyEngine.ini (UE3 names config after the script package, here 'Monkey'). Do not assume a filename - compare mtimes and let the game tell you by rewriting one on exit.",
+    "config_path": "Documents\\My Games\\Alice Madness Returns\\AliceGame\\Config\\AliceEngine.ini - LIVE on the dev PC (the game rewrites it on exit; launching from it came up windowed 1280x720) [verified-live 2026-09-07]. ⚠️ CORRECTED 2026-09-07: an earlier note claimed UE3 names this game's config after the script package 'Monkey', i.e. MonkeyEngine.ini. That is WRONG and it belongs to a DIFFERENT GAME - Documents\\My Games\\UnrealEngine3\\MonkeyGame\\ is ENSLAVED's config tree ('Monkey' is Ninja Theory's codename; that tree's MonkeyEngine.ini carries EditPackages=NTEngine, EditPackages=NTGameFramework and EditPackagesOutPath=..\\..\\MonkeyGame\\Script, with zero Alice references) [verified-numerically 2026-09-07]. If AliceGame\\Config does not exist on a machine, the user config has simply not been created there yet - do NOT go editing MonkeyGame.",
     "config_path_confidence": "verified-live",
     "config_path_verified": "2026-09-07"
   },
@@ -255,7 +255,7 @@
       "hazard": "Fullscreen-exclusive is invisible to BitBlt",
       "confidence": "verified-live",
       "verified": "2026-09-04",
-      "notes": "Fullscreen=True gives fullscreen-exclusive; BitBlt captures solid black and the game cannot be seen or driven. Set Fullscreen=False in the LIVE config tree while the game is CLOSED (UE3 rewrites config on exit). See entry_points.config_path - WHICH tree is live differs per machine."
+      "notes": "Fullscreen=True gives fullscreen-exclusive; BitBlt captures solid black and the game cannot be seen or driven. Set Fullscreen=False in AliceGame\\Config\\AliceEngine.ini while the game is CLOSED (UE3 rewrites config on exit). ⚠️ Do NOT edit My Games\\UnrealEngine3\\MonkeyGame\\ - that is ENSLAVED's config tree, not Alice's (corrected 2026-09-07). See entry_points.config_path."
     },
     {
       "hazard": "PROFILE SELECT has a DELETE action",
@@ -306,6 +306,12 @@
       "result": "disproved - it counts PIXEL-shader fix-texture bindings in applyPixelStereo() only, and says nothing about the c0 vertex path. Rate is ~5/frame in gameplay, ~1/frame in menus.",
       "date": "2026-09-07",
       "notes": "Use 'wiggle flips' to prove the eye alternated; there is no counter for sheared draws."
+    },
+    {
+      "claim": "Alice's UE3 user config is MonkeyEngine.ini, because UE3 names config after the script package and this game's package is 'Monkey'",
+      "result": "disproved 2026-09-07. 'Monkey' is NINJA THEORY's codename for ENSLAVED: Odyssey to the West, whose install is Enslaved\\MonkeyGame\\ and whose user config is My Games\\UnrealEngine3\\MonkeyGame\\. That tree's MonkeyEngine.ini contains zero Alice references and carries EditPackages=NTEngine / NTGameFramework. Alice's own tree is My Games\\Alice Madness Returns\\AliceGame\\.",
+      "date": "2026-09-07",
+      "notes": "Consequence worth knowing: acting on the wrong claim, a home-PC session set Fullscreen=False in MonkeyEngine.ini believing it was configuring Alice - it edited Enslaved's engine ini instead, and Alice never received the windowed fix on that machine."
     }
   ]
 }

@@ -7,7 +7,7 @@
     "engine": "Unreal Engine 3 (Ninja Theory 'NTEngine' layer)",
     "renderer": "Direct3D 9 (plain D3D9, not D3D9Ex)",
     "distribution": "Steam, Premium Edition",
-    "build_notes": "Verified on Windows 10, 2026-09-03. During testing the window was forced to 1280x720 windowed by a d3d9 proxy; this build ships no windowed mode of its own. Everything below was driven externally against the game window - no in-process code was required for any of it."
+    "build_notes": "Verified on Windows 10, 2026-09-03. During testing the window was forced to 1280x720 windowed by a d3d9 proxy; this build ships no windowed mode of its own. Everything below was driven externally against the game window - no in-process code was required for any of it. 2026-09-07 (dev PC): keyboard movement works but NO other input route does - see the disputed gameplay->main_menu route and the gamepad-only hazard. Harness rebuilt as enslaved-vr/dev-archive/tools/enslaved_harness.py."
   },
   "input": {
     "api": "Win32 SendInput (scancode keyboard + relative mouse)",
@@ -91,6 +91,24 @@
         "confidence": "verified-live",
         "verified": "2026-09-03",
         "notes": "Left stick full-forward 2.5s moved the character (frame delta 48.9); right stick 2.0s swung the camera onto entirely different scenery (delta 62.5), against an idle baseline of ~2. Hot-plugged into a running game, no restart needed."
+      },
+      {
+        "action": "walk the character (keyboard)",
+        "keys": [
+          {
+            "name": "W",
+            "dik": "0x11",
+            "extended": false
+          },
+          {
+            "name": "S",
+            "dik": "0x1F",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-07",
+        "notes": "Confirmed by eye across four captures on 2026-09-07 while every other input route was failing, which makes it the control that proves synthetic input reaches this game at all. NOTE: keyboard movement does NOT come from MonkeyInput.ini - [Engine.PlayerInput] in this build contains no keyboard bindings whatsoever (see hazards). It comes from engine defaults."
       }
     ]
   },
@@ -146,8 +164,9 @@
         "Enter",
         "Enter (confirms the warning that progress since the last checkpoint will be lost)"
       ],
-      "confidence": "verified-live",
-      "verified": "2026-09-03"
+      "confidence": "disputed",
+      "verified": "2026-09-03; CONTRADICTED 2026-09-07",
+      "notes": "⚠️ DISPUTED 2026-09-07 (dev PC): step 1 (Escape) did NOT open the pause menu - tried twice, at 90 ms and 300 ms hold, in two locations, with the window verified foregrounded and keyboard movement working in between. A virtual X360 pad also failed (enumerated - the game raised a 'Controller Connected' toast - but START did not pause and thumbLX=29490 did not move the character). With no pause menu there is no route out of gameplay at all. The 2026-09-03 observation was on this same machine, so one of the two is wrong or something changed. Two untested suspects: the 2026-09-07 ini edit (since reverted), and the 2026-09-04 self-healing d3d9 proxy which had NEVER been run before 2026-09-07 and hooks BeginStateBlock/EndStateBlock that earlier builds did not. Do not rely on this route until it is re-established."
     },
     {
       "from": "main_menu",
@@ -268,6 +287,32 @@
       "confidence": "verified-live",
       "verified": "2026-09-03",
       "notes": "While hunting un-offset screen-space effects, a single tile measured dx=+0 while its whole row moved +22 - exactly the signature of the bug being hunted, and sitting right on a wet floor's caustics. Re-measured across four eye-pairs the same tile read +24/-22/+18/-18, tracking its neighbour within ~2px with signs flipping together. The +0 was one low-confidence correlation failure. A correlation peak on a low-contrast or fast-changing tile can land anywhere, and it can land on a value that looks precisely like the defect you expect. Repeat across pairs and require the sign to flip before believing it."
+    },
+    {
+      "hazard": "[Engine.PlayerInput] in this build is GAMEPAD-ONLY - added keyboard bindings may be inert",
+      "confidence": "measured",
+      "verified": "2026-09-07",
+      "notes": "Dumping every Bindings= line in that section: it holds the action aliases (DoJump, DoPause, MoveForward...) and the XboxTypeS_* gamepad bindings, and NOT ONE keyboard key. DoPause is reachable from exactly one entry, XboxTypeS_Start. This matters for every exec test ever run on this game: 'the exec command did not fire' and 'a keyboard binding added to a gamepad-only section is inert' are indistinguishable observations, and the second is cheaper. Escape is bound only in [NTGameFramework.NTCam_DebugInput], the class proven dead on 2026-09-04."
+    },
+    {
+      "hazard": "The stereo proxy's wiggle mode makes ANY frame-difference measurement meaningless",
+      "confidence": "verified-live",
+      "verified": "2026-09-07",
+      "notes": "With d3d9_proxy.ini [stereo] Mode=0 the proxy alternates eyes every frame, so consecutive captures are DIFFERENT EYES and differ by ~27.5 mean luma - larger and steadier than most real signals. On 2026-09-07 a 27.58/0.00/27.58/0.00 series was briefly read as a pause; it was the character standing still (a static scene renders exactly two images, so same-eye pairs are byte-identical). Set Mode=1 or Mode=2 before any run that judges by image comparison, and look at the frame rather than the number."
+    }
+  ],
+  "disproved": [
+    {
+      "claim": "A virtual X360 gamepad (ViGEmBus/vgamepad) can drive this game on the dev PC",
+      "result": "disproved on the dev PC 2026-09-07: the pad enumerates and the GAME NOTICES IT (a 'Controller Connected - Xbox 360 controller' toast appears), but START does not open the pause menu and left_joystick x=29490 held for 2 s does not move the character at all. ViGEmBus is installed and the vgamepad module imports fine, so this is not a missing-driver problem. The home PC reported the same thumbLX value working on 2026-09-03d, so this is machine-specific or regressed.",
+      "date": "2026-09-07",
+      "notes": "The pad must be created and held by a LIVE process - vgamepad disconnects the device when the Python process exits, so the whole interaction has to happen in one script. Allow ~3 s after creation for the game to enumerate it."
+    },
+    {
+      "claim": "ALT+ENTER or resizing the game window will force a D3D9 device Reset",
+      "result": "disproved 2026-09-07. ALT+ENTER does reach the game (it reverted the window to its own WS_POPUP style 0x94080000, client 1286x749, and our proxy restyled it back at present#8700), and external SetWindowPos to 1024x576 / 1600x900 was likewise absorbed - but neither produced a single [reset] line. The backbuffer stays 1920x1080 and D3D stretches it into the window, so resizing never invalidates the device.",
+      "date": "2026-09-07",
+      "notes": "Consequence: there is no menu-free way to exercise the device-Reset path on this game. It genuinely requires the in-game options resolution change or a checkpoint restart, both behind the pause menu."
     }
   ]
 }
