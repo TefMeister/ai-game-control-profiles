@@ -1,0 +1,327 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "Prince of Persia",
+    "year": 2008,
+    "developer": "Ubisoft Montreal",
+    "engine": "Scimitar (the first Scimitar title; later renamed Anvil)",
+    "renderer": "Direct3D 9",
+    "distribution": "Steam (app 19980)",
+    "build_notes": "Written 2026-09-07 against the Steam build on Windows 10, dev PC. PrinceOfPersia_Launcher.exe is PE32/i386 and is wrapped in SteamStub Variant 2.1 — .text is encrypted at rest, so any string or code scan of the shipped file returns a false negative. Everything below marked inferred-static was read from a Steamless v3.1.0.5-unpacked COPY. The game WAS launched and driven on 2026-09-07 with explicit permission. Windowed mode is verified live; input automation is NOT solved."
+  },
+  "input": {
+    "api": "unknown — neither SendInput nor posted messages have been shown to reach the game",
+    "api_notes": [
+      "⚠️ THE CORRECTION THIS ENTRY EXISTS FOR: an early 2026-09-07 reading of 'SendInput does nothing, PostMessage works' was WRONG and is withdrawn. The title screen is an ATTRACT/DEMO REEL on an idle timer; a 60-second no-input control advanced it with nothing sent at all. The apparent PostMessage success was the timer.",
+      "Two cheap explanations are eliminated. Focus is genuinely held: GetFocus == GetActiveWindow == the game window, read from the game's own thread under AttachThreadInput. UIPI is not blocking: game and injector are both S-1-16-8192 (Medium), neither elevated.",
+      "Remaining hypotheses, with the observation that separates each: (1) the game polls a GAMEPAD on this screen — plug in or emulate a pad and see if the attract screen advances; (2) DirectInput8 with an exclusively-acquired keyboard — proxy dinput8.dll and see whether DirectInput8Create/GetDeviceState is called at all, which is the most informative and costs one rebuild since we already own d3d9.dll; (3) input is ignored during the attract sequence specifically — post keys at ~10 Hz for a full cycle and see whether the transition ever happens off-schedule.",
+      "Capture works: BitBlt from the screen DC against the window rect. Do NOT use PrintWindow (UNIVERSAL.md)."
+    ],
+    "bindings": [],
+    "disproved": [
+      {
+        "route": "SendInput keyboard scancodes (set 1, extended flag on arrows)",
+        "result": "no observed effect on the attract screen",
+        "confidence": "disproved",
+        "verified": "2026-09-07",
+        "notes": "This is the route that works on Enslaved. It does not work here."
+      },
+      {
+        "route": "PostMessage WM_KEYDOWN / WM_CHAR / WM_KEYUP to the main window",
+        "result": "no observed effect once the attract timer was controlled for",
+        "confidence": "disproved",
+        "verified": "2026-09-07"
+      }
+    ]
+  },
+  "states": [
+    {
+      "id": "attract",
+      "description": "Title screen reading PRESS ANY KEY. ⚠️ It advances into a demo reel BY ITSELF on an idle timer and later returns here, so a screen change is NOT evidence that input landed. Always run a no-input control before concluding anything about input on this game.",
+      "detect": [
+        {
+          "method": "screen",
+          "cue": "the words PRESS ANY KEY centred in the lower third"
+        }
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-07"
+    },
+    {
+      "id": "gameplay",
+      "description": "Never reached by automation. Unknown.",
+      "detect": [],
+      "confidence": "hypothesis",
+      "verified": "2026-09-07"
+    }
+  ],
+  "entry_points": [
+    {
+      "id": "steam-only",
+      "description": "The game MUST be started through Steam. Launching PrinceOfPersia_Launcher.exe directly fails: our proxy loads and reads its config, then the process exits after ~0.6 s without ever calling Direct3DCreate9. Steam instead runs Launcher\\Launcher.exe -uplay_steam_mode, a Ubisoft config dialog, which then starts the game.",
+      "route": "Start-Process 'steam://rungameid/19980'",
+      "confidence": "verified-live",
+      "verified": "2026-09-07"
+    },
+    {
+      "id": "launcher-dialog-click",
+      "description": "⭐ The Ubisoft launcher dialog IS drivable, even though the game itself is not. It is an ordinary Win32 dialog: EnumChildWindows returns three Buttons — 'Launch the game!', 'Settings', 'Quit' — and BM_CLICK (0x00F5) on the first starts the game. No synthetic input, no pixel matching.",
+      "route": "EnumChildWindows on the Launcher process main window, then SendMessage(hwndButton, BM_CLICK, 0, 0)",
+      "confidence": "verified-live",
+      "verified": "2026-09-07",
+      "notes": "'Settings' is unexplored and is where the launcher writes the HKCU ...\u0001.0\\Launcher registry values; worth a look for display options."
+    }
+  ],
+  "commands": {
+    "dispatch_notes": [
+      "This game has NO in-game console proven to exist. What it does have is a large COMMAND-LINE switch table, read out of the unpacked exe on 2026-09-07: 97 switch-shaped names in one contiguous .rdata pool around file offset 0x929640.",
+      "⚠️ A switch name existing in the binary is a LEAD, NOT EVIDENCE the switch does anything. Retail builds routinely keep the strings for stripped features — this estate has already been burned by exactly that on Enslaved, where shipped console bindings drive a console that is not there. None of these has been run.",
+      "The presence of 'noconsole' implies a console exists to be suppressed, which is why the board carries a [FLAT] row to launch WITHOUT /noconsole and look for one. That row is still unrun.",
+      "Switch syntax is '/name' and '/name:value' — established independently in ENGINE-DOSSIER.md section 9 from the exe's own DEFAULT command-line string (e.g. '/world:POP0WORLD', '/mission:pop0_root', '/shadows:off'). That default string is also evidence that a handful of these are genuinely wired, which is a stronger footing than the raw name pool."
+    ],
+    "available": [],
+    "untested_leads": [
+      {
+        "name": "startupmenu",
+        "why": "possible menu automation lever",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "quit",
+        "why": "would be a clean self-close route (automation capability 4)",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "mission",
+        "why": "with 'missions', 'testmission', 'missiontemproot' — possible direct level entry, which would skip menu navigation entirely",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "startpos",
+        "why": "possible spawn placement — would make camera and world recon repeatable",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "world",
+        "why": "with 'worldarea', 'nochangeworld' — possible direct world load",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "fixedfov",
+        "why": "⭐ directly relevant to the VR goal — a fixed FOV override would be a free lever on projection",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "neardist",
+        "why": "⭐ near clip plane",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "fardist",
+        "why": "⭐ far clip plane",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "consoleout",
+        "why": "may redirect engine output somewhere readable",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "help",
+        "why": "may print the switch list itself, which would confirm the prefix and the whole table in one launch",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "walkthrough",
+        "why": "with 'walkthroughloading', 'walkthroughsmoketest' — an automated playthrough mode would be a very large automation win if live",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      },
+      {
+        "name": "testvideo",
+        "why": "unknown; the only video-ish switch in the table",
+        "confidence": "inferred-static",
+        "verified": "2026-09-07"
+      }
+    ],
+    "full_switch_table": [
+      "ambience",
+      "ambiencepads",
+      "ambiencerandomfxs",
+      "ambient3dsounds",
+      "audioevents",
+      "autoprofile",
+      "autoprofileworst",
+      "consoleout",
+      "customphysmemalloc",
+      "darespy",
+      "dataservice",
+      "default",
+      "defaultallocator",
+      "dialog",
+      "dl272",
+      "dl283",
+      "edge",
+      "fardist",
+      "fast",
+      "fixedfov",
+      "flushdiskcache",
+      "full",
+      "gfxassert",
+      "gpuprofiler",
+      "head",
+      "heartbeat",
+      "help",
+      "importforge",
+      "invertcamerahorizontalaxis",
+      "invertcameraverticalaxis",
+      "language",
+      "lightmode",
+      "loadingrange",
+      "loadondemand",
+      "localbigfile",
+      "logtime",
+      "maxthread",
+      "memall",
+      "memdebug",
+      "memdebugfreequeuemaxalloc",
+      "memdebugfreequeuesize",
+      "memgearstats",
+      "memgeartracker",
+      "meminfodump",
+      "memlog",
+      "memtag",
+      "memtypestats",
+      "memvalidate",
+      "memworldstats",
+      "mission",
+      "missions",
+      "missiontemproot",
+      "msaa",
+      "music",
+      "neardist",
+      "nochangeworld",
+      "noconsole",
+      "nodiskcaching",
+      "noindirectlight",
+      "none",
+      "normal",
+      "noscimitaroutput",
+      "nosound",
+      "nosoundchangelistprotection",
+      "postfx",
+      "profilerout",
+      "propagation",
+      "ps3floodmeminfo",
+      "quit",
+      "revert",
+      "sanitycheck",
+      "sfx",
+      "shadows",
+      "skipmips",
+      "soundengine",
+      "soundinstances",
+      "soundsystemdebug",
+      "startanvil",
+      "startpos",
+      "startupmenu",
+      "sync",
+      "syncsound",
+      "tcmalloc",
+      "testmission",
+      "testmissiontemproot",
+      "testvideo",
+      "transparency",
+      "true",
+      "turbodebug",
+      "useptcoptim",
+      "usesharedobjects",
+      "volumeevents",
+      "walkthrough",
+      "walkthroughloading",
+      "walkthroughsmoketest",
+      "world",
+      "worldarea"
+    ],
+    "absent": [
+      {
+        "names": [
+          "window",
+          "windowed",
+          "fullscreen",
+          "borderless",
+          "w",
+          "sw"
+        ],
+        "confidence": "disproved",
+        "verified": "2026-09-07",
+        "notes": "There is NO windowed-mode command-line switch. The full switch pool was read from the unpacked exe and holds nothing display-related beyond testvideo/msaa/shadows/postfx/fixedfov/fardist/neardist. A whole-file case-insensitive search for 'window' returns only Win32 API import names, the literal 'Windows', and one non-switch 'window'. Do not go looking for this again."
+      }
+    ]
+  },
+  "routes": [],
+  "hazards": [
+    {
+      "id": "windowed",
+      "title": "Windowed mode exists only through our own d3d9 proxy",
+      "detail": "The game ships no windowed switch (see commands.absent) and no windowed registry value — HKCU\\Software\\Ubisoft\\Prince of Persia\\1.0\\Engine carries ScreenResolutionWidth/Height, VerticalSync, Antialiasing, AspectRatioOverride, Shadows, PostEffects and nothing about fullscreen. As of 2026-09-07 the project's d3d9.dll proxy hooks IDirect3D9::CreateDevice (vtable slot 16) and IDirect3DDevice9::Reset (slot 16) and forces Windowed=TRUE, FullScreen_RefreshRateInHz=0, BackBufferFormat=D3DFMT_UNKNOWN, then reframes the game window to a titled 1280x720. Controlled by pop_vr.ini beside the exe; Windowed=0 turns it off with no rebuild, and deleting d3d9.dll reverts everything.",
+      "confidence": "verified-live",
+      "verified": "2026-09-07",
+      "notes": "VERIFIED LIVE 2026-09-07, n=1 launch. The game requests 1920x1080 fullscreen at refresh 60 (matching the registry exactly, an independent confirmation of that read) and receives a 1280x720 windowed device; CreateDevice returns D3D_OK; the window measures 1286x749 outer with a client area of exactly 1280x720, WS_POPUP clear and WS_CAPTION set. Reset is hooked but no Reset was observed, so alt-tab behaviour is still untested."
+    },
+    {
+      "id": "steamstub",
+      "title": "Static scans of the shipped exe return false negatives",
+      "detail": "PrinceOfPersia_Launcher.exe is SteamStub Variant 2.1: .text entropy 8.00, entry point in a .bind section outside .text. Any string, immediate or code search against the shipped file is scanning ciphertext and CANNOT return a positive. Unpack a COPY with Steamless v3.1.0.5 first; the result should show entry point 0x00B076BD and .text entropy 6.61.",
+      "confidence": "measured",
+      "verified": "2026-09-07"
+    },
+    {
+      "id": "forge-verify",
+      "title": "Steam file verification silently reverts data mods",
+      "detail": "DataPC.forge is currently a patched archive (CR_Debug_1stPerson's state list rewritten to (309,309,309), deployed 2026-09-07). Steam's 'verify integrity of game files' will replace it without warning, because it no longer matches the manifest. If a data-driven mod stops working for no reason, check this first.",
+      "confidence": "reported",
+      "verified": "2026-09-07"
+    },
+    {
+      "id": "attract-timer",
+      "title": "The title screen advances on its own — it will fake an input success",
+      "detail": "PRESS ANY KEY runs a demo reel on an idle timer and returns to the title afterwards. A session that presses a key, sees the screen change and concludes the key worked will be wrong. This already happened on 2026-09-07. Always run a no-input control of at least 60 seconds before crediting any input route.",
+      "confidence": "verified-live",
+      "verified": "2026-09-07"
+    }
+  ],
+  "automation_capabilities": {
+    "note": "Scored against the four capabilities in PREFERENCES.md, after a real session on 2026-09-07.",
+    "menu_to_gameplay": {
+      "status": "NOT achieved",
+      "notes": "The Steam launcher dialog can be clicked through (verified live), but the game's own title screen cannot be advanced by any input route tried. Gameplay was never reached.",
+      "verified": "2026-09-07"
+    },
+    "issue_commands": {
+      "status": "NOT achieved",
+      "notes": "no console proven to exist; the 97 command-line switches are static leads, none run",
+      "verified": "2026-09-07"
+    },
+    "move_character_and_camera": {
+      "status": "NOT achieved",
+      "notes": "blocked behind menu_to_gameplay",
+      "verified": "2026-09-07"
+    },
+    "self_close": {
+      "status": "partial",
+      "notes": "the process can be closed, but no graceful in-game menu route is mapped because the menu was never reached",
+      "verified": "2026-09-07"
+    }
+  }
+}
