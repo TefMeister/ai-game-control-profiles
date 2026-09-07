@@ -303,10 +303,11 @@
   ],
   "disproved": [
     {
-      "claim": "A virtual X360 gamepad (ViGEmBus/vgamepad) can drive this game on the dev PC",
-      "result": "disproved on the dev PC 2026-09-07: the pad enumerates and the GAME NOTICES IT (a 'Controller Connected - Xbox 360 controller' toast appears), but START does not open the pause menu and left_joystick x=29490 held for 2 s does not move the character at all. ViGEmBus is installed and the vgamepad module imports fine, so this is not a missing-driver problem. The home PC reported the same thumbLX value working on 2026-09-03d, so this is machine-specific or regressed.",
+      "claim": "A virtual X360 gamepad (ViGEmBus/vgamepad) can drive this game on the dev PC - NOT ESTABLISHED, see result",
+      "result": "NOT a clean disproof, and it should not be read as one. Observed 2026-09-07 on the dev PC: the pad enumerates and the GAME NOTICES IT (a 'Controller Connected - Xbox 360 controller' toast appears), but START does not open the pause menu and left_joystick x=29490 held for 2 s does not move the character. HOWEVER, that machine has a PRE-EXISTING BROKEN ViGEm bus instance - Get-PnpDevice lists ROOT\\SYSTEM\\0002 OK, ROOT\\SYSTEM\\0003 OK and ROOT\\SYSTEM\\0004 in Error state, and the Error instance was present BEFORE any pad was created in that session. A half-broken bus is a cheaper explanation than anything game-side, so this is a local-environment fault until the bus is repaired and the test re-run.",
       "date": "2026-09-07",
-      "notes": "The pad must be created and held by a LIVE process - vgamepad disconnects the device when the Python process exits, so the whole interaction has to happen in one script. Allow ~3 s after creation for the game to enumerate it."
+      "notes": "Repair first (reinstall ViGEmBus / remove the Error instance), then retest before concluding anything about the game. The home PC reported thumbLX=29490 working on 2026-09-03d, which is further reason to suspect the dev PC's install rather than the game. Mechanics that still hold regardless: the pad must be created and held by a LIVE process (vgamepad disconnects the device when the Python process exits, so the whole interaction must happen in one script), and the game needs ~3 s to enumerate it.",
+      "confidence": "hypothesis"
     },
     {
       "claim": "ALT+ENTER or resizing the game window will force a D3D9 device Reset",
