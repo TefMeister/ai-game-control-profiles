@@ -20,11 +20,39 @@
     ],
     "bindings": [
       {
-        "action": "anything the keyboard can do",
+        "action": "menu / gameplay keys",
         "route": "pop_input.py tap/down/up with DIK_* names",
         "confidence": "verified-live",
         "verified": "2026-09-07",
-        "notes": "OR semantics: injection never clears a key the human is physically holding."
+        "notes": "Bound keys, read from HKCU\\Software\\Ubisoft\\Prince of Persia\\1.0\\Game value 1 (16 keyboard records, 56-byte stride, [u32 actionId][u8 DIK][0x22][01][01][36-byte GUID ascii]): W A S D, the four arrows, SPACE, E, R, T, TAB, ESC, PAUSE. RETURN and LCONTROL are NOT bound - do not try them."
+      },
+      {
+        "action": "CONFIRM / select a menu item",
+        "keys": [
+          {
+            "name": "SPACE",
+            "dik": "0x39"
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-07",
+        "notes": "MUST BE HELD ~700 ms. A 140 ms tap is IGNORED. Attributable, not guessed: the same key failed short and worked long, twice in a row. This cost more time on this game than anything else."
+      },
+      {
+        "action": "menu navigation",
+        "keys": [
+          {
+            "name": "UP",
+            "dik": "0xC8"
+          },
+          {
+            "name": "DOWN",
+            "dik": "0xD0"
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-07",
+        "notes": "Short taps are fine for navigation - only CONFIRM needs the long hold."
       }
     ],
     "disproved": [
@@ -302,7 +330,14 @@
       }
     ]
   },
-  "routes": [],
+  "routes": [
+    {
+      "id": "launch-to-loaded-save",
+      "description": "Automated end to end except the title screen: Steam URL -> BM_CLICK 'Launch the game!' -> (TITLE SCREEN needs a PAD press) -> main menu -> UP/DOWN to highlight -> SPACE held 700ms -> save entry -> SPACE held 700ms -> gameplay.",
+      "confidence": "verified-live",
+      "verified": "2026-09-07"
+    }
+  ],
   "hazards": [
     {
       "id": "windowed",
@@ -329,7 +364,7 @@
     {
       "id": "attract-timer",
       "title": "The title screen advances on its own — it will fake an input success",
-      "detail": "PRESS ANY KEY runs a demo reel on an idle timer and returns to the title afterwards. A session that presses a key, sees the screen change and concludes the key worked will be wrong. This already happened on 2026-09-07. Always run a no-input control of at least 60 seconds before crediting any input route.",
+      "detail": "PRESS ANY KEY runs a demo reel on an idle timer and returns to the title afterwards. A session that presses a key, sees the screen change and concludes the key worked will be wrong. This already happened on 2026-09-07. Always run a no-input control of at least 60 seconds before crediting any input route. CONFIRMED BY THE USER 2026-09-07: idling on the MAIN MENU also drops into a cinematic trailer until something is pressed, not just the title screen.",
       "confidence": "verified-live",
       "verified": "2026-09-07"
     },
@@ -339,13 +374,27 @@
       "detail": "PRESS ANY KEY polls no DirectInput at all; plugging in a DualSense with Steam Input advanced it immediately. An xinput1_3 proxy that can fabricate a pad is built (proxy-xinput/) and pinned to the ordinals the exe imports by, but it has NEVER FIRED - the game was not observed calling XInputGetState - so unattended launch-to-gameplay is NOT yet proven.",
       "confidence": "verified-live",
       "verified": "2026-09-07"
+    },
+    {
+      "id": "free-camera-build",
+      "title": "The deployed data mod makes the game UNPLAYABLE (free camera)",
+      "detail": "DataPC.forge is patched so CR_Debug_1stPerson's state list is (309,309,309), which takes over the camera in normal gameplay with no code patch. The result is a FREE/detached camera: it flies into the sky and through walls while the same keys still drive the Prince, so normal play is impossible. Excellent as a flycam for recon; not a playable build. Revert with one file copy from DataPC.forge.bak-2026-09-07-pre-debugcam.",
+      "confidence": "verified-live",
+      "verified": "2026-09-07"
+    },
+    {
+      "id": "stills-cannot-judge-a-camera",
+      "title": "A still frame cannot tell a LOCKED camera from a FREE one",
+      "detail": "Two readings on 2026-09-07 were recorded wrongly from stills: 'the edit did nothing' (taken standing still, the one state where a free camera sits in a plausible third-person position) and 'a character-less camera' (the observer had flown the camera away). Both frames were real; the interpretations were wrong. The discriminating action is to MOVE the camera and see whether the subject stays in frame. Worth carrying to every camera mod on any game.",
+      "confidence": "verified-live",
+      "verified": "2026-09-07"
     }
   ],
   "automation_capabilities": {
-    "note": "Scored after the 2026-09-07 session that built the injector.",
+    "note": "Scored after the 2026-09-07 session, in which a save was loaded end to end by injected input.",
     "menu_to_gameplay": {
-      "status": "PARTIAL",
-      "notes": "Steam launch and the Ubisoft launcher's 'Launch the game!' button are automated (BM_CLICK, n=2). The main menu is fully drivable by injection. The gap is the TITLE screen, which wants a pad - the virtual pad is built but unproven.",
+      "status": "ACHIEVED except the title screen",
+      "notes": "Steam launch, launcher BM_CLICK, main-menu navigation, Load Game and save selection are all automated. The only gap is the TITLE screen, which polls no DirectInput and wants a pad; the xinput virtual-pad proxy is built but has NEVER fired - the game does not call XInputGetState even with a controller connected.",
       "verified": "2026-09-07"
     },
     "issue_commands": {
@@ -354,13 +403,13 @@
       "verified": "2026-09-07"
     },
     "move_character_and_camera": {
-      "status": "NOT demonstrated",
-      "notes": "the keyboard path that drives menus is the same one gameplay uses and is polled at ~200 Hz there, so this is expected to work, but no character or camera motion has actually been driven yet. Mouse injection is host-tested only.",
+      "status": "ACHIEVED for the character; camera untested",
+      "notes": "injected W/S visibly drive the Prince. Mouse injection is host-tested and shares the proven hook but has never been run.",
       "verified": "2026-09-07"
     },
     "self_close": {
       "status": "partial",
-      "notes": "the process can be killed; a graceful route via the menu's Quit entry is now plausible since the menu is drivable, but has not been done",
+      "notes": "the menu's Quit entry is now reachable by injection, so a graceful close is plausible but untried; the process can be killed",
       "verified": "2026-09-07"
     }
   }
