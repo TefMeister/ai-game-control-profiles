@@ -265,8 +265,14 @@
     "console": {
       "available": true,
       "confidence": "verified-live",
-      "verified": "2026-09-01",
-      "notes": "In-game console opens on scancode 0x29 (send scan 0x29, then space+backspace). Retail GATES most cvars; +com_allowconsole 1 at launch ungates the console itself. The stereo switch is a call argument, not a cvar (dossier 6a), so a won gate yields parameters, not an on-switch."
+      "verified": "2026-09-08",
+      "notes": "Opens and executes on a plain retail launch - no +com_allowconsole 1 needed. Send scancode 0x29 (scan 0x29); `getviewpos` returned '1762.94 5461.52 6367.59 31.5 0.3' on 2026-09-08 with no launch flag, re-confirming the 2026-08-26 result (n=2 across two sessions). CORRECTION: this profile previously said 'Needs +com_allowconsole 1 at launch to be ungated; retail gates it.' That was wrong and the dossier never said it - ENGINE-DOSSIER.md section 9 has recorded the console as verified live since 2026-08-26, with getviewpos as the camera ground-truth instrument and `g_fov 110` as a WORKING WRITE, so console writes are not in question either. Section 11's +com_allowconsole note is a narrow untested candidate for the cvars present in the binary but never REGISTERED (the stereoRender_* family, noclip, rp, renameRenderProg) - not for console access. A hedged dossier claim had been copied outward as a broader settled one. STILL TRUE: the stereo switch is a call argument, not a cvar (dossier 6a). STILL A GAP: typing into the console is not reliable automation - the proxy's `type` burst-sends and only 1 char of 'getviewpos' arrived; a paced external typer needed four attempts and then stopped landing entirely (external SendInput follows focus, and SetForegroundWindow is refused to a background process). Build the in-process route: one character per command, so each lands on its own frame. Until then prefer the pdump route under commands.camera_position_read, which needs no console and no typing."
+    },
+    "camera_position_read": {
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "Two independent routes agree to printed precision, which is why the offset is now trustworthy: (1) the console command `getviewpos`; (2) the proxy's `pdump` at DOOMx64vk.exe + 0x360F6B0 (dossier 6h camera global), which returned 1762.941 5461.524 6367.585 against the console's 1762.94 5461.52 6367.59. Route (2) needs no console and no typing, so it is the one to automate."
     }
   },
   "hazards": [
@@ -304,6 +310,24 @@
       "hazard": "The window does not exist for several seconds after launch",
       "confidence": "verified-live",
       "verified": "2026-09-04"
+    },
+    {
+      "hazard": "`camwatch` costs ~60x the framerate - it is not a 'leave it on' mode",
+      "confidence": "measured",
+      "verified": "2026-09-08",
+      "notes": "Measured from the proxy's own 1000-frame markers: ~60 FPS before, ~1.1 FPS with camwatch on, ~60 FPS immediately after camoff (16.7s -> 889s -> 16.7s per 1000 frames), the slow interval matching the two commands to the second. The dev PC's low power is non-diagnostic by standing rule, which makes this exactly the kind of slowdown that gets shrugged off - it should not be. Take the reading, then camoff."
+    },
+    {
+      "hazard": "The HUD waypoint distance is a BAD odometer - do not judge movement by it",
+      "confidence": "measured",
+      "verified": "2026-09-08",
+      "notes": "It read 272.0 -> 271.2 across roughly 41 world units of actual movement, because the waypoint is not along the walk direction. It reads as 'input is being ignored' when input is working fine. Judge movement by `getviewpos` or by pdump on the camera global, never by the HUD."
+    },
+    {
+      "hazard": "doom-auto.ps1 races the proxy when sending more than ~8 commands at once",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "The script Add-Content's one line at a time while the proxy truncates the same file after reading it. A 64-command send died mid-way with 'Add-Content : Stream was not readable' after 35 landed. Batch to 8 or fewer, with a wait between batches."
     }
   ]
 }
