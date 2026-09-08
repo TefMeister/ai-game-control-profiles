@@ -73,6 +73,13 @@
    "confidence": "verified-live",
    "verified": "2026-09-08",
    "notes": "Entered from the title with NO input after roughly 20 s and cycles back through the title. This is why the title is useless for testing input."
+  },
+  {
+   "name": "developer_menu",
+   "detect": "Header 'Developer Menu' at the left with four rows: Get Lots of Guns, Get Flashlight and Batteries, Unlock all Episodes (Easy and Normal), Unlock Nightmare difficulty. Only reachable when the game was started with -developermenu.",
+   "confidence": "verified-live",
+   "verified": "2026-09-08",
+   "notes": "A QA unlock menu - nothing for camera, stereo or debug rendering. All four entries alter save/profile state, so do not select them; Esc backs out."
   }
  ],
  "routes": [
@@ -153,9 +160,13 @@
    }
   },
   "documented_launch_flags": {
-   "-window / -w <n> / -h <n> / -novsync / -showfps / -sensscale <n> / -locale=xx / -forcesurround / -forcestereo": "[reported, external-research - Fandom wiki + fan reference, NOT independently verified this session]",
-   "-freecamera": "[reported] a real, official free-camera tool, controller-driven, right-thumbstick toggle - no confirmed keyboard/mouse equivalent. Not tested live yet.",
-   "-developermenu": "[reported] adds a Developer Menu (episode/difficulty/ammo, unconfirmed if more). Not tested live yet."
+   "_measured_2026_09_08": "THE COMPLETE LIST, read out of AlanWake.exe's own option table beside the format string 'Unknown command line option \"%s\"'. This supersedes the earlier [reported] wiki list: shaders, SENSSCALE=/sensscale=, GPUCOUNT=/gpucount=, freecamera, directaiming, nativekeys, rigidcamera, showfps, verbose, developermenu, largeshadowmaps, noblur, forcesurround, forcestereo, cleanaccount, cleancloud, novsync, nosound, window, LOCALE=/locale=. NOTE -w <n> and -h <n> are NOT in the table; width/height come from resolution.xml.",
+   "_DANGER": "NEVER pass cleanaccount or cleancloud. They are in the same table and the names say they wipe local account state and Steam Cloud data. Nothing has been run to find out what they do and nothing should be - the project's save is the test fixture.",
+   "-developermenu": "[verified-live 2026-09-08] Works. Adds a '[Developer Menu]' row to the main menu (between Extras and Quit) AND to the pause menu (between Statistics and Quit To Menu). Contents are only: Get Lots of Guns, Get Flashlight and Batteries (both greyed at the main menu, in-game only), Unlock all Episodes (Easy and Normal), Unlock Nightmare difficulty. It is a QA unlock menu - no stereo entries, no camera/FOV/debug toggles, no console. All four items alter save/profile state; do not select them.",
+   "-rigidcamera": "[measured 2026-09-08, treatment half only] Accepted without error. With it armed, walking produced ZERO per-frame vertical camera shift across 13 frame pairs (estimator validated against injected +/-1, +/-3, +/-8 px offsets). NOT established that the flag caused this - no no-flag control has been run at the same save point yet.",
+   "-noblur": "[untested] Accepted without error in the same run; no observation was made.",
+   "-freecamera": "[reported] a real, official free-camera tool, controller-driven, right-thumbstick toggle - no confirmed keyboard/mouse equivalent. Confirmed present in the binary's option table 2026-09-08; still not tested live.",
+   "-window / -novsync / -showfps / -sensscale= / -locale= / -forcesurround / -forcestereo / -directaiming / -nativekeys / -largeshadowmaps / -verbose / -shaders / -gpucount=": "[measured 2026-09-08] present in the binary's option table; behaviour untested."
   },
   "steam_app_id": "108710 (start steam://rungameid/108710). On a fresh install Steam first runs a ~7 s first-run setup that shows in content_log.txt as App Running and exits; the game starts on the SECOND launch attempt (2026-09-05)."
  },
@@ -219,6 +230,12 @@
   {
    "name": "the activation click can select a menu item",
    "detail": "Because every key needs a preceding mouse click, the click position matters: the menu list occupies the lower third of the window, so a click there SELECTS an item. The main menu's 'Quit' and the pause menu's 'Restart Checkpoint' are both reachable this way. awkeys.py clicks at 15% of window height for this reason. Always capture-verify the highlight before Enter; never blind key-count past a destructive item.",
+   "confidence": "verified-live",
+   "verified": "2026-09-08"
+  },
+  {
+   "name": "-developermenu shifts every menu index by one",
+   "detail": "The flag inserts a '[Developer Menu]' row into BOTH the main menu (between Extras and Quit) and the pause menu (between Statistics and Quit To Menu). So Quit becomes Down x6 instead of Down x5, and Quit To Menu likewise. Any recorded key-count route is off by one while the flag is set. Capture and verify the highlight rather than counting.",
    "confidence": "verified-live",
    "verified": "2026-09-08"
   }
