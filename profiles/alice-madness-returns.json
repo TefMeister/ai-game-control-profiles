@@ -244,7 +244,13 @@
    "verified": "2026-09-04",
    "notes": "The d3d9.dll proxy polls F7-F12 via GetAsyncKeyState each Present; answers in alice_vr_proxy_log.txt. F9 toggle stereo (confirmed live). No in-game developer console investigated."
   },
-  "console": "NOT AVAILABLE in this retail build [verified-live 2026-09-08]. Launched with -freeconsole -allowcheats, a key verified-bound to `exec commands`, and the exec file written to all four candidate directories: BugIt produced no console, no output and no visible change. AliceInput.ini declares ConsoleKey=Tilde and scancode 0x29 opens nothing either. Keys DO reach the game (W walked the character, delta 14.62 against a 1.05 idle floor), so this is not an input problem. NOTE the build writes NO UE3 log at all - no Logs\\\\Launch.log anywhere - so a failing console command has nowhere to report, which is why this had to be settled by exclusion. NOT established: that the launch flags were honoured; nothing can confirm it without a log."
+  "console": {
+   "available": false,
+   "confidence": "verified-live",
+   "verified": "2026-09-08",
+   "notes": "NOT AVAILABLE in this retail build [verified-live 2026-09-08]. Launched with -freeconsole -allowcheats, a key verified-bound to `exec commands`, and the exec file written to all four candidate directories: BugIt produced no console, no output and no visible change. AliceInput.ini declares ConsoleKey=Tilde and scancode 0x29 opens nothing either. Keys DO reach the game (W walked the character, delta 14.62 against a 1.05 idle floor), so this is not an input problem. NOTE the build writes NO UE3 log at all - no Logs\\\\Launch.log anywhere - so a failing console command has nowhere to report, which is why this had to be settled by exclusion. NOT established: that the launch flags were honoured; nothing can confirm it without a log.",
+   "supersedes": "2026-09-04 placeholder: {available: null, confidence: hypothesis} - \"Not investigated. The engine exposes Exec* config identifiers (ExecStereo3D etc.) but reached via the menu, not a typed console, as far as tested.\" That entry made no claim either way; this one is the measurement that settles it."
+  }
  },
  "hazards": [
   {
