@@ -152,6 +152,32 @@
         "confidence": "verified-live",
         "verified": "2026-09-04",
         "notes": "At 784x561: CAMERA SETTINGS label (452,106); FIELD OF VIEW label (85,174); arrows (55,189) and (272,189). Each > click is ~3 deg of horizontal FOV near the default; range 58.3-116.9 deg hfov; resets when Capture Mode is left with Esc."
+      },
+      {
+        "action": "toggle the FIRST-PERSON COCKPIT camera while in a vehicle",
+        "keys": [
+          {
+            "name": "V",
+            "dik": "0x2F",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-08",
+        "notes": "A SHIPPED first-person cockpit view - windscreen, steering wheel, dashboard - toggling cleanly back to the chase camera. Measured on slot 9, the frame-constant main camera: no-input control 0.00 units, V 6.76 units, V again 6.22 units back, second control 0.06 units, i.e. about a car length in opposite directions against essentially exact controls. The most VR-relevant control surface on this game, and it needs no code. Tested STATIONARY only - behaviour under motion is unknown."
+      },
+      {
+        "action": "exit the vehicle",
+        "keys": [
+          {
+            "name": "R",
+            "dik": "0x13",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-08",
+        "notes": "R exits. It did NOT re-enter when Max had walked away, so entering needs proximity to the car - a probe that assumes R is a symmetric toggle will silently measure the player on foot instead, which is exactly what happened once on 2026-09-08."
       }
     ]
   },
@@ -213,6 +239,12 @@
     {
       "name": "capture_session",
       "detect": "Live gameplay with NO HUD at all and a visibly very wide field of view. WASD still moves Max and the camera follows. Survives the pause menu and RESUME GAME.",
+      "confidence": "verified-live",
+      "verified": "2026-09-08"
+    },
+    {
+      "name": "vehicle_first_person",
+      "detect": "Interior view through the windscreen with the steering wheel and dashboard in frame; vehicle HUD widgets bottom-right. Reached with V while in a vehicle.",
       "confidence": "verified-live",
       "verified": "2026-09-08"
     }
@@ -356,6 +388,12 @@
       "confidence": "verified-live",
       "verified": "2026-09-08",
       "notes": "EXIT GAME is the seventh. Caught by capturing before pressing Enter."
+    },
+    {
+      "hazard": "settings.ini `keymap_group_*` values are GROUP IDS, not key codes",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "keymap_group_enter_vehicle=17 and keymap_group_exit_vehicle=17 share a value, which no key binding could. Do not read key assignments out of these lines. V and R were established empirically instead."
     }
   ],
   "disproved": [
