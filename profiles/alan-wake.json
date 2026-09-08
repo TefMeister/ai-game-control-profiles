@@ -148,7 +148,8 @@
     "purpose": "width/height/fullscreen. Read at process start only - editing it while the game is running has no live effect; takes effect on the NEXT launch.",
     "confidence": "verified-live",
     "verified": "2026-09-03",
-    "example": "<screen_resolution><width value=\"1920\"/><height value=\"1080\"/><fullscreen value=\"1\"/></screen_resolution>"
+    "example": "<screen_resolution><width value=\"1920\"/><height value=\"1080\"/><fullscreen value=\"1\"/></screen_resolution>",
+    "notes": "2026-09-08: set to 1280x720 windowed on the dev PC so the game does NOT fill the screen - at 1920x1080 windowed on a 1920x1080 monitor it covered everything. Read at process start only, so edit it while the game is closed. Previous value kept as resolution.xml.bak-2026-09-08-was-1920x1080. IMPORTANT: the BACKBUFFER aspect, not the monitor, is what the camera signature is keyed on - so pinning a 16:9 windowed size makes MatchXS/MatchYS portable between the dev PC (16:9 monitor) and the home PC (21:9 monitor). Fullscreen on the home PC would give ys/xs ~2.37 and need a re-measure."
    }
   },
   "documented_launch_flags": {
