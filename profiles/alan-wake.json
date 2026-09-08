@@ -1,218 +1,229 @@
 {
-  "schema_version": "0.1",
-  "game": {
-    "title": "Alan Wake",
-    "developer": "Remedy Entertainment",
-    "engine": "Remedy engine (custom, D3D9)",
-    "renderer": "Direct3D 9",
-    "platform": "Windows (Steam)",
-    "notes": "32-bit exe (AlanWake.exe, PE machine=0x14C). Ships a from-scratch d3d9.dll forwarding proxy in this project (exports exactly Direct3DCreate9, no hook code as of 2026-09-03)."
-  },
-  "input": {
-    "api_notes": [
-      "Window title is exactly 'Alan Wake - v<version>' (version string embedded, changes per patch - match on 'Alan Wake' substring, not the full title).",
-      "SendInput scancode keyboard + relative mouse work for basic capture/focus operations; menu navigation not yet mapped (Esc tried once, inconclusive - see hazards).",
-      "2026-09-05 (home PC): SendInput with SCANCODES did NOT reach this game (Space at the title, twice, once held 0.25 s: nothing); the same keys as VIRTUAL-KEY events (wVk, no scancode flag) worked at once. The dev PC record of 2026-09-04 says scancodes worked there - n=1 each way, so try VK first and fall back. Driver: alan-wake-vr/dev-archive/tools/awdrive.py (+ the awvk helper in the notes)."
-    ]
-  },
-  "states": [
-    {
-      "name": "gameplay",
-      "detect": "Third-person over-shoulder view, objective text + flashlight-battery dial HUD top-left, continuous non-zero frame delta via BitBlt capture.",
-      "confidence": "verified-live",
-      "verified": "2026-09-03"
-    },
-    {
-      "name": "minimized (fullscreen-exclusive focus-loss)",
-      "detect": "GetWindowRect returns the Windows sentinel (-32000,-32000)-(-31840,-31972); IsIconic() == True. BitBlt capture at the window's client origin returns a near-black/tiny image even though the process is alive and CPU/GPU-active.",
-      "confidence": "verified-live",
-      "verified": "2026-09-03",
-      "notes": "See hazards: this build auto-minimizes on ANY external focus steal while running D3D9 exclusive fullscreen (resolution.xml fullscreen=1). Fix: ShowWindow(hwnd, SW_RESTORE) then SetForegroundWindow - confirmed twice to fully recover the running session with no state loss (same scene, same HUD, same character position both times)."
-    },
-    {
-      "name": "title",
-      "detect": "ALAN WAKE logo over a foggy forest; 'Press any key to play' (takes Space); Nitro/Remedy credits and version at the bottom.",
-      "confidence": "verified-live",
-      "verified": "2026-09-04"
-    },
-    {
-      "name": "main_menu",
-      "detect": "Lighthouse scene; vertical list Continue Game / New Game / Episodes / Options / Extras / Quit; 'Select' prompt bottom-right.",
-      "confidence": "verified-live",
-      "verified": "2026-09-04"
-    },
-    {
-      "name": "difficulty",
-      "detect": "'Difficulty' label with Easy / Normal / Nightmare over the lighthouse; reached from New Game.",
-      "confidence": "verified-live",
-      "verified": "2026-09-05"
-    },
-    {
-      "name": "load_game_slots",
-      "detect": "'Load Game' label with numbered slots ('1: Steam Cloud Alan Wake'); reached from Continue Game once a save exists.",
-      "confidence": "verified-live",
-      "verified": "2026-09-05"
-    },
-    {
-      "name": "pause_menu",
-      "detect": "Resume Game / Restart Checkpoint / Manuscript / Options / Statistics / Quit To Menu over the blurred scene; footer 'Esc Back  Enter Select'. Esc during a video also opens it (does not skip the video); Esc again resumes.",
-      "confidence": "verified-live",
-      "verified": "2026-09-05"
-    },
-    {
-      "name": "video_playback",
-      "detect": "Letterboxed fly-over / studio logos; the proxy log shows only c0+4 / c0+5 constant uploads (~200/s). The title's forest and the lighthouse main menu are ALSO video, not 3D: a live projection matrix only exists in the studio logos before the title and in the in-engine intro after the fly-over.",
-      "confidence": "verified-live",
-      "verified": "2026-09-05"
-    }
-  ],
-  "routes": [
-    {
-      "from": "launch",
-      "to": "main_menu",
-      "steps": [
-        "wait for the window (windowed if resolution.xml fullscreen=0)",
-        "title screen: press Space ('Press any key to play' - Enter may not register)",
-        "main menu appears with Continue Game highlighted"
-      ],
-      "confidence": "verified-live",
-      "verified": "2026-09-04"
-    },
-    {
-      "from": "main_menu",
-      "to": "process_exit",
-      "steps": [
-        "Down x5 to Quit - VERIFY the highlight",
-        "Enter",
-        "'Are you sure you want to Quit?' - Enter accepts (Esc cancels)",
-        "process exits to desktop in a few seconds"
-      ],
-      "confidence": "verified-live",
-      "verified": "2026-09-04",
-      "notes": "Reached from gameplay via Esc to the pause menu then to the main menu (pause route not exercised 2026-09-04)."
-    },
-    {
-      "from": "main_menu",
-      "to": "gameplay (new game)",
-      "steps": [
-        "Down x1 -> New Game (verify the highlight)",
-        "Enter -> Difficulty screen, Easy highlighted",
-        "Enter -> fly-over video (~60 s) then the in-engine intro; Esc pauses, Esc resumes"
-      ],
-      "confidence": "verified-live",
-      "verified": "2026-09-05"
-    },
-    {
-      "from": "main_menu",
-      "to": "gameplay (continue)",
-      "steps": [
-        "Enter on Continue Game -> Load Game slot list",
-        "Enter on slot 1 -> load (~30 s) -> the checkpoint's video/cutscene, then gameplay"
-      ],
-      "confidence": "verified-live",
-      "verified": "2026-09-05",
-      "notes": "An Enter sent within ~5 s of the title->menu transition is eaten (twice). Capture-verify the main menu before pressing."
-    },
-    {
-      "from": "gameplay",
-      "to": "process_exit",
-      "steps": [
-        "Esc -> pause menu, Resume Game highlighted",
-        "Down x5 -> Quit To Menu (verify)",
-        "Enter -> 'Are you sure you want to Quit?' -> Enter",
-        "main menu, Continue Game highlighted (~8 s)",
-        "Down x5 -> Quit (verify)",
-        "Enter -> confirm -> Enter; process exits within 2 s, proxy hooks unwound in order"
-      ],
-      "confidence": "verified-live",
-      "verified": "2026-09-05",
-      "notes": "Proven twice on 2026-09-05. This is the graceful route; WM_CLOSE is no longer needed."
-    }
-  ],
-  "entry_points": {
-    "process_name": "AlanWake.exe",
-    "window_title_substring": "Alan Wake",
-    "config_files": {
-      "resolution.xml": {
-        "path": "%USERPROFILE%\\Documents\\Remedy\\AlanWake\\resolution.xml",
-        "purpose": "width/height/fullscreen. Read at process start only - editing it while the game is running has no live effect; takes effect on the NEXT launch.",
-        "confidence": "verified-live",
-        "verified": "2026-09-03",
-        "example": "<screen_resolution><width value=\"1920\"/><height value=\"1080\"/><fullscreen value=\"1\"/></screen_resolution>"
-      }
-    },
-    "documented_launch_flags": {
-      "-window / -w <n> / -h <n> / -novsync / -showfps / -sensscale <n> / -locale=xx / -forcesurround / -forcestereo": "[reported, external-research - Fandom wiki + fan reference, NOT independently verified this session]",
-      "-freecamera": "[reported] a real, official free-camera tool, controller-driven, right-thumbstick toggle - no confirmed keyboard/mouse equivalent. Not tested live yet.",
-      "-developermenu": "[reported] adds a Developer Menu (episode/difficulty/ammo, unconfirmed if more). Not tested live yet."
-    },
-    "steam_app_id": "108710 (start steam://rungameid/108710). On a fresh install Steam first runs a ~7 s first-run setup that shows in content_log.txt as App Running and exits; the game starts on the SECOND launch attempt (2026-09-05)."
-  },
-  "commands": {
-    "console": {
-      "available": null,
-      "confidence": "hypothesis",
-      "verified": "2026-09-03",
-      "notes": "Not investigated. Esc was sent once mid-session; the follow-up capture landed on what was probably a menu-transition frame (came back near-black) and a re-capture a moment later showed unchanged gameplay with no visible menu - genuinely inconclusive, not a negative result. Window/process state was healthy throughout (not minimized, not crashed)."
-    }
-  },
-  "hazards": [
-    {
-      "hazard": "This build auto-minimizes on ANY external focus steal while D3D9-exclusive-fullscreen",
-      "confidence": "verified-live",
-      "verified": "2026-09-03",
-      "notes": "Reproduced twice, from two unrelated causes: (1) sending Alt+Enter - the ALT key alone generates WM_SYSKEYDOWN, which this build appears to treat as losing exclusive-mode focus; (2) merely launching an unrelated GUI application (x32dbg.exe) nearby, with no attach ever made. Both times GetWindowRect reported the Windows-minimized sentinel (-32000,-32000)-(-31840,-31972) and IsIconic()==True, and both times ShowWindow(hwnd, SW_RESTORE) + SetForegroundWindow fully recovered the exact running state with no loss (same scene, same HUD, same character position). DO NOT send Alt+Enter to this game live to try to toggle windowed mode - it does not toggle, it minimizes. Use resolution.xml + a relaunch instead (see entry_points.config_files)."
-    },
-    {
-      "hazard": "A game-window close (WM_CLOSE) produced a Windows crash-report minidump, despite a fast, non-hanging process exit",
-      "confidence": "verified-live",
-      "verified": "2026-09-03",
-      "notes": "PostMessage(hwnd, WM_CLOSE, 0, 0) made the process leave the process list within ~4s with no visible hang - insufficient evidence to call it 'graceful', corrected in-session. A fresh minidump (15,718 bytes) appeared at the exact close time. NOTE for future sessions: that exact byte size also matches ONE of nine pre-existing dumps from an unrelated 2026-08-25 session (the other eight were 216-254 KB, a visibly different/larger fault), which hints this specific small dump may be a repeatable, likely-benign exception the shutdown path always trips - not proven, n=2. Do not copy dump FILE CONTENTS into any repo (a minidump is a memory snapshot that can contain the game's own compiled code/assets - treat it like any other original game file, never distribute it). Recording only size/timestamp metadata is fine. A verified in-game quit route (through a menu) is still unknown and would be worth finding before assuming WM_CLOSE is the best available method."
-    },
-    {
-      "hazard": "The x64dbg MCP automation bridge did not connect on this machine",
-      "confidence": "inferred-static",
-      "verified": "2026-09-07",
-      "notes": "SYMPTOM UNCHANGED: start_session reported a timeout even though x32dbg.exe did launch and run standalone, and list_sessions never showed it. THE RECORDED CAUSE WAS WRONG and is corrected here (2026-09-07). It said six 'apparently-stale' x64dbg-automate-mcp.exe helpers suggested an estate-wide bridge issue. Measured 2026-09-07: five such helpers were running and EVERY ONE had a live claude parent process (five distinct, all alive), holding no TCP endpoints - they are one helper per open session, ordinary MCP behaviour, not leaked orphans. WHAT THE CONFIGURATION ACTUALLY IS: X64DBG_PATH (Process and User scope) points at ...\\release\\x96dbg.exe, which is x64dbg's LAUNCHER/SELECTOR, not a debugger - it picks x32 or x64 and starts it. The bridge resolves explicit parameter -> X64DBG_PATH -> shutil.which, then Popen()s that path and waits for a session to register, so if the process it launched is the selector, the handle it holds is not the debugger's: it waits, times out, and list_sessions stays empty while a perfectly good debugger runs. That is the symptom exactly. AND THERE ARE TWO INSTALLS, UNEVENLY PROVISIONED: the WinGet copy has x64dbg-automate.dp32 and .dp64; the AppData\\Local\\x64dbg copy has an EMPTY x32\\plugins. Alan Wake is 32-bit, so it needs x32dbg AND the .dp32 - against the AppData copy a 32-bit session could never register.",
-      "candidate_causes": [
-        "launcher indirection - the bridge holds the selector's handle, not the debugger's",
-        "half-provisioned install - a 32-bit session against the AppData copy has no automate plugin",
-        "contention between several sessions' helpers over the plugin's endpoint"
-      ],
-      "how_to_separate_them": "(1) vs (2): which install did the x32dbg.exe that launched come from? The WinGet copy has the .dp32; the AppData copy does not. (3): retry with only one Claude session open.",
-      "first_thing_to_try": "Point X64DBG_PATH at the actual debugger binary matching the target's bitness - the WinGet install's x32\\x32dbg.exe for this 32-bit game - or pass x64dbg_path explicitly to start_session, which the tool accepts per call. UNTESTED: nothing here has been run against a live session."
-    },
-    {
-      "hazard": "Proxy: a foreign hook layered on IDirect3D9 vtable slot 16 during the first (throwaway) load - most likely the Steam overlay - makes the second load chain into it and recurse CreateDevice until the process dies (~7 s, 1,669 calls in 1 ms). Timing-dependent: it happened once when the first block lived 700 ms, not on three launches where it lived 16 ms.",
-      "confidence": "verified-live",
-      "verified": "2026-09-05",
-      "notes": "Log tells: 'CreateDevice hook: slot 16 holds ..., not ours' at the first unload, then a burst of 'IDirect3D9::CreateDevice called'. Queued fix: never chain into a foreign slot-16 pointer."
-    },
-    {
-      "hazard": "A small (~15.7 KB) crash minidump appears in Documents\\Remedy\\AlanWake at every clean menu quit, with the proxy hooks already removed (n=3: 15,718 / 15,666 B). Benign shutdown-path exception; not ours. Do not commit dump contents.",
-      "confidence": "verified-live",
-      "verified": "2026-09-05"
-    },
-    {
-      "hazard": "Pre-creating Documents\\Remedy\\AlanWake\resolution.xml with fullscreen=0 on a never-run install works: the game came up windowed 1920x1080 on its first real launch, no minimise events in four launches.",
-      "confidence": "verified-live",
-      "verified": "2026-09-05"
-    },
-    {
-      "hazard": "IDirect3D9 vtable slot 16 is ALWAYS already hooked on a Steam machine - a d3d9 proxy that patches it cannot install",
-      "confidence": "verified-live",
-      "verified": "2026-09-08",
-      "notes": "Two launches, four proxy loads, every one refused: slot 16 held a pointer owned by Steam\\gameoverlayrenderer.dll (load 1 of both launches) and by C:\\Windows\\SYSTEM32\\apphelp.dll (load 2 of the direct launch), never by the real d3d9.dll. A vtable is shared per class, so the owner CHANGED between two loads 350 ms apart in one process; why is not established. The fix is to stop patching the vtable and return your own COM object from Direct3DCreate9, which the game calls directly when you are the proxy."
-    },
-    {
-      "hazard": "Launching AlanWake.exe DIRECTLY does not avoid the Steam overlay",
-      "confidence": "verified-live",
-      "verified": "2026-09-08",
-      "notes": "Bypassing the Steam launcher (SteamAppId in the environment, Start-Process on the exe) still had gameoverlayrenderer.dll owning slot 16 on the first proxy load. With Steam running the overlay is injected regardless, so this is not a way around it. n=1."
-    }
-  ],
-  "notes": [
-    "2026-09-04b: the FreeLibrary-at-detach fix is confirmed live - the proxy's second d3d9 load now stays resident and the game renders through it (title + main menu). The proxy owns the real device. [verified-live 2026-09-04]",
-    "2026-09-05: handedness read live - g_mViewToClip is LEFT-handed (clip.w = +view.z), stored with registers as rows of a column-vector matrix (+1 at storage index 14). Main camera at c192 in skinned shaders (16:9, near 0.2, far 1000). The engine uploads constants as whole 128-register blocks (c0+128, c128+128). See the alan-wake-vr dossier 4c."
+ "schema_version": "0.1",
+ "game": {
+  "title": "Alan Wake",
+  "developer": "Remedy Entertainment",
+  "engine": "Remedy engine (custom, D3D9)",
+  "renderer": "Direct3D 9",
+  "platform": "Windows (Steam)",
+  "notes": "32-bit exe (AlanWake.exe, PE machine=0x14C). Ships a from-scratch d3d9.dll forwarding proxy in this project (exports exactly Direct3DCreate9, no hook code as of 2026-09-03)."
+ },
+ "input": {
+  "api_notes": [
+   "Window title is exactly 'Alan Wake - v<version>' (version string embedded, changes per patch - match on 'Alan Wake' substring, not the full title).",
+   "SendInput scancode keyboard + relative mouse work for basic capture/focus operations; menu navigation not yet mapped (Esc tried once, inconclusive - see hazards).",
+   "2026-09-05 (home PC): SendInput with SCANCODES did NOT reach this game (Space at the title, twice, once held 0.25 s: nothing); the same keys as VIRTUAL-KEY events (wVk, no scancode flag) worked at once. The dev PC record of 2026-09-04 says scancodes worked there - n=1 each way, so try VK first and fall back. Driver: alan-wake-vr/dev-archive/tools/awdrive.py (+ the awvk helper in the notes).",
+   "2026-09-08 (dev PC), SUPERSEDES the two n=1 records above as the operating rule: a BARE keypress does not reach this game at all - neither VK nor scancode - even with the game window verified as the foreground window. A LEFT MOUSE CLICK INSIDE THE WINDOW IMMEDIATELY BEFORE THE KEY makes it land, and the effect does NOT persist: the next key needs its own click. Rule: click, key, click, key. Measured on the MAIN MENU (a stable state that does not auto-advance, so every result is attributable), n=2 each: VK alone no; scancode alone no; cursor moved inside the window without clicking then VK no; click then VK YES; VK again without a new click no. Same rule in gameplay: 2.5 s of W with no click was indistinguishable from the no-input control (mean luma delta 2.87 vs 2.92); a click then 3 s of W walked the character visibly. WHY the click is needed is NOT established - plausibly each external shell command steals foreground and the game never receives a proper activation back. The earlier records are kept, not deleted: the missing ingredient in both may simply have been the click. Driver: alan-wake-vr/dev-archive/tools/awkeys.py",
+   "2026-09-08 DISPROVED, and it nearly became a finding: 'VK events work here, scancodes do not'. The title screen advanced right after a VK space, but a no-input control then showed the TITLE AUTO-ADVANCES INTO AN ATTRACT REEL ON ITS OWN (60 s of no input, never the title), so every transition attributed to a keypress was equally explained by the attract timeout. Never test input on the title screen of this game; use the main menu, which is stable."
   ]
+ },
+ "states": [
+  {
+   "name": "gameplay",
+   "detect": "Third-person over-shoulder view, objective text + flashlight-battery dial HUD top-left, continuous non-zero frame delta via BitBlt capture.",
+   "confidence": "verified-live",
+   "verified": "2026-09-03"
+  },
+  {
+   "name": "minimized (fullscreen-exclusive focus-loss)",
+   "detect": "GetWindowRect returns the Windows sentinel (-32000,-32000)-(-31840,-31972); IsIconic() == True. BitBlt capture at the window's client origin returns a near-black/tiny image even though the process is alive and CPU/GPU-active.",
+   "confidence": "verified-live",
+   "verified": "2026-09-03",
+   "notes": "See hazards: this build auto-minimizes on ANY external focus steal while running D3D9 exclusive fullscreen (resolution.xml fullscreen=1). Fix: ShowWindow(hwnd, SW_RESTORE) then SetForegroundWindow - confirmed twice to fully recover the running session with no state loss (same scene, same HUD, same character position both times)."
+  },
+  {
+   "name": "title",
+   "detect": "ALAN WAKE logo over a foggy forest; 'Press any key to play' (takes Space); Nitro/Remedy credits and version at the bottom.",
+   "confidence": "verified-live",
+   "verified": "2026-09-04"
+  },
+  {
+   "name": "main_menu",
+   "detect": "Lighthouse scene; vertical list Continue Game / New Game / Episodes / Options / Extras / Quit; 'Select' prompt bottom-right.",
+   "confidence": "verified-live",
+   "verified": "2026-09-04"
+  },
+  {
+   "name": "difficulty",
+   "detect": "'Difficulty' label with Easy / Normal / Nightmare over the lighthouse; reached from New Game.",
+   "confidence": "verified-live",
+   "verified": "2026-09-05"
+  },
+  {
+   "name": "load_game_slots",
+   "detect": "'Load Game' label with numbered slots ('1: Steam Cloud Alan Wake'); reached from Continue Game once a save exists.",
+   "confidence": "verified-live",
+   "verified": "2026-09-05"
+  },
+  {
+   "name": "pause_menu",
+   "detect": "Resume Game / Restart Checkpoint / Manuscript / Options / Statistics / Quit To Menu over the blurred scene; footer 'Esc Back  Enter Select'. Esc during a video also opens it (does not skip the video); Esc again resumes.",
+   "confidence": "verified-live",
+   "verified": "2026-09-05"
+  },
+  {
+   "name": "video_playback",
+   "detect": "Letterboxed fly-over / studio logos; the proxy log shows only c0+4 / c0+5 constant uploads (~200/s). The title's forest and the lighthouse main menu are ALSO video, not 3D: a live projection matrix only exists in the studio logos before the title and in the in-engine intro after the fly-over.",
+   "confidence": "verified-live",
+   "verified": "2026-09-05"
+  },
+  {
+   "name": "attract_reel",
+   "detect": "Letterboxed cinematic clips (Bright Falls fly-over, Alan close-ups) cycling with the title card, with only c0+4 / c0+5 vertex-constant uploads in the proxy log.",
+   "confidence": "verified-live",
+   "verified": "2026-09-08",
+   "notes": "Entered from the title with NO input after roughly 20 s and cycles back through the title. This is why the title is useless for testing input."
+  }
+ ],
+ "routes": [
+  {
+   "from": "launch",
+   "to": "main_menu",
+   "steps": [
+    "wait for the window (windowed if resolution.xml fullscreen=0)",
+    "click inside the window, then send space - repeat about 6 times (awkeys.py --repeat 6 space)",
+    "capture and verify the menu list before pressing anything: Continue Game is highlighted"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-08",
+   "notes": "Rewritten 2026-09-08: the old 'press Space at the title' step is not sufficient on its own, because a bare keypress does not reach this game (see input.api_notes). The title also auto-advances into an attract reel, so do not treat reaching the menu as proof a key landed."
+  },
+  {
+   "from": "main_menu",
+   "to": "process_exit",
+   "steps": [
+    "Down x5 to Quit - VERIFY the highlight",
+    "Enter",
+    "'Are you sure you want to Quit?' - Enter accepts (Esc cancels)",
+    "process exits to desktop in a few seconds"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-04",
+   "notes": "Reached from gameplay via Esc to the pause menu then to the main menu (pause route not exercised 2026-09-04)."
+  },
+  {
+   "from": "main_menu",
+   "to": "gameplay (new game)",
+   "steps": [
+    "Down x1 -> New Game (verify the highlight)",
+    "Enter -> Difficulty screen, Easy highlighted",
+    "Enter -> fly-over video (~60 s) then the in-engine intro; Esc pauses, Esc resumes"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-05"
+  },
+  {
+   "from": "main_menu",
+   "to": "gameplay (continue)",
+   "steps": [
+    "Enter on Continue Game -> Load Game slot list",
+    "Enter on slot 1 -> load (~30 s) -> the checkpoint's video/cutscene, then gameplay"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-05",
+   "notes": "An Enter sent within ~5 s of the title->menu transition is eaten (twice). Capture-verify the main menu before pressing."
+  },
+  {
+   "from": "gameplay",
+   "to": "process_exit",
+   "steps": [
+    "Esc -> pause menu, Resume Game highlighted",
+    "Down x5 -> Quit To Menu (verify)",
+    "Enter -> 'Are you sure you want to Quit?' -> Enter",
+    "main menu, Continue Game highlighted (~8 s)",
+    "Down x5 -> Quit (verify)",
+    "Enter -> confirm -> Enter; process exits within 2 s, proxy hooks unwound in order"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-05",
+   "notes": "Proven twice on 2026-09-05. This is the graceful route; WM_CLOSE is no longer needed."
+  }
+ ],
+ "entry_points": {
+  "process_name": "AlanWake.exe",
+  "window_title_substring": "Alan Wake",
+  "config_files": {
+   "resolution.xml": {
+    "path": "%USERPROFILE%\\Documents\\Remedy\\AlanWake\\resolution.xml",
+    "purpose": "width/height/fullscreen. Read at process start only - editing it while the game is running has no live effect; takes effect on the NEXT launch.",
+    "confidence": "verified-live",
+    "verified": "2026-09-03",
+    "example": "<screen_resolution><width value=\"1920\"/><height value=\"1080\"/><fullscreen value=\"1\"/></screen_resolution>"
+   }
+  },
+  "documented_launch_flags": {
+   "-window / -w <n> / -h <n> / -novsync / -showfps / -sensscale <n> / -locale=xx / -forcesurround / -forcestereo": "[reported, external-research - Fandom wiki + fan reference, NOT independently verified this session]",
+   "-freecamera": "[reported] a real, official free-camera tool, controller-driven, right-thumbstick toggle - no confirmed keyboard/mouse equivalent. Not tested live yet.",
+   "-developermenu": "[reported] adds a Developer Menu (episode/difficulty/ammo, unconfirmed if more). Not tested live yet."
+  },
+  "steam_app_id": "108710 (start steam://rungameid/108710). On a fresh install Steam first runs a ~7 s first-run setup that shows in content_log.txt as App Running and exits; the game starts on the SECOND launch attempt (2026-09-05)."
+ },
+ "commands": {
+  "console": "NONE. This game ships no console and no exec route was found; configuration reaches the mod through d3d9_proxy.ini, which is read at process start only, so every config change costs a relaunch. [verified-live 2026-09-08]"
+ },
+ "hazards": [
+  {
+   "hazard": "This build auto-minimizes on ANY external focus steal while D3D9-exclusive-fullscreen",
+   "confidence": "verified-live",
+   "verified": "2026-09-03",
+   "notes": "Reproduced twice, from two unrelated causes: (1) sending Alt+Enter - the ALT key alone generates WM_SYSKEYDOWN, which this build appears to treat as losing exclusive-mode focus; (2) merely launching an unrelated GUI application (x32dbg.exe) nearby, with no attach ever made. Both times GetWindowRect reported the Windows-minimized sentinel (-32000,-32000)-(-31840,-31972) and IsIconic()==True, and both times ShowWindow(hwnd, SW_RESTORE) + SetForegroundWindow fully recovered the exact running state with no loss (same scene, same HUD, same character position). DO NOT send Alt+Enter to this game live to try to toggle windowed mode - it does not toggle, it minimizes. Use resolution.xml + a relaunch instead (see entry_points.config_files)."
+  },
+  {
+   "hazard": "A game-window close (WM_CLOSE) produced a Windows crash-report minidump, despite a fast, non-hanging process exit",
+   "confidence": "verified-live",
+   "verified": "2026-09-03",
+   "notes": "PostMessage(hwnd, WM_CLOSE, 0, 0) made the process leave the process list within ~4s with no visible hang - insufficient evidence to call it 'graceful', corrected in-session. A fresh minidump (15,718 bytes) appeared at the exact close time. NOTE for future sessions: that exact byte size also matches ONE of nine pre-existing dumps from an unrelated 2026-08-25 session (the other eight were 216-254 KB, a visibly different/larger fault), which hints this specific small dump may be a repeatable, likely-benign exception the shutdown path always trips - not proven, n=2. Do not copy dump FILE CONTENTS into any repo (a minidump is a memory snapshot that can contain the game's own compiled code/assets - treat it like any other original game file, never distribute it). Recording only size/timestamp metadata is fine. A verified in-game quit route (through a menu) is still unknown and would be worth finding before assuming WM_CLOSE is the best available method."
+  },
+  {
+   "hazard": "The x64dbg MCP automation bridge did not connect on this machine",
+   "confidence": "inferred-static",
+   "verified": "2026-09-07",
+   "notes": "SYMPTOM UNCHANGED: start_session reported a timeout even though x32dbg.exe did launch and run standalone, and list_sessions never showed it. THE RECORDED CAUSE WAS WRONG and is corrected here (2026-09-07). It said six 'apparently-stale' x64dbg-automate-mcp.exe helpers suggested an estate-wide bridge issue. Measured 2026-09-07: five such helpers were running and EVERY ONE had a live claude parent process (five distinct, all alive), holding no TCP endpoints - they are one helper per open session, ordinary MCP behaviour, not leaked orphans. WHAT THE CONFIGURATION ACTUALLY IS: X64DBG_PATH (Process and User scope) points at ...\\release\\x96dbg.exe, which is x64dbg's LAUNCHER/SELECTOR, not a debugger - it picks x32 or x64 and starts it. The bridge resolves explicit parameter -> X64DBG_PATH -> shutil.which, then Popen()s that path and waits for a session to register, so if the process it launched is the selector, the handle it holds is not the debugger's: it waits, times out, and list_sessions stays empty while a perfectly good debugger runs. That is the symptom exactly. AND THERE ARE TWO INSTALLS, UNEVENLY PROVISIONED: the WinGet copy has x64dbg-automate.dp32 and .dp64; the AppData\\Local\\x64dbg copy has an EMPTY x32\\plugins. Alan Wake is 32-bit, so it needs x32dbg AND the .dp32 - against the AppData copy a 32-bit session could never register.",
+   "candidate_causes": [
+    "launcher indirection - the bridge holds the selector's handle, not the debugger's",
+    "half-provisioned install - a 32-bit session against the AppData copy has no automate plugin",
+    "contention between several sessions' helpers over the plugin's endpoint"
+   ],
+   "how_to_separate_them": "(1) vs (2): which install did the x32dbg.exe that launched come from? The WinGet copy has the .dp32; the AppData copy does not. (3): retry with only one Claude session open.",
+   "first_thing_to_try": "Point X64DBG_PATH at the actual debugger binary matching the target's bitness - the WinGet install's x32\\x32dbg.exe for this 32-bit game - or pass x64dbg_path explicitly to start_session, which the tool accepts per call. UNTESTED: nothing here has been run against a live session."
+  },
+  {
+   "hazard": "Proxy: a foreign hook layered on IDirect3D9 vtable slot 16 during the first (throwaway) load - most likely the Steam overlay - makes the second load chain into it and recurse CreateDevice until the process dies (~7 s, 1,669 calls in 1 ms). Timing-dependent: it happened once when the first block lived 700 ms, not on three launches where it lived 16 ms.",
+   "confidence": "verified-live",
+   "verified": "2026-09-05",
+   "notes": "Log tells: 'CreateDevice hook: slot 16 holds ..., not ours' at the first unload, then a burst of 'IDirect3D9::CreateDevice called'. Queued fix: never chain into a foreign slot-16 pointer."
+  },
+  {
+   "hazard": "A small (~15.7 KB) crash minidump appears in Documents\\Remedy\\AlanWake at every clean menu quit, with the proxy hooks already removed (n=3: 15,718 / 15,666 B). Benign shutdown-path exception; not ours. Do not commit dump contents.",
+   "confidence": "verified-live",
+   "verified": "2026-09-05"
+  },
+  {
+   "hazard": "Pre-creating Documents\\Remedy\\AlanWake\resolution.xml with fullscreen=0 on a never-run install works: the game came up windowed 1920x1080 on its first real launch, no minimise events in four launches.",
+   "confidence": "verified-live",
+   "verified": "2026-09-05"
+  },
+  {
+   "hazard": "IDirect3D9 vtable slot 16 is ALWAYS already hooked on a Steam machine - a d3d9 proxy that patches it cannot install",
+   "confidence": "verified-live",
+   "verified": "2026-09-08",
+   "notes": "Two launches, four proxy loads, every one refused: slot 16 held a pointer owned by Steam\\gameoverlayrenderer.dll (load 1 of both launches) and by C:\\Windows\\SYSTEM32\\apphelp.dll (load 2 of the direct launch), never by the real d3d9.dll. A vtable is shared per class, so the owner CHANGED between two loads 350 ms apart in one process; why is not established. The fix is to stop patching the vtable and return your own COM object from Direct3DCreate9, which the game calls directly when you are the proxy."
+  },
+  {
+   "hazard": "Launching AlanWake.exe DIRECTLY does not avoid the Steam overlay",
+   "confidence": "verified-live",
+   "verified": "2026-09-08",
+   "notes": "Bypassing the Steam launcher (SteamAppId in the environment, Start-Process on the exe) still had gameoverlayrenderer.dll owning slot 16 on the first proxy load. With Steam running the overlay is injected regardless, so this is not a way around it. n=1."
+  },
+  {
+   "name": "the activation click can select a menu item",
+   "detail": "Because every key needs a preceding mouse click, the click position matters: the menu list occupies the lower third of the window, so a click there SELECTS an item. The main menu's 'Quit' and the pause menu's 'Restart Checkpoint' are both reachable this way. awkeys.py clicks at 15% of window height for this reason. Always capture-verify the highlight before Enter; never blind key-count past a destructive item.",
+   "confidence": "verified-live",
+   "verified": "2026-09-08"
+  }
+ ],
+ "notes": [
+  "2026-09-04b: the FreeLibrary-at-detach fix is confirmed live - the proxy's second d3d9 load now stays resident and the game renders through it (title + main menu). The proxy owns the real device. [verified-live 2026-09-04]",
+  "2026-09-05: handedness read live - g_mViewToClip is LEFT-handed (clip.w = +view.z), stored with registers as rows of a column-vector matrix (+1 at storage index 14). Main camera at c192 in skinned shaders (16:9, near 0.2, far 1000). The engine uploads constants as whole 128-register blocks (c0+128, c128+128). See the alan-wake-vr dossier 4c."
+ ]
 }
