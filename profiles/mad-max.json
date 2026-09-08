@@ -197,6 +197,24 @@
       "detect": "GRAPHICS header, PRESETS/FULLSCREEN/RESOLUTION rows, Apply / Revert Changes / AUTO DETECT PRESET buttons; SETTINGS column GAME/CONTROLLER/AUDIO/GAMMA/GRAPHICS/KEYMAPPING on the left. Esc backs out to the menu that opened it.",
       "confidence": "verified-live",
       "verified": "2026-09-04"
+    },
+    {
+      "name": "video_mode",
+      "detect": "Capture Mode with tabs FILTERS / CAMERA SETTINGS / VIGNETTE / FRAME, and a bottom bar reading 'Enter BEGIN SESSION   R PHOTO MODE   Esc EXIT'. R toggles between Photo Mode and Video Mode.",
+      "confidence": "verified-live",
+      "verified": "2026-09-08"
+    },
+    {
+      "name": "capture_video_panel",
+      "detect": "A 'CAPTURE VIDEO' dialog listing SECOND CONTROLLER bindings, with 'Enter CONTINUE / Esc BACK' at the bottom.",
+      "confidence": "verified-live",
+      "verified": "2026-09-08"
+    },
+    {
+      "name": "capture_session",
+      "detect": "Live gameplay with NO HUD at all and a visibly very wide field of view. WASD still moves Max and the camera follows. Survives the pause menu and RESUME GAME.",
+      "confidence": "verified-live",
+      "verified": "2026-09-08"
     }
   ],
   "routes": [
@@ -255,6 +273,21 @@
       "confidence": "verified-live",
       "verified": "2026-09-04",
       "notes": "Coordinates are client-area pixels for the 784x561 window; scale them for other window sizes. Verified with the cbfp probe dumping after each change."
+    },
+    {
+      "from": "capture_mode",
+      "to": "capture_session",
+      "steps": [
+        "R  (the Capture Mode HUD bar reads 'R VIDEO MODE')",
+        "click the CAMERA SETTINGS tab label - the tabs are MOUSE-ONLY",
+        "click the FIELD OF VIEW row label, then its '>' arrow repeatedly (18 clicks reaches maximum)",
+        "Enter  ('BEGIN SESSION')",
+        "Enter  ('CONTINUE' on the CAPTURE VIDEO panel)",
+        "-> live, playable, HUD-free gameplay at hfov ~157.4 degrees"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "Measured |col 0| = 0.2000 -> hfov ~157.4 deg, against an 80.48 deg gameplay default and a 116.91 deg Photo-Mode maximum. Two controllers are required and the game says so in its own UI twice; two ViGEm virtual pads (tools/hold-pads.py) satisfied it on a machine with zero physical pads, XInput slots [0,1]. NOT ESTABLISHED: that the pads were NECESSARY - no pads-removed control was run. Also unknown: how to end the session cleanly (Esc reaches the pause menu and RESUME GAME returns INTO the session)."
     }
   ],
   "entry_points": {
@@ -273,6 +306,12 @@
       "confidence": "verified-live",
       "verified": "2026-09-04",
       "notes": "IS a free camera: arrows/WASD move, mouse rotates, U/I tilt, Enter captures, R video mode, Esc exits. Drives the same shared camera constant as gameplay. Tabs CAMERA / FILTERS / CAMERA SETTINGS / VIGNETTE exist; the key that switches them was not found (arrows, E, Tab tried). 2026-09-04b: tabs switch by MOUSE CLICK on the label (not a key). CAMERA SETTINGS has EXPOSURE / FIELD OF VIEW / BLUR INTENSITY / DOF FOCUS DISTANCE / DEPTH OF FIELD / AUTOFOCUS ON MAX; sliders change via their < > arrows. The FOV slider edits the main-pass projection columns only (58.3-116.9 deg hfov) and resets on Esc."
+    },
+    "second_controller_camera": {
+      "available": true,
+      "confidence": "reported",
+      "verified": "2026-09-08",
+      "notes": "A SHIPPED detached camera driven by a SECOND controller during live gameplay. The CAPTURE VIDEO panel documents: Increase/Decrease Field Of View, Attach/Detach Camera To Max, Toggle Game Camera, Toggle Camera Tracking, Toggle Alternate Camera 1, Toggle Alternate Camera 2, Rotate Camera Axis (two axes), Pan Up, Pan Down, Toggle Depth Of Field, Normal Game Speed, Slow Motion, Start/Stop Recording. The LIST is verified-live as documentation (read off the game's own panel 2026-09-08); every individual binding is REPORTED as behaviour because none has been pressed. Driving pad 1's buttons is the outstanding work - an engine-native attach/detach plus FOV pair would be a decoupled camera reachable with no code."
     }
   },
   "hazards": [
@@ -305,6 +344,18 @@
       "confidence": "verified-live",
       "verified": "2026-09-04",
       "notes": "At objective 'Collect the jag tip' the car in Chumbucket's garage is a prop: no prompt, R does nothing. Vehicle tests need a later save."
+    },
+    {
+      "hazard": "NumLock OFF silently changes which proxy hotkey fires",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "With NumLock off a numpad scancode produces the navigation VK (0x51 -> VK_NEXT), and the dxgi proxy accepts navigation keys as aliases - but its alias table pairs them differently from its numpad table. A 'numpad3 = dump' press was logged as 'stereo separation -> 0.0520', i.e. it ran NUMPAD9. Worse, the stereo aliases are RIGHT and UP, which in Capture Mode MOVE THE CAMERA, so an experiment can run with a drifting viewpoint and nothing errors. Set NumLock ON first and check the logged line names the function you meant."
+    },
+    {
+      "hazard": "Six downs on the main menu lands on CREDITS, not EXIT GAME",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "EXIT GAME is the seventh. Caught by capturing before pressing Enter."
     }
   ],
   "disproved": [
