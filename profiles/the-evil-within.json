@@ -10,8 +10,9 @@
     "build_notes": "Verified on Windows 10, 2026-09-03, with our winmm.dll proxy present. Driven entirely by external synthetic input against the game window; no in-process code was needed for navigation."
   },
   "input": {
-    "api": "DirectInput8 (+XInput). NOT drivable by SendInput - see disproved.",
+    "api": "DirectInput8 (+XInput). NOT drivable by SendInput - but a VIRTUAL XInput pad works. See api_notes.",
     "api_notes": [
+      "SOLVED 2026-09-08: a VIRTUAL XInput pad (ViGEm, tools/pad-session.py) drives this game end to end where SendInput cannot. EvilWithin.exe imports XINPUT1_3, so the pad is the same API with no code. It passed the photosensitivity splash SendInput could not, then the attract screen, title menu, CONTINUE into Ch.1, the pause menu, and a clean EXIT with process exit. The game raises a 'Controller Connected - Xbox 360 controller' toast and switches prompts to (A) SELECT / (B) BACK. Safer than a real pad: the DualSense drift that walked the highlight onto NEW GAME on 2026-09-07 is structurally impossible with sticks at dead centre. [verified-live 2026-09-08, n=2 launches]",
       "WITHDRAWN 2026-09-07: SendInput scancodes do NOT reach this game. Two launches settled it - with a controller connected the splash/title/menu all advanced and it looked like keyboard automation; with the controller unplugged NOTHING advances, with foreground verified before every send. The advances were the pad, and a highlight that crept from CONTINUE to NEW GAME while only Enters were sent was stick drift.",
       "Same primitives as the ENSLAVED profile: scancodes, KEYEVENTF_EXTENDEDKEY for arrows, foreground the window first, and capture with BitBlt rather than PrintWindow.",
       "The game window is titled exactly 'The Evil Within' and BitBlt captures it cleanly."
@@ -87,6 +88,21 @@
       "confidence": "verified-live",
       "verified": "2026-09-04",
       "notes": "TWO-STAGE: pause TITLE MENU returns to the title SCREEN (not desktop); EXIT from the title menu then quits to desktop. Both confirm dialogs default to NO. [verified-live 2026-09-04]"
+    },
+    {
+      "from": "launch",
+      "to": "gameplay (virtual pad)",
+      "steps": [
+        "create ONE virtual XInput pad and let it settle ~5 s",
+        "throwaway DPAD_RIGHT - absorbs the swallowed first input",
+        "A  (dismiss the photosensitivity splash)",
+        "A  (attract screen 'PRESS ANY KEY')",
+        "title menu appears with CONTINUE highlighted - CAPTURE AND VERIFY, NEW GAME is directly below",
+        "A  (CONTINUE) -> 'Ch.1 An Emergency Call' loads (~60-75 s)"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "Replaces the keyboard route, which does not work at all - SendInput does not reach this game."
     }
   ],
   "entry_points": {
@@ -146,6 +162,12 @@
       "detail": "EvilWithin.exe imports DINPUT8.dll and XINPUT1_3.dll. The generic DirectInput8 GetDeviceState injector built for prince-of-persia-2008 on 2026-09-07 is the fix, needing a 64-bit build; and since this game already ships our winmm.dll proxy with MinHook vendored, the hook belongs inside that proxy rather than as a second DLL. Strong lead not proven cause: the exe also imports GetAsyncKeyState/GetKeyboardState/GetKeyState/GetMessageA/SetWindowsHookEx.",
       "confidence": "inferred-static",
       "verified": "2026-09-07"
+    },
+    {
+      "hazard": "The FIRST input after each virtual-pad connect is SWALLOWED - key counts from the keyboard route do NOT transfer",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "Measured: five DPAD_DOWN presses moved the pause-menu highlight THREE rows; two more in a fresh pad session moved ZERO. Inside one pad lifetime each press moves exactly one row and the first after connect moves none. Following the keyboard route's 'Down x5 to TITLE MENU' and committing blind puts A on RESTART CHAPTER, which is destructive. WORKING PATTERN: do a whole navigation inside ONE pad lifetime, and open each session with a throwaway press that cannot move a vertical list (DPAD_RIGHT) to absorb the swallowed input. Always capture and verify the highlight before committing."
     }
   ],
   "notes": []
