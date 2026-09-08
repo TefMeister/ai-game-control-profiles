@@ -250,6 +250,12 @@
    "verified": "2026-09-08",
    "notes": "NOT AVAILABLE in this retail build [verified-live 2026-09-08]. Launched with -freeconsole -allowcheats, a key verified-bound to `exec commands`, and the exec file written to all four candidate directories: BugIt produced no console, no output and no visible change. AliceInput.ini declares ConsoleKey=Tilde and scancode 0x29 opens nothing either. Keys DO reach the game (W walked the character, delta 14.62 against a 1.05 idle floor), so this is not an input problem. NOTE the build writes NO UE3 log at all - no Logs\\\\Launch.log anywhere - so a failing console command has nowhere to report, which is why this had to be settled by exclusion. NOT established: that the launch flags were honoured; nothing can confirm it without a log.",
    "supersedes": "2026-09-04 placeholder: {available: null, confidence: hypothesis} - \"Not investigated. The engine exposes Exec* config identifiers (ExecStereo3D etc.) but reached via the menu, not a typed console, as far as tested.\" That entry made no claim either way; this one is the measurement that settles it."
+  },
+  "camera_axes": {
+   "available": true,
+   "confidence": "verified-live",
+   "verified": "2026-09-08",
+   "notes": "CAMERA CONTROL WORKS via UE3 axis bindings on numpad keys, added to the live AliceInput.ini while the game is closed: NumPadFour/Six -> 'Axis aTurn Speed=-/+200.0 AbsoluteAxis=100', NumPadSeven/Nine -> 'Axis aBaseX ...', NumPadTwo/Eight -> 'Axis aLookUp Speed=-/+25.0 ...'. Measured against a 0.28 no-input control with 15 presses each: aTurn 14.96, aBaseX 9.81, aLookUp 15.84 mean luma delta - 35-56x the control, and obvious by eye. This is route 2; route 1 (console/exec) is dead on this build. NOT established: the degrees-per-press rate - calibrating it from screenshots failed (10-100 presses, deltas 12.75-24.02, no clean return to the start view), probably because the third-person camera re-centres. Read yaw from the proxy's VP matrix instead."
   }
  },
  "hazards": [
@@ -294,6 +300,12 @@
    "confidence": "verified-live",
    "verified": "2026-09-08",
    "notes": "Alice binds F1-F9 by default in AliceInput.ini: F1 viewmode wireframe, F2 unlit, F3 lit, F4 shadercomplexity, F5 QUICKSAVE, F6 QUICKLOAD, F7/F8 toggle bUsePostProcessEffects, F9 shot. Separately the alice-madness-returns-vr d3d9 proxy polls VK_F6 through VK_F12 for its stereo hotkeys. So an F-key chosen for automation can fire TWO unintended actions and neither reports anything. F5/F6 are the dangerous pair - quicksave and quickload both alter save state. Take a key back deliberately instead: F1 is now rebound to `exec commands`, and it is outside the proxy's F6-F12 range."
+  },
+  {
+   "hazard": "numpad scancodes are arrow scancodes WITHOUT the extended flag",
+   "confidence": "verified-live",
+   "verified": "2026-09-08",
+   "notes": "NumPadSix is scancode 0x4D sent WITHOUT KEYEVENTF_EXTENDEDKEY; 0x4D WITH the flag is the Right arrow. Same for NumPadFour/Left 0x4B, NumPadEight/Up 0x48, NumPadTwo/Down 0x50, NumPadSeven/Home 0x47, NumPadNine/PageUp 0x49. Sending the wrong one hits a different key entirely and nothing errors - it just reads as 'the game ignores that key'. This is the mirror of the toolkit's rule that arrow keys NEED the flag."
   }
  ],
  "disproved": [
