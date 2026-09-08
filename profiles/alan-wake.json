@@ -197,6 +197,18 @@
       "hazard": "Pre-creating Documents\\Remedy\\AlanWake\resolution.xml with fullscreen=0 on a never-run install works: the game came up windowed 1920x1080 on its first real launch, no minimise events in four launches.",
       "confidence": "verified-live",
       "verified": "2026-09-05"
+    },
+    {
+      "hazard": "IDirect3D9 vtable slot 16 is ALWAYS already hooked on a Steam machine - a d3d9 proxy that patches it cannot install",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "Two launches, four proxy loads, every one refused: slot 16 held a pointer owned by Steam\\gameoverlayrenderer.dll (load 1 of both launches) and by C:\\Windows\\SYSTEM32\\apphelp.dll (load 2 of the direct launch), never by the real d3d9.dll. A vtable is shared per class, so the owner CHANGED between two loads 350 ms apart in one process; why is not established. The fix is to stop patching the vtable and return your own COM object from Direct3DCreate9, which the game calls directly when you are the proxy."
+    },
+    {
+      "hazard": "Launching AlanWake.exe DIRECTLY does not avoid the Steam overlay",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "Bypassing the Steam launcher (SteamAppId in the environment, Start-Process on the exe) still had gameoverlayrenderer.dll owning slot 16 on the first proxy load. With Steam running the overlay is injected regardless, so this is not a way around it. n=1."
     }
   ],
   "notes": [
