@@ -276,7 +276,8 @@
    "verified": "2026-09-08",
    "notes": "Two independent routes agree to printed precision, which is why the offset is now trustworthy: (1) the console command `getviewpos`; (2) the proxy's `pdump` at DOOMx64vk.exe + 0x360F6B0 (dossier 6h camera global), which returned 1762.941 5461.524 6367.585 against the console's 1762.94 5461.52 6367.59. Route (2) needs no console and no typing, so it is the one to automate."
   },
-  "console_verified_again": "2026-09-08: console opened with `scan 0x29` on a plain Steam launch, and `getviewpos` returned '1728 5440 6372.16 30.0 -0.0' then '2345.03 5795.69 6333.47 30.0 -0.0' after a move. Console read AND write confirmed live again, n=3 across three sessions. Typing requires `typeroute sendinput` - see input.api_notes."
+  "console_verified_again": "2026-09-08: console opened with `scan 0x29` on a plain Steam launch, and `getviewpos` returned '1728 5440 6372.16 30.0 -0.0' then '2345.03 5795.69 6333.47 30.0 -0.0' after a move. Console read AND write confirmed live again, n=3 across three sessions. Typing requires `typeroute sendinput` - see input.api_notes.",
+  "rvhold": "[verified-live 2026-09-08] rvhold <hexaddr> [fov] [frames] writes explicitProjectionMatrix AND the useExplicitProjectionMatrix flag every frame, which is the only form of the section 6c experiment that can produce a meaningful result - a one-shot write is zeroed before any frame consumes it. PROVED the engine honours the field: held fov 40 and fov 140 each changed the picture well above the scene-animation floor and each reverted on release, and the two values gave different pictures. Addresses need a 0x prefix and no zero padding. The address can be DERIVED as module base + 0x360F6B0 rather than re-hunted with psearch/pnarrow."
  },
  "hazards": [
   {
@@ -337,6 +338,18 @@
    "confidence": "verified-live",
    "verified": "2026-09-08",
    "notes": "rvscan lists survivors as zero-padded addresses (000000E5E2DEB7A0). Pasting one into rvcheck returns 'usage:', and into rvmat returns '0000000000000000: window not readable' - a SILENTLY WRONG answer, not an error. Both need 0x-prefixed unpadded addresses (0xE5E2DEB7A0). rvexplicit accepts the padded form, so the three commands disagree about their own address syntax."
+  },
+  {
+   "hazard": "the automation channel does not drain until the game is fully loaded",
+   "confidence": "verified-live",
+   "verified": "2026-09-08",
+   "notes": "Commands appended to doom_automation_cmds.txt before the game finishes loading (~2 min from launch on the dev PC) are queued silently and answered only once the proxy prints \"[auto] automation ON\". Wait for that line before expecting a reply, or a command will look like it was ignored."
+  },
+  {
+   "hazard": "timed probes can expire before the capture, which reads as a false null",
+   "confidence": "verified-live",
+   "verified": "2026-09-08",
+   "notes": "rvhold takes a frame budget. A 600-frame arm is about 10 s at 60 fps and expired before the screenshot, which read as \"this value has no effect\" and nearly became a finding. Check the log ARMED / \"released (frame budget expired)\" timestamps against the capture time before believing any null from a self-expiring probe, or give it a long budget."
   }
  ]
 }
