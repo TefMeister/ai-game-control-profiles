@@ -140,7 +140,7 @@
         ],
         "confidence": "verified-live",
         "verified": "2026-09-09",
-        "notes": "Not a mod and not a rebind: AliceControlLayout.ini ships KeyBindArray1=(Name=\"T\",Command=\"EnterFPSByRS | OnRelease ToggleCloseFollowCamera\"), and the same action sits on the pad's RIGHT STICK CLICK (XboxTypeS_RightThumbstick -> EnterFPS), which is why keyboard probing never found it. One press and Alice leaves the frame; the camera drops to eye level. hfov becomes ~65.1 deg against 70.0 in third person. It SURVIVES WALKING (12 forward taps). QuitFPS is bound alongside attack, weapon switch and most context actions, so those leave it [inferred-static 2026-09-09]."
+        "notes": "Not a mod and not a rebind: AliceControlLayout.ini ships KeyBindArray1=(Name=\"T\",Command=\"EnterFPSByRS | OnRelease ToggleCloseFollowCamera\"), and the same action sits on the pad's RIGHT STICK CLICK (XboxTypeS_RightThumbstick -> EnterFPS), which is why keyboard probing never found it. One press and Alice leaves the frame; the camera drops to eye level. hfov becomes ~65.1 deg against 70.0 in third person. The camera also aims in far smaller steps here (see the first-person aiming binding). It SURVIVES WALKING (12 forward taps). QuitFPS is bound alongside attack, weapon switch and most context actions, so those leave it [inferred-static 2026-09-09]."
       },
       {
         "action": "aim the camera IN FIRST PERSON - fine control, and the mode to drive in",
@@ -158,7 +158,7 @@
         ],
         "confidence": "measured",
         "verified": "2026-09-09",
-        "notes": "In first person the camera is FINELY controllable: about 2.9 deg of yaw per press and 10-15 deg of pitch per press, against 94 deg per press in third person. That, not the field of view, is why first person is the mode to drive in. WARNING: `aLookUp` with a POSITIVE Speed pitches the view DOWN - NumPadEight is bound Speed=+25.0 and looks down. The axis name and its sign disagree, and nothing errors."
+        "notes": "In first person the camera moves in MUCH smaller steps than in third - roughly 20 deg of yaw per press against 94 deg in third person - which is what makes first person the mode to drive in. WARNING: the first-person step is NOT a constant. Repeats of the same burst gave -21.13, -21.16, +5.78/2 and -12.44/4 degrees, so aim by reading the proxy's camtrace line and adjusting, never by multiplying a rate by a press count. Pitch moves and CLAMPS at about +/-90 deg (straight up and straight down), after which further presses do nothing. The only per-press figure on this game that repeats is the THIRD-person yaw, -94.2 deg (n=4, spread ~1%). Also: `aLookUp` with a POSITIVE Speed pitches the view DOWN - NumPadEight is bound Speed=+25.0 and looks down. The axis name and its sign disagree, and nothing errors."
       }
     ]
   },
