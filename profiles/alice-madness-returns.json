@@ -277,7 +277,7 @@
       ],
       "confidence": "verified-live",
       "verified": "2026-09-09",
-      "notes": "Reverse it with any action carrying QuitFPS - attacking (LeftMouseButton), or a weapon-switch key One..Four. Which of those is cleanest is NOT verified live [inferred-static 2026-09-09]."
+      "notes": "Reverse it with a weapon-switch key One..Four - VERIFIED LIVE 2026-09-09 (pressing One returned the view to third person). Other actions carrying QuitFPS in the ini (attacking, most context actions) are still only [inferred-static]. FIRST PERSON SURVIVES: walking (12 taps), jumping, and running-then-jumping [verified-live 2026-09-09, n=1 each]. COMBAT IS UNTESTED - Chapter 1's opening has no enemies. FREE STATE DETECTOR: the proxy log's p00cam reads ~1.5697 in first person and ~1.4281 in third, so the state can be read without a screenshot."
     }
   ],
   "entry_points": {
@@ -308,10 +308,10 @@
       "notes": "CAMERA CONTROL WORKS via UE3 axis bindings on numpad keys, added to the live AliceInput.ini while the game is closed: NumPadFour/Six -> 'Axis aTurn Speed=-/+200.0 AbsoluteAxis=100', NumPadSeven/Nine -> 'Axis aBaseX ...', NumPadTwo/Eight -> 'Axis aLookUp Speed=-/+25.0 ...'. Measured against a 0.28 no-input control with 15 presses each: aTurn 14.96, aBaseX 9.81, aLookUp 15.84 mean luma delta - 35-56x the control, and obvious by eye. This is route 2; route 1 (console/exec) is dead on this build. NOT established: the degrees-per-press rate - calibrating it from screenshots failed (10-100 presses, deltas 12.75-24.02, no clean return to the start view), probably because the third-person camera re-centres. Read yaw from the proxy's VP matrix instead."
     },
     "control_layout_ini": {
-      "available": true,
+      "available": false,
       "confidence": "verified-live",
       "verified": "2026-09-09",
-      "notes": "A SECOND command channel that is not the console. The console is genuinely absent in this retail build (settled 2026-09-08), but AliceControlLayout.ini binds engine commands straight to keys with no console in the path. PROVEN: EnterFPSByRS, on T. Named in the file and UNTRIED: EnterFPS, QuitFPS, ChangeCameraMode, ToggleCloseFollowCamera, TogglePOI, ToggleGhost, togglephysicsmode, BugItForGameController, StatUnitAndStatFPS. BugItForGameController is the one worth trying next - it reaches the BugIt pose dump the dead console route was after. A binding in a shipped ini is a lead, not evidence."
+      "notes": "CORRECTED 2026-09-09b - the earlier entry called this a live command channel and that was wrong. The game reads its SHIPPED layout and IGNORES rows added to AliceControlLayout.ini. Three unused commands bound to three free keys did nothing; the discriminator settled it - G rebound to EnterFPSByRS, the exact command T carries, did nothing while T worked seconds later in the same run. So a name in that file tells you WHAT THE BUILD CAN DO, and is only reachable if the game already ships a key for it. Reading the file is still how the first-person camera was found; writing to it does not work. How the layout is actually loaded is NOT established (profile cache, compiled defaults or a fixed row count all fit). The game's own CONFIGURATION -> CONTROLS screen does rebind keys and the exe exports ExecRebindKey / ExecResetKeyBindings - driving that UI is untried and is the only known route left to the other commands."
     }
   },
   "hazards": [
@@ -394,6 +394,18 @@
       "result": "disproved 2026-09-07. 'Monkey' is NINJA THEORY's codename for ENSLAVED: Odyssey to the West, whose install is Enslaved\\MonkeyGame\\ and whose user config is My Games\\UnrealEngine3\\MonkeyGame\\. That tree's MonkeyEngine.ini contains zero Alice references and carries EditPackages=NTEngine / NTGameFramework. Alice's own tree is My Games\\Alice Madness Returns\\AliceGame\\.",
       "date": "2026-09-07",
       "notes": "Consequence worth knowing: acting on the wrong claim, a home-PC session set Fullscreen=False in MonkeyEngine.ini believing it was configuring Alice - it edited Enslaved's engine ini instead, and Alice never received the windowed fix on that machine."
+    },
+    {
+      "claim": "engine commands can be bound to any free key by adding a KeyBindArray row to AliceControlLayout.ini",
+      "verdict": "disproved",
+      "verified": "2026-09-09",
+      "evidence": "BugItForGameController on G, StatUnitAndStatFPS on H and ChangeCameraMode on J all did nothing, in both the per-user and game-folder copies, with the rows still present in the file afterwards. Then the discriminator: G rebound to EnterFPSByRS - the command that works on T - still did nothing, while T entered first person seconds later in the same run. Added rows are not honoured. n=1 launch each."
+    },
+    {
+      "claim": "the once-per-frame non-camera write at vertex c0 is a second matrix",
+      "verdict": "disproved",
+      "verified": "2026-09-09",
+      "evidence": "It arrives with Vector4fCount=8, so it is not a 4x4 matrix at all, and its values are exact whole-texel offsets for the 1280x720 backbuffer (1/1280, 2/1280, 1/720, 2/720) - a blur pass's SampleOffsets array. Census over 24,484 c0 writes: 4=23372 8+=1112 against camera=23352 affine=20 skewed=1112, with no residue. The proxy's shear had been corrupting that array whenever stereo was on; the interception is now gated on count == 4."
     }
   ]
 }
