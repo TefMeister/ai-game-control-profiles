@@ -1,337 +1,399 @@
 {
- "schema_version": "0.1",
- "game": {
-  "title": "Alice: Madness Returns",
-  "year": 2011,
-  "developer": "Spicy Horse",
-  "publisher": "Electronic Arts",
-  "engine": "Unreal Engine 3",
-  "renderer": "Direct3D 9",
-  "distribution": "Steam (EA/Origin activation; SteamStub-wrapped exe)",
-  "build_notes": "Verified 2026-09-04 dev PC, windowed 1280x720, with our d3d9.dll proxy present. Driven by external synthetic keyboard (SendInput scancodes) for menus and the proxy's own F-key hotkeys for stereo. MUST be windowed (see hazards). Re-verified 2026-09-07 (dev PC): full menu->gameplay drive, character movement, all six proxy hotkeys, and a graceful self-close, all unassisted after the user's launch. Harness: alice-madness-returns-vr/dev-archive/tools/alice_harness.py."
- },
- "input": {
-  "api": "Win32 SendInput (scancode keyboard) for menus; proxy F-key hotkeys (GetAsyncKeyState, polled each Present) for stereo controls",
-  "api_notes": [
-   "The window title is 'Alice Madness Returns' (match substring 'Alice').",
-   "MUST run windowed: Fullscreen=True gives fullscreen-exclusive which BitBlt captures as solid black, so the harness cannot see or drive it. Set Fullscreen=False in the live config while the game is CLOSED (UE3 rewrites config on exit). [verified-live 2026-09-04]",
-   "Menus take Enter / arrow keys / Esc. Some menu screens are radial (Configuration categories arranged around a head; Left/Right/Down move between them) while others are vertical lists.",
-   "The proxy's stereo hotkeys are read via GetAsyncKeyState in the Present hook: F9 toggle stereo, F10 swap eye, F11/F12 ipd -/+, F7/F8 convergence. F9 confirmed to register from external SendInput 2026-09-04. Their effect is logged to Binaries\\Win32\\alice_vr_proxy_log.txt.",
-   "Capture with BitBlt from the screen DC, window focused first.",
-   "2026-09-08: to test whether keys reach this game, use a key whose action is unambiguously LIVE - W (walk) changes the frame by ~14.6 mean luma against a ~1.05 idle floor. Do NOT use the F1-F4 `viewmode` binds as the probe: they are dev commands that may be stripped from retail, so their doing nothing is equally explained by the command being absent rather than the key not arriving. A binding surviving in a shipped ini is not evidence the feature is live."
+  "schema_version": "0.1",
+  "game": {
+    "title": "Alice: Madness Returns",
+    "year": 2011,
+    "developer": "Spicy Horse",
+    "publisher": "Electronic Arts",
+    "engine": "Unreal Engine 3",
+    "renderer": "Direct3D 9",
+    "distribution": "Steam (EA/Origin activation; SteamStub-wrapped exe)",
+    "build_notes": "Verified 2026-09-04 dev PC, windowed 1280x720, with our d3d9.dll proxy present. Driven by external synthetic keyboard (SendInput scancodes) for menus and the proxy's own F-key hotkeys for stereo. MUST be windowed (see hazards). Re-verified 2026-09-07 (dev PC): full menu->gameplay drive, character movement, all six proxy hotkeys, and a graceful self-close, all unassisted after the user's launch. Harness: alice-madness-returns-vr/dev-archive/tools/alice_harness.py."
+  },
+  "input": {
+    "api": "Win32 SendInput (scancode keyboard) for menus; proxy F-key hotkeys (GetAsyncKeyState, polled each Present) for stereo controls",
+    "api_notes": [
+      "The window title is 'Alice Madness Returns' (match substring 'Alice').",
+      "MUST run windowed: Fullscreen=True gives fullscreen-exclusive which BitBlt captures as solid black, so the harness cannot see or drive it. Set Fullscreen=False in the live config while the game is CLOSED (UE3 rewrites config on exit). [verified-live 2026-09-04]",
+      "Menus take Enter / arrow keys / Esc. Some menu screens are radial (Configuration categories arranged around a head; Left/Right/Down move between them) while others are vertical lists.",
+      "The proxy's stereo hotkeys are read via GetAsyncKeyState in the Present hook: F9 toggle stereo, F10 swap eye, F11/F12 ipd -/+, F7/F8 convergence. F9 confirmed to register from external SendInput 2026-09-04. Their effect is logged to Binaries\\Win32\\alice_vr_proxy_log.txt.",
+      "Capture with BitBlt from the screen DC, window focused first.",
+      "2026-09-08: to test whether keys reach this game, use a key whose action is unambiguously LIVE - W (walk) changes the frame by ~14.6 mean luma against a ~1.05 idle floor. Do NOT use the F1-F4 `viewmode` binds as the probe: they are dev commands that may be stripped from retail, so their doing nothing is equally explained by the command being absent rather than the key not arriving. A binding surviving in a shipped ini is not evidence the feature is live.",
+      "2026-09-09: this game keeps its ACTION bindings in AliceControlLayout.ini, NOT AliceInput.ini (which holds only axes and aliases). Several sessions read the latter and concluded features were absent. On a UE3 title read every *Input* and *ControlLayout* ini before saying a feature does not exist.",
+      "2026-09-09: the third-person camera turns about 94 degrees per numpad press at the harness default 80 ms hold, and presses compose linearly (n=4, spread ~1%). HOLD DURATION IS NOT A DIAL - 20/40/160 ms gave -5.3/-168.7/+75.4 degrees, neither monotonic nor proportional. Use press COUNT at the default hold, and expect a quarter turn each time."
+    ],
+    "bindings": [
+      {
+        "action": "advance the title / copyright screen",
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "select the highlighted menu item",
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "move the menu selection (vertical lists and radial category menus)",
+        "keys": [
+          {
+            "name": "Up",
+            "dik": "0x48",
+            "extended": true
+          },
+          {
+            "name": "Down",
+            "dik": "0x50",
+            "extended": true
+          },
+          {
+            "name": "Left",
+            "dik": "0x4B",
+            "extended": true
+          },
+          {
+            "name": "Right",
+            "dik": "0x4D",
+            "extended": true
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "In a yes/no dialog, Left=NO, Right=YES (dialogs default to NO). In the Video sliders, Left/Right change the highlighted row's value."
+      },
+      {
+        "action": "back out of a menu / open the in-game pause menu",
+        "keys": [
+          {
+            "name": "Escape",
+            "dik": "0x01",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "Esc in a settings sub-screen raises a 'Cancel? All changes will be lost' dialog (NO default)."
+      },
+      {
+        "action": "toggle stereo (proxy)",
+        "keys": [
+          {
+            "name": "F9",
+            "dik": "0x43",
+            "extended": false
+          }
+        ],
+        "device": "proxy hotkey",
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "Logs 'HOTKEY F9: stereo ON/OFF (... p00=known|NOT SEEN YET)'. p00 is only recovered while enabled, so read it on a SECOND toggle after enabled frames have run."
+      },
+      {
+        "action": "eye swap / ipd / convergence (proxy)",
+        "keys": [
+          {
+            "name": "F10 eye, F11/F12 ipd, F7/F8 convergence",
+            "dik": "0x44/0x57/0x58/0x41/0x42",
+            "extended": false
+          }
+        ],
+        "device": "proxy hotkey",
+        "confidence": "verified-live",
+        "verified": "2026-09-07",
+        "notes": "F6 wiggle, F7/F8 convergence, F9 stereo, F11/F12 ipd ALL exercised live 2026-09-07 and all reversible. F10 is refused while wiggle is on (the wiggle owns the eye). F12 is also Steam's screenshot key - harmless, but the toast overlay sits in screen captures for ~10 s and will contaminate image analysis of the bottom-right corner."
+      },
+      {
+        "action": "walk the character forward (and W/A/S/D generally)",
+        "keys": [
+          {
+            "name": "W",
+            "dik": "0x11",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-07",
+        "notes": "12 discrete taps (80 ms hold, 150 ms gap) walked Alice from in front of the Whitechapel arch to under it. A/S/D assumed by symmetry but NOT individually exercised. Camera control still unexercised - it needs mouse injection and the harness is keyboard-only."
+      },
+      {
+        "action": "ENTER THE GAME'S BUILT-IN FIRST-PERSON CAMERA",
+        "keys": [
+          {
+            "name": "T",
+            "dik": "0x14",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-09",
+        "notes": "Not a mod and not a rebind: AliceControlLayout.ini ships KeyBindArray1=(Name=\"T\",Command=\"EnterFPSByRS | OnRelease ToggleCloseFollowCamera\"), and the same action sits on the pad's RIGHT STICK CLICK (XboxTypeS_RightThumbstick -> EnterFPS), which is why keyboard probing never found it. One press and Alice leaves the frame; the camera drops to eye level. hfov becomes ~65.1 deg against 70.0 in third person. It SURVIVES WALKING (12 forward taps). QuitFPS is bound alongside attack, weapon switch and most context actions, so those leave it [inferred-static 2026-09-09]."
+      },
+      {
+        "action": "aim the camera IN FIRST PERSON - fine control, and the mode to drive in",
+        "keys": [
+          {
+            "name": "NumPadFour/NumPadSix (yaw)",
+            "dik": "0x4B/0x4D",
+            "extended": false
+          },
+          {
+            "name": "NumPadEight/NumPadTwo (pitch)",
+            "dik": "0x48/0x50",
+            "extended": false
+          }
+        ],
+        "confidence": "measured",
+        "verified": "2026-09-09",
+        "notes": "In first person the camera is FINELY controllable: about 2.9 deg of yaw per press and 10-15 deg of pitch per press, against 94 deg per press in third person. That, not the field of view, is why first person is the mode to drive in. WARNING: `aLookUp` with a POSITIVE Speed pitches the view DOWN - NumPadEight is bound Speed=+25.0 and looks down. The axis name and its sign disagree, and nothing errors."
+      }
+    ]
+  },
+  "states": [
+    {
+      "name": "title",
+      "detect": "ALICE MADNESS RETURNS logo with a pocket watch and 'Press ENTER'; an autosave warning.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "copyright",
+      "detect": "ALICE logo over damask; 'Game code (c) 2011 Spicy Horse ... Electronic Arts' at the bottom.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "profile_select",
+      "detect": "PROFILE SELECT with a profile row (name, Play Time, Overall Completion) and NEW / ENTER / DELETE actions.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "main_menu",
+      "detect": "Alice portrait on the left; CONTINUE GAME / MEMORIES / EXTRA CONTENT / CONFIGURATION / GAME MANUAL / EXIT GAME on a red curve; eQUIP / bACK bottom-right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "pause_menu",
+      "detect": "Chapter stats book on the left (SNOUTS PEPPERED, MEMORIES RECOVERED, ...); MEMORIES / CONFIGURATION / RESTART / MAIN MENU on a curve at right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "configuration_categories",
+      "detect": "CONFIGURATION over a head diagram; AUDIO / CONTROLS / VIDEO / GAME AND DATA arranged radially.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "video_options",
+      "detect": "Video: GAMMA, RESOLUTION, ANTI-ALIAS, 3D STEREO, MOTION BLUR, POST PROCESS, DYNAMIC SHADOWS; an eyeball diagram at left; CONFIRM / DEFAULTS / BACK.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "gameplay",
+      "detect": "Third-person Alice; in Chapter 1 real-world London (Whitechapel Market brick arch).",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "extra_content",
+      "detect": "EXTRA CONTENT over parchment; CHARACTERS / TROUBLING VISIONS / THEATRICALS / PAST MATTERS / CREDITS as butterfly-topped banners.",
+      "confidence": "verified-live",
+      "verified": "2026-09-07",
+      "notes": "Galleries only - NO playable level, so there is no menu shortcut to a combat or HUD scene."
+    },
+    {
+      "name": "first_person",
+      "detect": "Alice is not in the frame at all and the view is at standing eye height. The proxy log's camtrace line reads p00cam ~1.5697 (hfov ~65.1 deg) instead of ~1.4281 (~70.0 deg), and pitch stops being exactly 0.000.",
+      "confidence": "verified-live",
+      "verified": "2026-09-09"
+    }
   ],
-  "bindings": [
-   {
-    "action": "advance the title / copyright screen",
-    "keys": [
-     {
-      "name": "Enter",
-      "dik": "0x1C",
-      "extended": false
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04"
-   },
-   {
-    "action": "select the highlighted menu item",
-    "keys": [
-     {
-      "name": "Enter",
-      "dik": "0x1C",
-      "extended": false
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04"
-   },
-   {
-    "action": "move the menu selection (vertical lists and radial category menus)",
-    "keys": [
-     {
-      "name": "Up",
-      "dik": "0x48",
-      "extended": true
-     },
-     {
-      "name": "Down",
-      "dik": "0x50",
-      "extended": true
-     },
-     {
-      "name": "Left",
-      "dik": "0x4B",
-      "extended": true
-     },
-     {
-      "name": "Right",
-      "dik": "0x4D",
-      "extended": true
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04",
-    "notes": "In a yes/no dialog, Left=NO, Right=YES (dialogs default to NO). In the Video sliders, Left/Right change the highlighted row's value."
-   },
-   {
-    "action": "back out of a menu / open the in-game pause menu",
-    "keys": [
-     {
-      "name": "Escape",
-      "dik": "0x01",
-      "extended": false
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04",
-    "notes": "Esc in a settings sub-screen raises a 'Cancel? All changes will be lost' dialog (NO default)."
-   },
-   {
-    "action": "toggle stereo (proxy)",
-    "keys": [
-     {
-      "name": "F9",
-      "dik": "0x43",
-      "extended": false
-     }
-    ],
-    "device": "proxy hotkey",
-    "confidence": "verified-live",
-    "verified": "2026-09-04",
-    "notes": "Logs 'HOTKEY F9: stereo ON/OFF (... p00=known|NOT SEEN YET)'. p00 is only recovered while enabled, so read it on a SECOND toggle after enabled frames have run."
-   },
-   {
-    "action": "eye swap / ipd / convergence (proxy)",
-    "keys": [
-     {
-      "name": "F10 eye, F11/F12 ipd, F7/F8 convergence",
-      "dik": "0x44/0x57/0x58/0x41/0x42",
-      "extended": false
-     }
-    ],
-    "device": "proxy hotkey",
-    "confidence": "verified-live",
-    "verified": "2026-09-07",
-    "notes": "F6 wiggle, F7/F8 convergence, F9 stereo, F11/F12 ipd ALL exercised live 2026-09-07 and all reversible. F10 is refused while wiggle is on (the wiggle owns the eye). F12 is also Steam's screenshot key - harmless, but the toast overlay sits in screen captures for ~10 s and will contaminate image analysis of the bottom-right corner."
-   },
-   {
-    "action": "walk the character forward (and W/A/S/D generally)",
-    "keys": [
-     {
-      "name": "W",
-      "dik": "0x11",
-      "extended": false
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-07",
-    "notes": "12 discrete taps (80 ms hold, 150 ms gap) walked Alice from in front of the Whitechapel arch to under it. A/S/D assumed by symmetry but NOT individually exercised. Camera control still unexercised - it needs mouse injection and the harness is keyboard-only."
-   }
+  "routes": [
+    {
+      "from": "launch",
+      "to": "gameplay",
+      "steps": [
+        "wait for the window (fullscreen-exclusive if Fullscreen=True - fix to windowed first, see hazards)",
+        "Enter at the title (autosave warning)",
+        "Enter at the copyright screen",
+        "PROFILE SELECT: the profile is highlighted, Enter (this is ENTER=load, not DELETE)",
+        "main menu: CONTINUE GAME highlighted, Enter",
+        "wait ~30 s for the level load",
+        "gameplay"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "from": "gameplay",
+      "to": "video_options",
+      "steps": [
+        "Esc (pause menu)",
+        "Down to CONFIGURATION, Enter",
+        "radial categories: Right to CONTROLS then Down to VIDEO (or navigate to VIDEO), Enter"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "3D STEREO is the 4th row; Left/Right toggles it OFF<->ON. Esc raises a 'Cancel? changes lost' dialog (Right=YES to discard)."
+    },
+    {
+      "from": "gameplay",
+      "to": "process_exit",
+      "steps": [
+        "Esc (pause menu) - it opens with MEMORIES highlighted",
+        "Down x3 to MAIN MENU - VERIFY the highlight; RESTART is the row before it",
+        "Enter; 'Return to the Main Menu? All unsaved progress will be lost.' Right=yes, VERIFY, Enter",
+        "wait ~10 s for the main menu",
+        "Down x5 to EXIT GAME - VERIFY (the main menu highlight resets to CONTINUE GAME)",
+        "Enter; 'Are you sure you want to quit?' Right=yes, VERIFY, Enter"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-07",
+      "notes": "CORRECTED 2026-09-07: the earlier 'Down x2 to MAIN MENU' was wrong - the pause menu opens on MEMORIES, so Down x2 lands on RESTART. Also, after backing out of any submenu the main menu highlight resets to CONTINUE GAME, so count from the top every time rather than from where you were. Both dialogs default to NO. Quits gracefully; the proxy logs a clean 'unloading'."
+    },
+    {
+      "from": "gameplay",
+      "to": "first_person",
+      "steps": [
+        "press T once",
+        "verify: Alice is gone from the frame and the view is at eye height"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-09",
+      "notes": "Reverse it with any action carrying QuitFPS - attacking (LeftMouseButton), or a weapon-switch key One..Four. Which of those is cleanest is NOT verified live [inferred-static 2026-09-09]."
+    }
+  ],
+  "entry_points": {
+    "process_name": "AliceMadnessReturns.exe",
+    "window_title_substring": "Alice",
+    "config_path": "Documents\\My Games\\Alice Madness Returns\\AliceGame\\Config\\AliceEngine.ini - LIVE on the dev PC (the game rewrites it on exit; launching from it came up windowed 1280x720) [verified-live 2026-09-07]. ⚠️ CORRECTED 2026-09-07: an earlier note claimed UE3 names this game's config after the script package 'Monkey', i.e. MonkeyEngine.ini. That is WRONG and it belongs to a DIFFERENT GAME - Documents\\My Games\\UnrealEngine3\\MonkeyGame\\ is ENSLAVED's config tree ('Monkey' is Ninja Theory's codename; that tree's MonkeyEngine.ini carries EditPackages=NTEngine, EditPackages=NTGameFramework and EditPackagesOutPath=..\\..\\MonkeyGame\\Script, with zero Alice references) [verified-numerically 2026-09-07]. If AliceGame\\Config does not exist on a machine, the user config has simply not been created there yet - do NOT go editing MonkeyGame.",
+    "config_path_confidence": "verified-live",
+    "config_path_verified": "2026-09-07"
+  },
+  "commands": {
+    "proxy_hotkeys": {
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "The d3d9.dll proxy polls F7-F12 via GetAsyncKeyState each Present; answers in alice_vr_proxy_log.txt. F9 toggle stereo (confirmed live). No in-game developer console investigated."
+    },
+    "console": {
+      "available": false,
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "NOT AVAILABLE in this retail build [verified-live 2026-09-08]. Launched with -freeconsole -allowcheats, a key verified-bound to `exec commands`, and the exec file written to all four candidate directories: BugIt produced no console, no output and no visible change. AliceInput.ini declares ConsoleKey=Tilde and scancode 0x29 opens nothing either. Keys DO reach the game (W walked the character, delta 14.62 against a 1.05 idle floor), so this is not an input problem. NOTE the build writes NO UE3 log at all - no Logs\\\\Launch.log anywhere - so a failing console command has nowhere to report, which is why this had to be settled by exclusion. NOT established: that the launch flags were honoured; nothing can confirm it without a log.",
+      "supersedes": "2026-09-04 placeholder: {available: null, confidence: hypothesis} - \"Not investigated. The engine exposes Exec* config identifiers (ExecStereo3D etc.) but reached via the menu, not a typed console, as far as tested.\" That entry made no claim either way; this one is the measurement that settles it."
+    },
+    "camera_axes": {
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "CAMERA CONTROL WORKS via UE3 axis bindings on numpad keys, added to the live AliceInput.ini while the game is closed: NumPadFour/Six -> 'Axis aTurn Speed=-/+200.0 AbsoluteAxis=100', NumPadSeven/Nine -> 'Axis aBaseX ...', NumPadTwo/Eight -> 'Axis aLookUp Speed=-/+25.0 ...'. Measured against a 0.28 no-input control with 15 presses each: aTurn 14.96, aBaseX 9.81, aLookUp 15.84 mean luma delta - 35-56x the control, and obvious by eye. This is route 2; route 1 (console/exec) is dead on this build. NOT established: the degrees-per-press rate - calibrating it from screenshots failed (10-100 presses, deltas 12.75-24.02, no clean return to the start view), probably because the third-person camera re-centres. Read yaw from the proxy's VP matrix instead."
+    },
+    "control_layout_ini": {
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-09",
+      "notes": "A SECOND command channel that is not the console. The console is genuinely absent in this retail build (settled 2026-09-08), but AliceControlLayout.ini binds engine commands straight to keys with no console in the path. PROVEN: EnterFPSByRS, on T. Named in the file and UNTRIED: EnterFPS, QuitFPS, ChangeCameraMode, ToggleCloseFollowCamera, TogglePOI, ToggleGhost, togglephysicsmode, BugItForGameController, StatUnitAndStatFPS. BugItForGameController is the one worth trying next - it reaches the BugIt pose dump the dead console route was after. A binding in a shipped ini is a lead, not evidence."
+    }
+  },
+  "hazards": [
+    {
+      "hazard": "Fullscreen-exclusive is invisible to BitBlt",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Fullscreen=True gives fullscreen-exclusive; BitBlt captures solid black and the game cannot be seen or driven. Set Fullscreen=False in AliceGame\\Config\\AliceEngine.ini while the game is CLOSED (UE3 rewrites config on exit). ⚠️ Do NOT edit My Games\\UnrealEngine3\\MonkeyGame\\ - that is ENSLAVED's config tree, not Alice's (corrected 2026-09-07). See entry_points.config_path."
+    },
+    {
+      "hazard": "PROFILE SELECT has a DELETE action",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "NEW / ENTER / DELETE on the profile screen. Enter on the highlighted profile loads it (ENTER), but do not stray onto DELETE."
+    },
+    {
+      "hazard": "The pause menu has RESTART above MAIN MENU",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Order MEMORIES / CONFIGURATION / RESTART / MAIN MENU. Verify the highlight before Enter when heading for MAIN MENU."
+    },
+    {
+      "hazard": "Yes/No dialogs default to NO",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Cancel-changes, return-to-main-menu and quit dialogs all start on NO (left); press Right for YES and verify before Enter."
+    },
+    {
+      "hazard": "The proxy never frees the real d3d9.dll (latent reload-past)",
+      "confidence": "inferred-static",
+      "verified": "2026-09-04",
+      "notes": "If the game ever FreeLibrary's the proxy, the system d3d9 stays resident by name and the proxy never reloads. Did NOT bite on 2026-09-04 (proxy resident all session). See dossier section 4."
+    },
+    {
+      "hazard": "Menu highlight resets to the top after backing out of a submenu",
+      "confidence": "verified-live",
+      "verified": "2026-09-07",
+      "notes": "Esc out of EXTRA CONTENT and the main menu highlight is back on CONTINUE GAME, not where you were. Always re-capture and count from the top; never reuse a Down-count across a submenu visit. This menu has no destructive row, but PROFILE SELECT does."
+    },
+    {
+      "hazard": "every F-key F1-F12 is claimed, by the game AND by our own proxy",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "Alice binds F1-F9 by default in AliceInput.ini: F1 viewmode wireframe, F2 unlit, F3 lit, F4 shadercomplexity, F5 QUICKSAVE, F6 QUICKLOAD, F7/F8 toggle bUsePostProcessEffects, F9 shot. Separately the alice-madness-returns-vr d3d9 proxy polls VK_F6 through VK_F12 for its stereo hotkeys. So an F-key chosen for automation can fire TWO unintended actions and neither reports anything. F5/F6 are the dangerous pair - quicksave and quickload both alter save state. Take a key back deliberately instead: F1 is now rebound to `exec commands`, and it is outside the proxy's F6-F12 range."
+    },
+    {
+      "hazard": "numpad scancodes are arrow scancodes WITHOUT the extended flag",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "NumPadSix is scancode 0x4D sent WITHOUT KEYEVENTF_EXTENDEDKEY; 0x4D WITH the flag is the Right arrow. Same for NumPadFour/Left 0x4B, NumPadEight/Up 0x48, NumPadTwo/Down 0x50, NumPadSeven/Home 0x47, NumPadNine/PageUp 0x49. Sending the wrong one hits a different key entirely and nothing errors - it just reads as 'the game ignores that key'. This is the mirror of the toolkit's rule that arrow keys NEED the flag."
+    },
+    {
+      "hazard": "a rare access violation during the level load",
+      "confidence": "measured",
+      "verified": "2026-09-09",
+      "notes": "One launch of four died loading the save: AliceMadnessReturns.exe + 0x00067d48, c0000005, faulting module the exe rather than d3d9.dll. Three further launches across three different proxy builds were clean. n=1, cause not established. If a launch vanishes during the load, relaunch once before investigating it."
+    }
+  ],
+  "disproved": [
+    {
+      "claim": "The F9 shear test on the 2026-09-03 M0 build gives a clean read of the c0 delivery path",
+      "result": "inconclusive: the stats line fires before F9, vp_writes is gated behind g_st.enabled, and the F9 log samples p00 at the toggle instant; the frame diff was scene animation, not a shear",
+      "date": "2026-09-04",
+      "notes": "Not a disproof of c0 delivery - a disproof of the TEST. Use the F9 double-toggle retest or ungate the instrumentation."
+    },
+    {
+      "claim": "The player character is not receiving the stereo shear (Alice shows ~0 disparity while the world around her doubles)",
+      "result": "disproved - she IS sheared. Holding ipd at 12.5 and sweeping convergence moves her disparity a long way: conv 98 -> +78 px, conv 300 -> -1 px, conv 915 -> +26 px. Her near-zero reading at default settings is the third-person camera distance sitting near the convergence plane. The NPCs (also skinned) read +60 px and agree.",
+      "date": "2026-09-07",
+      "notes": "Worth keeping because the anaglyph LOOKS exactly like the 'flat cardboard hero' failure. Judge it with the convergence lever, not by eye."
+    },
+    {
+      "claim": "draws_fixed in the proxy log reports how many draws received the vertex stereo shear",
+      "result": "disproved - it counts PIXEL-shader fix-texture bindings in applyPixelStereo() only, and says nothing about the c0 vertex path. Rate is ~5/frame in gameplay, ~1/frame in menus.",
+      "date": "2026-09-07",
+      "notes": "Use 'wiggle flips' to prove the eye alternated; there is no counter for sheared draws."
+    },
+    {
+      "claim": "Alice's UE3 user config is MonkeyEngine.ini, because UE3 names config after the script package and this game's package is 'Monkey'",
+      "result": "disproved 2026-09-07. 'Monkey' is NINJA THEORY's codename for ENSLAVED: Odyssey to the West, whose install is Enslaved\\MonkeyGame\\ and whose user config is My Games\\UnrealEngine3\\MonkeyGame\\. That tree's MonkeyEngine.ini contains zero Alice references and carries EditPackages=NTEngine / NTGameFramework. Alice's own tree is My Games\\Alice Madness Returns\\AliceGame\\.",
+      "date": "2026-09-07",
+      "notes": "Consequence worth knowing: acting on the wrong claim, a home-PC session set Fullscreen=False in MonkeyEngine.ini believing it was configuring Alice - it edited Enslaved's engine ini instead, and Alice never received the windowed fix on that machine."
+    }
   ]
- },
- "states": [
-  {
-   "name": "title",
-   "detect": "ALICE MADNESS RETURNS logo with a pocket watch and 'Press ENTER'; an autosave warning.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "copyright",
-   "detect": "ALICE logo over damask; 'Game code (c) 2011 Spicy Horse ... Electronic Arts' at the bottom.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "profile_select",
-   "detect": "PROFILE SELECT with a profile row (name, Play Time, Overall Completion) and NEW / ENTER / DELETE actions.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "main_menu",
-   "detect": "Alice portrait on the left; CONTINUE GAME / MEMORIES / EXTRA CONTENT / CONFIGURATION / GAME MANUAL / EXIT GAME on a red curve; eQUIP / bACK bottom-right.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "pause_menu",
-   "detect": "Chapter stats book on the left (SNOUTS PEPPERED, MEMORIES RECOVERED, ...); MEMORIES / CONFIGURATION / RESTART / MAIN MENU on a curve at right.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "configuration_categories",
-   "detect": "CONFIGURATION over a head diagram; AUDIO / CONTROLS / VIDEO / GAME AND DATA arranged radially.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "video_options",
-   "detect": "Video: GAMMA, RESOLUTION, ANTI-ALIAS, 3D STEREO, MOTION BLUR, POST PROCESS, DYNAMIC SHADOWS; an eyeball diagram at left; CONFIRM / DEFAULTS / BACK.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "gameplay",
-   "detect": "Third-person Alice; in Chapter 1 real-world London (Whitechapel Market brick arch).",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "extra_content",
-   "detect": "EXTRA CONTENT over parchment; CHARACTERS / TROUBLING VISIONS / THEATRICALS / PAST MATTERS / CREDITS as butterfly-topped banners.",
-   "confidence": "verified-live",
-   "verified": "2026-09-07",
-   "notes": "Galleries only - NO playable level, so there is no menu shortcut to a combat or HUD scene."
-  }
- ],
- "routes": [
-  {
-   "from": "launch",
-   "to": "gameplay",
-   "steps": [
-    "wait for the window (fullscreen-exclusive if Fullscreen=True - fix to windowed first, see hazards)",
-    "Enter at the title (autosave warning)",
-    "Enter at the copyright screen",
-    "PROFILE SELECT: the profile is highlighted, Enter (this is ENTER=load, not DELETE)",
-    "main menu: CONTINUE GAME highlighted, Enter",
-    "wait ~30 s for the level load",
-    "gameplay"
-   ],
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "from": "gameplay",
-   "to": "video_options",
-   "steps": [
-    "Esc (pause menu)",
-    "Down to CONFIGURATION, Enter",
-    "radial categories: Right to CONTROLS then Down to VIDEO (or navigate to VIDEO), Enter"
-   ],
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "3D STEREO is the 4th row; Left/Right toggles it OFF<->ON. Esc raises a 'Cancel? changes lost' dialog (Right=YES to discard)."
-  },
-  {
-   "from": "gameplay",
-   "to": "process_exit",
-   "steps": [
-    "Esc (pause menu) - it opens with MEMORIES highlighted",
-    "Down x3 to MAIN MENU - VERIFY the highlight; RESTART is the row before it",
-    "Enter; 'Return to the Main Menu? All unsaved progress will be lost.' Right=yes, VERIFY, Enter",
-    "wait ~10 s for the main menu",
-    "Down x5 to EXIT GAME - VERIFY (the main menu highlight resets to CONTINUE GAME)",
-    "Enter; 'Are you sure you want to quit?' Right=yes, VERIFY, Enter"
-   ],
-   "confidence": "verified-live",
-   "verified": "2026-09-07",
-   "notes": "CORRECTED 2026-09-07: the earlier 'Down x2 to MAIN MENU' was wrong - the pause menu opens on MEMORIES, so Down x2 lands on RESTART. Also, after backing out of any submenu the main menu highlight resets to CONTINUE GAME, so count from the top every time rather than from where you were. Both dialogs default to NO. Quits gracefully; the proxy logs a clean 'unloading'."
-  }
- ],
- "entry_points": {
-  "process_name": "AliceMadnessReturns.exe",
-  "window_title_substring": "Alice",
-  "config_path": "Documents\\My Games\\Alice Madness Returns\\AliceGame\\Config\\AliceEngine.ini - LIVE on the dev PC (the game rewrites it on exit; launching from it came up windowed 1280x720) [verified-live 2026-09-07]. ⚠️ CORRECTED 2026-09-07: an earlier note claimed UE3 names this game's config after the script package 'Monkey', i.e. MonkeyEngine.ini. That is WRONG and it belongs to a DIFFERENT GAME - Documents\\My Games\\UnrealEngine3\\MonkeyGame\\ is ENSLAVED's config tree ('Monkey' is Ninja Theory's codename; that tree's MonkeyEngine.ini carries EditPackages=NTEngine, EditPackages=NTGameFramework and EditPackagesOutPath=..\\..\\MonkeyGame\\Script, with zero Alice references) [verified-numerically 2026-09-07]. If AliceGame\\Config does not exist on a machine, the user config has simply not been created there yet - do NOT go editing MonkeyGame.",
-  "config_path_confidence": "verified-live",
-  "config_path_verified": "2026-09-07"
- },
- "commands": {
-  "proxy_hotkeys": {
-   "available": true,
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "The d3d9.dll proxy polls F7-F12 via GetAsyncKeyState each Present; answers in alice_vr_proxy_log.txt. F9 toggle stereo (confirmed live). No in-game developer console investigated."
-  },
-  "console": {
-   "available": false,
-   "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "NOT AVAILABLE in this retail build [verified-live 2026-09-08]. Launched with -freeconsole -allowcheats, a key verified-bound to `exec commands`, and the exec file written to all four candidate directories: BugIt produced no console, no output and no visible change. AliceInput.ini declares ConsoleKey=Tilde and scancode 0x29 opens nothing either. Keys DO reach the game (W walked the character, delta 14.62 against a 1.05 idle floor), so this is not an input problem. NOTE the build writes NO UE3 log at all - no Logs\\\\Launch.log anywhere - so a failing console command has nowhere to report, which is why this had to be settled by exclusion. NOT established: that the launch flags were honoured; nothing can confirm it without a log.",
-   "supersedes": "2026-09-04 placeholder: {available: null, confidence: hypothesis} - \"Not investigated. The engine exposes Exec* config identifiers (ExecStereo3D etc.) but reached via the menu, not a typed console, as far as tested.\" That entry made no claim either way; this one is the measurement that settles it."
-  },
-  "camera_axes": {
-   "available": true,
-   "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "CAMERA CONTROL WORKS via UE3 axis bindings on numpad keys, added to the live AliceInput.ini while the game is closed: NumPadFour/Six -> 'Axis aTurn Speed=-/+200.0 AbsoluteAxis=100', NumPadSeven/Nine -> 'Axis aBaseX ...', NumPadTwo/Eight -> 'Axis aLookUp Speed=-/+25.0 ...'. Measured against a 0.28 no-input control with 15 presses each: aTurn 14.96, aBaseX 9.81, aLookUp 15.84 mean luma delta - 35-56x the control, and obvious by eye. This is route 2; route 1 (console/exec) is dead on this build. NOT established: the degrees-per-press rate - calibrating it from screenshots failed (10-100 presses, deltas 12.75-24.02, no clean return to the start view), probably because the third-person camera re-centres. Read yaw from the proxy's VP matrix instead."
-  }
- },
- "hazards": [
-  {
-   "hazard": "Fullscreen-exclusive is invisible to BitBlt",
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "Fullscreen=True gives fullscreen-exclusive; BitBlt captures solid black and the game cannot be seen or driven. Set Fullscreen=False in AliceGame\\Config\\AliceEngine.ini while the game is CLOSED (UE3 rewrites config on exit). ⚠️ Do NOT edit My Games\\UnrealEngine3\\MonkeyGame\\ - that is ENSLAVED's config tree, not Alice's (corrected 2026-09-07). See entry_points.config_path."
-  },
-  {
-   "hazard": "PROFILE SELECT has a DELETE action",
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "NEW / ENTER / DELETE on the profile screen. Enter on the highlighted profile loads it (ENTER), but do not stray onto DELETE."
-  },
-  {
-   "hazard": "The pause menu has RESTART above MAIN MENU",
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "Order MEMORIES / CONFIGURATION / RESTART / MAIN MENU. Verify the highlight before Enter when heading for MAIN MENU."
-  },
-  {
-   "hazard": "Yes/No dialogs default to NO",
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "Cancel-changes, return-to-main-menu and quit dialogs all start on NO (left); press Right for YES and verify before Enter."
-  },
-  {
-   "hazard": "The proxy never frees the real d3d9.dll (latent reload-past)",
-   "confidence": "inferred-static",
-   "verified": "2026-09-04",
-   "notes": "If the game ever FreeLibrary's the proxy, the system d3d9 stays resident by name and the proxy never reloads. Did NOT bite on 2026-09-04 (proxy resident all session). See dossier section 4."
-  },
-  {
-   "hazard": "Menu highlight resets to the top after backing out of a submenu",
-   "confidence": "verified-live",
-   "verified": "2026-09-07",
-   "notes": "Esc out of EXTRA CONTENT and the main menu highlight is back on CONTINUE GAME, not where you were. Always re-capture and count from the top; never reuse a Down-count across a submenu visit. This menu has no destructive row, but PROFILE SELECT does."
-  },
-  {
-   "hazard": "every F-key F1-F12 is claimed, by the game AND by our own proxy",
-   "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "Alice binds F1-F9 by default in AliceInput.ini: F1 viewmode wireframe, F2 unlit, F3 lit, F4 shadercomplexity, F5 QUICKSAVE, F6 QUICKLOAD, F7/F8 toggle bUsePostProcessEffects, F9 shot. Separately the alice-madness-returns-vr d3d9 proxy polls VK_F6 through VK_F12 for its stereo hotkeys. So an F-key chosen for automation can fire TWO unintended actions and neither reports anything. F5/F6 are the dangerous pair - quicksave and quickload both alter save state. Take a key back deliberately instead: F1 is now rebound to `exec commands`, and it is outside the proxy's F6-F12 range."
-  },
-  {
-   "hazard": "numpad scancodes are arrow scancodes WITHOUT the extended flag",
-   "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "NumPadSix is scancode 0x4D sent WITHOUT KEYEVENTF_EXTENDEDKEY; 0x4D WITH the flag is the Right arrow. Same for NumPadFour/Left 0x4B, NumPadEight/Up 0x48, NumPadTwo/Down 0x50, NumPadSeven/Home 0x47, NumPadNine/PageUp 0x49. Sending the wrong one hits a different key entirely and nothing errors - it just reads as 'the game ignores that key'. This is the mirror of the toolkit's rule that arrow keys NEED the flag."
-  }
- ],
- "disproved": [
-  {
-   "claim": "The F9 shear test on the 2026-09-03 M0 build gives a clean read of the c0 delivery path",
-   "result": "inconclusive: the stats line fires before F9, vp_writes is gated behind g_st.enabled, and the F9 log samples p00 at the toggle instant; the frame diff was scene animation, not a shear",
-   "date": "2026-09-04",
-   "notes": "Not a disproof of c0 delivery - a disproof of the TEST. Use the F9 double-toggle retest or ungate the instrumentation."
-  },
-  {
-   "claim": "The player character is not receiving the stereo shear (Alice shows ~0 disparity while the world around her doubles)",
-   "result": "disproved - she IS sheared. Holding ipd at 12.5 and sweeping convergence moves her disparity a long way: conv 98 -> +78 px, conv 300 -> -1 px, conv 915 -> +26 px. Her near-zero reading at default settings is the third-person camera distance sitting near the convergence plane. The NPCs (also skinned) read +60 px and agree.",
-   "date": "2026-09-07",
-   "notes": "Worth keeping because the anaglyph LOOKS exactly like the 'flat cardboard hero' failure. Judge it with the convergence lever, not by eye."
-  },
-  {
-   "claim": "draws_fixed in the proxy log reports how many draws received the vertex stereo shear",
-   "result": "disproved - it counts PIXEL-shader fix-texture bindings in applyPixelStereo() only, and says nothing about the c0 vertex path. Rate is ~5/frame in gameplay, ~1/frame in menus.",
-   "date": "2026-09-07",
-   "notes": "Use 'wiggle flips' to prove the eye alternated; there is no counter for sheared draws."
-  },
-  {
-   "claim": "Alice's UE3 user config is MonkeyEngine.ini, because UE3 names config after the script package and this game's package is 'Monkey'",
-   "result": "disproved 2026-09-07. 'Monkey' is NINJA THEORY's codename for ENSLAVED: Odyssey to the West, whose install is Enslaved\\MonkeyGame\\ and whose user config is My Games\\UnrealEngine3\\MonkeyGame\\. That tree's MonkeyEngine.ini contains zero Alice references and carries EditPackages=NTEngine / NTGameFramework. Alice's own tree is My Games\\Alice Madness Returns\\AliceGame\\.",
-   "date": "2026-09-07",
-   "notes": "Consequence worth knowing: acting on the wrong claim, a home-PC session set Fullscreen=False in MonkeyEngine.ini believing it was configuring Alice - it edited Enslaved's engine ini instead, and Alice never received the windowed fix on that machine."
-  }
- ]
 }
