@@ -164,9 +164,9 @@
         "Enter",
         "Enter (confirms the warning that progress since the last checkpoint will be lost)"
       ],
-      "confidence": "disputed",
-      "verified": "2026-09-03; CONTRADICTED 2026-09-07",
-      "notes": "⚠️ DISPUTED 2026-09-07 (dev PC): step 1 (Escape) did NOT open the pause menu - tried twice, at 90 ms and 300 ms hold, in two locations, with the window verified foregrounded and keyboard movement working in between. A virtual X360 pad also failed (enumerated - the game raised a 'Controller Connected' toast - but START did not pause and thumbLX=29490 did not move the character). With no pause menu there is no route out of gameplay at all. The 2026-09-03 observation was on this same machine, so one of the two is wrong or something changed. Two untested suspects: the 2026-09-07 ini edit (since reverted), and the 2026-09-04 self-healing d3d9 proxy which had NEVER been run before 2026-09-07 and hooks BeginStateBlock/EndStateBlock that earlier builds did not. Do not rely on this route until it is re-established."
+      "confidence": "verified-live",
+      "verified": "2026-09-09",
+      "notes": "RE-ESTABLISHED 2026-09-09 on the dev PC and walked twice end to end. The 2026-09-07 dispute is resolved and its cause found: that session had created a [MonkeyGame.MKInput] section in MonkeyInput.ini, a section this build does not ship, which silently disables Escape and the F-keys while leaving character movement working. A/B across three launches: reverted ini pauses; the 2026-09-07 ini reproduces the failure; the same ini minus that section pauses again on the first press. See hazards -> 'inventing a config section kills keyboard input'. Step 1 (Escape) is reliable whenever the ini ships no invented section."
     },
     {
       "from": "main_menu",
@@ -299,6 +299,12 @@
       "confidence": "verified-live",
       "verified": "2026-09-07",
       "notes": "With d3d9_proxy.ini [stereo] Mode=0 the proxy alternates eyes every frame, so consecutive captures are DIFFERENT EYES and differ by ~27.5 mean luma - larger and steadier than most real signals. On 2026-09-07 a 27.58/0.00/27.58/0.00 series was briefly read as a pause; it was the character standing still (a static scene renders exactly two images, so same-eye pairs are byte-identical). Set Mode=1 or Mode=2 before any run that judges by image comparison, and look at the frame rather than the number."
+    },
+    {
+      "hazard": "Creating a config SECTION this build does not ship silently disables Escape and the F-keys",
+      "confidence": "verified-live",
+      "verified": "2026-09-09",
+      "notes": "Adding a [MonkeyGame.MKInput] section to MonkeyInput.ini (a class name taken from a community report, absent from this build) leaves the game starting normally and character movement working, while Escape and every F-key become inert. Nothing errors and nothing is logged; it reads exactly like 'this game ignores the keyboard', and it cost the 2026-09-07 session its whole objective. Adding Bindings= lines INSIDE a section that already exists is harmless by comparison (run 3 of 2026-09-09 carried two and behaved normally). Rule: never invent a section name; and if input degrades, diff the ini against a known-good copy before suspecting the game or the proxy."
     }
   ],
   "disproved": [
@@ -314,6 +320,18 @@
       "result": "disproved 2026-09-07. ALT+ENTER does reach the game (it reverted the window to its own WS_POPUP style 0x94080000, client 1286x749, and our proxy restyled it back at present#8700), and external SetWindowPos to 1024x576 / 1600x900 was likewise absorbed - but neither produced a single [reset] line. The backbuffer stays 1920x1080 and D3D stretches it into the window, so resizing never invalidates the device.",
       "date": "2026-09-07",
       "notes": "Consequence: there is no menu-free way to exercise the device-Reset path on this game. It genuinely requires the in-game options resolution change or a checkpoint restart, both behind the pause menu."
+    },
+    {
+      "claim": "Key bindings added to [Engine.PlayerInput] in MonkeyInput.ini can fire an action alias or an exec command",
+      "result": "Inert. With Bindings=(Name=\"F4\",Command=\"DoPause\") and Bindings=(Name=\"F2\",Command=\"Pause\") live in that section, neither key did anything, in the same session and the same scene where Escape opened the pause menu on the first press. So the file is not read for keyboard bindings in this build, consistent with the 2026-09-07 finding that the section holds only gamepad (XboxTypeS_*) bindings. IMPORTANT: this means the exec-dispatch question still has NO valid control - a binding that never fires cannot distinguish 'exec dispatch is stripped' from 'this file is not read'.",
+      "date": "2026-09-09",
+      "notes": "n=1 per key, one scene. Do not re-run this as a way of testing exec dispatch; it cannot answer it."
+    },
+    {
+      "claim": "The 2026-09-04 self-healing d3d9 proxy broke keyboard input (the leading suspect for the 2026-09-07 pause failure)",
+      "result": "Disproved. That exact build (d3d9.dll, 78,336 B) was installed and running in all three launches on 2026-09-09, including the two in which Escape opened the pause menu on the first press. The cause was the ini section - see hazards.",
+      "date": "2026-09-09",
+      "notes": "n=3 launches. The same build also proved its re-arm live: two device Resets, slot 94 reverted and was re-patched 0 frames later, and the stereo kept working."
     }
   ]
 }
