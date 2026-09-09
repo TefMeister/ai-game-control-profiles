@@ -1,0 +1,180 @@
+{
+ "schema_version": "0.1",
+ "game": {
+  "title": "Unreal Gold",
+  "year": 1998,
+  "developer": "Epic MegaGames / Digital Extremes",
+  "engine": "Unreal Engine 1 (OldUnreal patch v227k)",
+  "renderer": "our own VRGoldDrv (D3D11) as GameRenderDevice; stock ships D3D9Drv / OpenGLDrv / ICBINDx11Drv",
+  "distribution": "non-Steam standalone install",
+  "build_notes": "Verified on the home PC (RTX) 2026-09-09, Windows 11, x64 build at C:\\nonSteam\\UnrealGold\\System64\\Unreal.exe. The menu title bar reads 'Version 227k'. NOTE the dev PC's install is at D:\\nonSteam\\UnrealGold - the path differs per machine."
+ },
+ "input": {
+  "api": "Win32 SendInput with SCANCODES against the game window",
+  "api_notes": [
+   "Ordinary synthetic keyboard input works; the game needs no proxy or hook to be driven.",
+   "Foreground the window first (ShowWindow + SetForegroundWindow) and re-check it - synthetic input follows focus.",
+   "Capture with BitBlt from the SCREEN DC, not PrintWindow. Verified working across the attract demo, the menu and live gameplay on 2026-09-09.",
+   "Arrow keys need KEYEVENTF_EXTENDEDKEY or the scancode reads as the numpad equivalent (standing estate primitive; not separately exercised here)."
+  ],
+  "bindings": [
+   {
+    "action": "open the in-game console (command entry line)",
+    "keys": [{ "name": "Tab", "dik": "0x0F", "extended": false }],
+    "confidence": "verified-live",
+    "verified": "2026-09-09",
+    "notes": "User.ini line 49 is 'Tab=Type'. Opens a one-line console at the bottom of the screen; typing then works normally and Enter submits. Pressing Tab a SECOND time closes it again - it does not open a scrollback pane."
+   },
+   {
+    "action": "leave the attract demo into the menu, and return from it",
+    "keys": [{ "name": "Escape", "dik": "0x01", "extended": false }],
+    "confidence": "verified-live",
+    "verified": "2026-09-09",
+    "notes": "The attract screen prints 'Press ESC to begin'. ESC toggles between the demo and the main menu."
+   }
+  ],
+  "disproved": [
+   {
+    "action": "open the console with the tilde / grave key",
+    "keys": [{ "name": "Tilde", "dik": "0x29", "extended": false }],
+    "confidence": "disproved",
+    "verified": "2026-09-09",
+    "notes": "TILDE IS UNBOUND on this install - User.ini line 168 is 'Tilde=' with no value, and pressing it does nothing at all. The failure is SILENT AND MISLEADING: with no console open the typed command goes to the game as key bindings, and 'R=TeamTalk' (User.ini line 128) opens the chat prompt so the remaining letters land in it. The screen then shows something like 'TeamSay gold status', which reads as if the console mangled the command rather than as if the console never opened. Cost two rounds on 2026-09-09. Same family as doom-2016's scan 0x29 keyboard-layout trap. On UE1, always read User.ini for the binding before assuming a key."
+   }
+  ]
+ },
+ "states": [
+  {
+   "id": "attract_demo",
+   "description": "Post-launch flythrough of a level with the Unreal logo. No player, no HUD.",
+   "detect": [{ "method": "screenshot", "cue": "green 'Press ESC to begin' text centred at the top; Epic / Digital Extremes logos down the left edge" }],
+   "confidence": "verified-live",
+   "verified": "2026-09-09"
+  },
+  {
+   "id": "menu",
+   "description": "Main menu. A real Win32 menu bar appears at the top of the window.",
+   "detect": [{ "method": "screenshot", "cue": "Win32 menu bar across the top (Game / Multiplayer / Options / Tools / Recording / Help), 'Version 227k' at its right end, 'Press ESC to return to the game' in the status bar" }],
+   "confidence": "verified-live",
+   "verified": "2026-09-09"
+  },
+  {
+   "id": "gameplay",
+   "description": "Player in a loaded level with control and HUD.",
+   "detect": [{ "method": "screenshot", "cue": "health cross at bottom-LEFT and ammo panel at bottom-RIGHT of the frame; no 'Press ESC to begin' text" }],
+   "confidence": "verified-live",
+   "verified": "2026-09-09",
+   "notes": "In stereo modes the HUD stays anchored to the FULL frame, not per eye - so these two cues remain valid at the outer corners whatever StereoMode is set to."
+  }
+ ],
+ "routes": [
+  {
+   "from": "launch",
+   "to": "gameplay",
+   "steps": [
+    "Start-Process System64\\Unreal.exe with the working directory set to System64 (window titled 'Unreal' is up within ~12 s)",
+    "Tab to open the console",
+    "type 'open Vortex2' and press Enter",
+    "wait ~15 s for the level load"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-09",
+   "notes": "Goes straight from the attract demo to a live level with a player and HUD - no menu navigation and no save selection, so no destructive menu item is ever passed. Vortex2 is Unreal's first real level."
+  },
+  {
+   "from": "any",
+   "to": "process_exit",
+   "steps": ["Tab to open the console", "type 'exit' and press Enter"],
+   "confidence": "verified-live",
+   "verified": "2026-09-09",
+   "notes": "Graceful: the log records 'Closing by request: QUIT' followed by a full ordered shutdown of every subsystem. taskkill was never needed."
+  }
+ ],
+ "commands": {
+  "dispatch_notes": [
+   "Standard UE1 console. Commands are case-insensitive and echo into Unreal.log as a 'Cmd:' line with the reply on the following 'Console:' line.",
+   "CRITICAL FOR AUTOMATION: Unreal.log is 0 BYTES WHILE THE GAME RUNS and is written in full the moment the process exits. Console output is therefore fully readable - after the run, not during it. A command whose reply never appears on screen has still been answered; read the log afterwards.",
+   "The console input line KEEPS ITS PREVIOUS CONTENT between opens. Send backspaces before typing, or a retry appends to the abandoned text - which is exactly how 'vrgold ipd 2vrgold ipd 2.85' got into the 2026-09-09 log."
+  ],
+  "available": [
+   { "name": "open <map>", "purpose": "load a level; 'open Vortex2' is the fastest route to live gameplay", "confidence": "verified-live", "verified": "2026-09-09" },
+   { "name": "exit", "purpose": "graceful shutdown", "confidence": "verified-live", "verified": "2026-09-09" },
+   {
+    "name": "VRGOLD STATUS",
+    "purpose": "print resolution, StereoMode, StereoIPD, StereoSwapEyes, eye count and frame number",
+    "confidence": "verified-live",
+    "verified": "2026-09-09",
+    "notes": "Our driver's command, not the engine's. Prints to the log only - nothing appears on screen, which reads as a dead command if you do not know to check the log afterwards."
+   },
+   {
+    "name": "VRGOLD STEREO <0|1|2>",
+    "purpose": "0 mono, 1 side-by-side squashed, 2 side-by-side cropped",
+    "confidence": "verified-live",
+    "verified": "2026-09-09",
+    "notes": "Modes 0 and 1 exercised live; both take effect immediately with no relaunch. Mode 2 NOT exercised."
+   },
+   {
+    "name": "VRGOLD IPD <units>",
+    "purpose": "eye separation in Unreal units; default 2.85",
+    "confidence": "verified-live",
+    "verified": "2026-09-09",
+    "notes": "Exercised at 20. Parallax scaled with it (~7x the IPD gave ~7.6x the near-band eye shift), so it genuinely reaches the projection."
+   },
+   { "name": "VRGOLD SWAPEYES <0|1>", "purpose": "put the right eye into the left half, for cross-eye viewing", "confidence": "verified-live", "verified": "2026-09-09" }
+  ]
+ },
+ "entry_points": [
+  {
+   "name": "direct exe",
+   "value": "C:\\nonSteam\\UnrealGold\\System64\\Unreal.exe",
+   "confidence": "verified-live",
+   "verified": "2026-09-09",
+   "notes": "Launch with the working directory set to System64. Not a Steam title; there is no Steam launch path. The dev PC's copy is on D:, not C:."
+  }
+ ],
+ "hazards": [
+  {
+   "id": "tilde-does-nothing",
+   "severity": "high",
+   "description": "Tilde is unbound. Keys typed with no console open fire game bindings instead (R = TeamTalk opens chat), producing a plausible-looking but wrong command echo. Use Tab.",
+   "confidence": "verified-live",
+   "verified": "2026-09-09"
+  },
+  {
+   "id": "console-line-persists",
+   "severity": "medium",
+   "description": "The console input line retains its previous text between opens. Always send backspaces first.",
+   "confidence": "verified-live",
+   "verified": "2026-09-09"
+  },
+  {
+   "id": "log-empty-while-running",
+   "severity": "medium",
+   "description": "Unreal.log is 0 bytes until the process exits. Do not conclude from an empty log mid-run that a command was ignored.",
+   "confidence": "verified-live",
+   "verified": "2026-09-09"
+  },
+  {
+   "id": "ini-wipe-on-first-run",
+   "severity": "high",
+   "description": "The first-run wizard can leave Unreal.ini a near-empty stub, after which every launch dies with \"Can't find ini:Engine.Engine.GameEngine\". The accompanying 'Not enough memory resources' is a red herring. Restore Unreal.ini from Default.ini in BOTH SYSTEM\\ and System64\\, re-apply the renderer pick, set FirstRun=227.",
+   "confidence": "verified-live",
+   "verified": "2026-08-21",
+   "notes": "Carried over from ENGINE-DOSSIER section 11. Not re-triggered on 2026-09-09."
+  },
+  {
+   "id": "config-written-on-exit",
+   "severity": "low",
+   "description": "UE1 rewrites its inis on exit, so edit them with the game CLOSED. Observed 2026-09-09: the driver wrote NO [VRGoldDrv.VRGoldRenderDevice] section, so stereo settings do not persist and every launch starts mono at IPD 2.85.",
+   "confidence": "verified-live",
+   "verified": "2026-09-09"
+  }
+ ],
+ "capabilities": {
+  "self_launch": { "state": "proven", "verified": "2026-09-09" },
+  "menu_to_gameplay": { "state": "proven", "verified": "2026-09-09", "notes": "via console 'open', bypassing the menus entirely" },
+  "commands": { "state": "proven", "verified": "2026-09-09" },
+  "character_and_camera": { "state": "not_attempted", "notes": "Scancode input is proven - it drove the console - but no walk or camera sweep was run on 2026-09-09, because the M2 question did not need one. This is the cheapest remaining automation gap on this game." },
+  "self_close": { "state": "proven", "verified": "2026-09-09", "notes": "console 'exit', graceful; taskkill never used" }
+ }
+}
