@@ -1,0 +1,146 @@
+{
+  "game": "Manhunt",
+  "year": 2003,
+  "developer": "Rockstar North",
+  "engine": "RenderWare 3.6",
+  "renderer": "Direct3D 8",
+  "binary": "manhunt.exe (2004 retail build, PE32/i386, no ASLR, ImageBase 0x00400000)",
+  "store": "Steam (appid 12130)",
+  "profile_created": "2026-09-10",
+  "created_by": "manhunt-2003-vr /lm session, dev PC",
+
+  "summary": "Self-launch works, but the game stops at an ANSI Win32 launcher dialog that must be clicked. The frontend menu CANNOT currently be driven: this game reads the DirectInput MOUSE and never the DirectInput keyboard, and no synthetic input route reaches it. The working way into live 3D is to bypass the frontend entirely with the game's own SKIP_MENU setting.",
+
+  "input": {
+    "measured_paths": [
+      {
+        "claim": "The game calls IDirectInputDevice8::GetDeviceState ~11.9 million times per session on the SysMouse device and ZERO times on the SysKeyboard device. GetDeviceData is never called at all.",
+        "numbers": "GetDeviceState=11917105 (keyboard=0), GetDeviceData=0",
+        "confidence": "verified-live",
+        "date": "2026-09-10",
+        "n": 1,
+        "how": "counters in the project's own d3d8 proxy (input.c), over one full frontend session",
+        "implication": "Any injection must target GetDeviceState on the MOUSE device. Injecting synthetic KEYBOARD state is a no-op in this game."
+      }
+    ],
+    "working": [],
+    "disproved": [
+      {
+        "route": "SendInput keyboard scancodes (Return 0x1C, Space 0x39, LCtrl 0x1D, Down 0x50 with KEYEVENTF_EXTENDEDKEY)",
+        "target": "main menu",
+        "result": "no effect; menu highlight never moved, though the menu's on-screen timecode kept ticking and the window was confirmed foreground",
+        "confidence": "verified-live", "date": "2026-09-10", "n": 1
+      },
+      {
+        "route": "SendInput mouse, MOUSEEVENTF_ABSOLUTE|MOVE plus SetCursorPos, then left button down/up over a menu entry",
+        "target": "main menu",
+        "result": "no effect",
+        "confidence": "verified-live", "date": "2026-09-10", "n": 1
+      },
+      {
+        "route": "SendInput mouse, relative MOUSEEVENTF_MOVE, 30 steps of dy=+12",
+        "target": "main menu",
+        "result": "no effect",
+        "confidence": "verified-live", "date": "2026-09-10", "n": 1
+      },
+      {
+        "route": "proxy-side synthetic DirectInput KEYBOARD state (input.c ORs 0x80 into the 256-byte buffer returned by GetDeviceState), driven by the manhunt_vr_input.txt script file",
+        "target": "main menu, DIK_RETURN 0x1C",
+        "result": "script ran and the file was consumed, but no effect - and the counters explain why: the keyboard device is read zero times",
+        "confidence": "verified-live", "date": "2026-09-10", "n": 1
+      }
+    ],
+    "untried": [
+      "proxy-side synthetic DIMOUSESTATE (deltas + buttons) injected into GetDeviceState on the SysMouse device - this is the indicated next step and the measurement above is the evidence for it"
+    ]
+  },
+
+  "entry_points": [
+    {
+      "name": "steam-launch",
+      "how": "Start-Process steam://rungameid/12130",
+      "confidence": "verified-live", "date": "2026-09-10", "n": 4,
+      "notes": "Reaches the launcher dialog in roughly 20-25 s. The proxy DLL loads and patches within 0.6 s of process start."
+    },
+    {
+      "name": "launcher-dialog",
+      "how": "A top-level window titled MANHUNT owns a small dialog ('Manhunt launcher', ~414x346) with Play / Quit buttons and video settings. Enumerate its child windows and send BM_CLICK (0x00F5) to the child whose text is 'Play'.",
+      "confidence": "verified-live", "date": "2026-09-10", "n": 4,
+      "hazard": "Read child window text with GetWindowTextA, NOT GetWindowTextW. The dialog is ANSI, so the W variant returns only the first character - 'P' for Play, 'Q' for Quit - which reads exactly like 'no Play button found'. Same for GetClassNameA ('B' instead of 'BUTTON')."
+    },
+    {
+      "name": "skip-the-frontend",
+      "how": "Edit initscripts/FRONTEND/settings.txt with the game CLOSED: set SKIP_MENU 1 and START_LEVEL 0 (the built-in 'Test level'). Launch, click Play in the launcher dialog, then wait ~50 s.",
+      "result": "lands directly in live 3D - real in-engine rendering with HUD, crosshair and subtitles - with no frontend involved. Ran 3 min 30 s before hitting a separate, understood crash (spline table, see hazards).",
+      "confidence": "verified-live", "date": "2026-09-10", "n": 1,
+      "notes": "This is currently the ONLY way to reach a running game unattended, because the frontend cannot be driven. START_LEVEL 1 (the first real level, 'Doorway Into Hell') loads too and shows its title card, but overflows the spline table sooner."
+    }
+  ],
+
+  "states": [
+    {"name": "launcher-dialog", "tell": "a ~414x346 window with 'Manhunt launcher' in its title bar and a Play button"},
+    {"name": "intro-fmv", "tell": "credits over VHS-styled footage with a 'TCR: hh:mm:ss:ff' timecode at the bottom"},
+    {"name": "main-menu", "tell": "'MAIN MENU' under a ticking timecode, entries PLAY / SELECT SCENE / LOAD GAME / SETTINGS / BONUS FEATURES / QUIT"},
+    {"name": "level-title-card", "tell": "the level name in large type over a VHS-tape image"},
+    {"name": "in-game", "tell": "3D scene with a crosshair, two tape-timer widgets and subtitle text"}
+  ],
+
+  "routes": [
+    {
+      "from": "intro-fmv", "to": "main-menu",
+      "how": "the credits end on their own after roughly 90 s",
+      "confidence": "verified-live", "date": "2026-09-10", "n": 2,
+      "warning": "Escape was sent while these were playing and the credits did end, but they also end unprompted; do NOT record Escape as a working skip - it was never a controlled test, and no other key has ever reached this game."
+    },
+    {
+      "from": "main-menu", "to": "in-game",
+      "how": "UNSOLVED - see input.disproved. Use the skip-the-frontend entry point instead.",
+      "confidence": "disproved", "date": "2026-09-10"
+    }
+  ],
+
+  "commands": {
+    "console": "none known; not exercised",
+    "settings_file": {
+      "path": "initscripts/FRONTEND/settings.txt",
+      "notes": "Plain text, read at startup only - edit with the game closed. Useful keys: START_LEVEL (0 = Test level, 1-n = real levels), SKIP_MENU (1 = boot straight into START_LEVEL), GAME_CONTROL_TYPE, GAME_CONTROL_INVERT_Y, FX_MODE. There is also a 'Frontend disable (FOR DEBUG ONLY!)' option.",
+      "confidence": "verified-live", "date": "2026-09-10", "n": 2
+    },
+    "registry": {
+      "path": "HKCU\\SOFTWARE\\Rockstar Games\\Manhunt\\Video",
+      "notes": "Device / Mode / Index. Mode is a RenderWare video-mode index handed verbatim to RwEngineSetVideoMode. Deleting the Video key makes the game recreate its defaults. On the dev PC, mode index 0 enumerated as 1920x1080 WINDOWED (the desktop resolution).",
+      "confidence": "verified-live", "date": "2026-09-10", "n": 1
+    }
+  },
+
+  "capture": {
+    "method": "BitBlt from the screen DC (Graphics.CopyFromScreen over the window rect), after SetForegroundWindow",
+    "confidence": "verified-live", "date": "2026-09-10", "n": 12,
+    "warning": "Do not use PrintWindow - it serves stale DWM-cached frames when the game stops presenting, with no error. This is a portfolio-wide rule, not specific to Manhunt.",
+    "notes": "The game window is a normal top-level window; the proxy resizes its client area to 800x600. Several invisible top-level windows share the PID, so pick the largest VISIBLE one."
+  },
+
+  "hazards": [
+    {
+      "what": "Spline table overflow crash",
+      "detail": "The spline (camera path) loader writes into a fixed 100-entry table at 0x007134F4 whose count variable sits in the word immediately after the last slot (0x00713684), with no bounds check. The 101st spline overwrites the count with a heap pointer and the next iteration faults at 0x00471FFB. The project's proxy now clamps the count (SPLINEGUARD), which removes that crash but moves the fault to a memcpy into a null spline at 0x0061166A. Expect a direct-start session to end after roughly 3-4 minutes until the table is relocated.",
+      "confidence": "verified-numerically", "date": "2026-09-10"
+    },
+    {
+      "what": "SecuROM remnant sabotage",
+      "detail": "Sixteen call sites in the retail exe run leftover anti-tamper checks that deliberately sabotage the game (stuck gates, item/useable crashes, broken saving, ammo drain). The project's proxy patches fifteen of them at runtime; the sixteenth is provably inert. Without that proxy, expect the documented bug cluster.",
+      "confidence": "verified-live", "date": "2026-09-10", "n": 3
+    },
+    {
+      "what": "x64dbg/x32dbg cannot attach",
+      "detail": "The exe is packed at rest by a SecuROM protector stub and external debugger attach fails ('Could not open process'). All static analysis must be done against a dump of the unpacked image; all patching must be done in-process from an injected DLL.",
+      "confidence": "verified-live", "date": "2026-08-25"
+    }
+  ],
+
+  "process_exit": {
+    "how": "SendMessage(hwnd, WM_CLOSE) to the game's visible top-level window",
+    "confidence": "verified-live", "date": "2026-09-10", "n": 3,
+    "notes": "Exits cleanly, no taskkill needed. Historically, once the SecuROM bug cluster has been hit in gameplay the process can become unresponsive and need a force-kill; that has not recurred since the DRM patches went in, but n is small."
+  }
+}
