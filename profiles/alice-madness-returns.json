@@ -8,7 +8,7 @@
   "engine": "Unreal Engine 3",
   "renderer": "Direct3D 9",
   "distribution": "Steam (EA/Origin activation; SteamStub-wrapped exe)",
-  "build_notes": "Verified 2026-09-04 dev PC, windowed 1280x720, with our d3d9.dll proxy present. Driven by external synthetic keyboard (SendInput scancodes) for menus and the proxy's own F-key hotkeys for stereo. MUST be windowed (see hazards). Re-verified 2026-09-07 (dev PC): full menu->gameplay drive, character movement, all six proxy hotkeys, and a graceful self-close, all unassisted after the user's launch. Harness: alice-madness-returns-vr/dev-archive/tools/alice_harness.py."
+  "build_notes": "Verified 2026-09-04 dev PC, windowed 1280x720, with our d3d9.dll proxy present. Driven by external synthetic keyboard (SendInput scancodes) for menus and the proxy's own F-key hotkeys for stereo. MUST be windowed (see hazards). Re-verified 2026-09-07 (dev PC): full menu->gameplay drive, character movement, all six proxy hotkeys, and a graceful self-close, all unassisted after the user's launch. Harness: alice-madness-returns-vr/dev-archive/tools/alice_harness.py. Re-verified 2026-09-10 (dev PC): three self-launches, menu->gameplay with a screenshot check per screen, proxy head-offset hotkeys on all three axes, graceful self-close."
  },
  "input": {
   "api": "Win32 SendInput (scancode keyboard) for menus; proxy F-key hotkeys (GetAsyncKeyState, polled each Present) for stereo controls",
@@ -20,7 +20,8 @@
    "Capture with BitBlt from the screen DC, window focused first.",
    "2026-09-08: to test whether keys reach this game, use a key whose action is unambiguously LIVE - W (walk) changes the frame by ~14.6 mean luma against a ~1.05 idle floor. Do NOT use the F1-F4 `viewmode` binds as the probe: they are dev commands that may be stripped from retail, so their doing nothing is equally explained by the command being absent rather than the key not arriving. A binding surviving in a shipped ini is not evidence the feature is live.",
    "2026-09-09: this game keeps its ACTION bindings in AliceControlLayout.ini, NOT AliceInput.ini (which holds only axes and aliases). Several sessions read the latter and concluded features were absent. On a UE3 title read every *Input* and *ControlLayout* ini before saying a feature does not exist.",
-   "2026-09-09: the third-person camera turns about 94 degrees per numpad press at the harness default 80 ms hold, and presses compose linearly (n=4, spread ~1%). HOLD DURATION IS NOT A DIAL - 20/40/160 ms gave -5.3/-168.7/+75.4 degrees, neither monotonic nor proportional. Use press COUNT at the default hold, and expect a quarter turn each time."
+   "2026-09-09: the third-person camera turns about 94 degrees per numpad press at the harness default 80 ms hold, and presses compose linearly (n=4, spread ~1%). HOLD DURATION IS NOT A DIAL - 20/40/160 ms gave -5.3/-168.7/+75.4 degrees, neither monotonic nor proportional. Use press COUNT at the default hold, and expect a quarter turn each time.",
+   "2026-09-10: the first Enter after launch is SWALLOWED if it is sent before the title screen is interactive (about 30 s after the process starts on the dev PC). Do not count Enters blind: capture, classify the screen (PROFILE SELECT has the red profile blot; the main menu has the red blot behind CONTINUE GAME), and press again only while still on title/copyright. dev-archive/tools/ has no driver for this yet; the session's scratch script did it in six lines."
   ],
   "bindings": [
    {
@@ -159,6 +160,30 @@
     "confidence": "measured",
     "verified": "2026-09-09",
     "notes": "In first person the camera moves in MUCH smaller steps than in third - roughly 20 deg of yaw per press against 94 deg in third person - which is what makes first person the mode to drive in. WARNING: the first-person step is NOT a constant. Repeats of the same burst gave -21.13, -21.16, +5.78/2 and -12.44/4 degrees, so aim by reading the proxy's camtrace line and adjusting, never by multiplying a rate by a press count. Pitch moves and CLAMPS at about +/-90 deg (straight up and straight down), after which further presses do nothing. The only per-press figure on this game that repeats is the THIRD-person yaw, -94.2 deg (n=4, spread ~1%). Also: `aLookUp` with a POSITIVE Speed pitches the view DOWN - NumPadEight is bound Speed=+25.0 and looks down. The axis name and its sign disagree, and nothing errors."
+   },
+   {
+    "action": "step the proxy's HEAD OFFSET (the VR camera translation) - NumPad5 cycles the axis RIGHT/UP/FORWARD, NumPad+ / NumPad- step 5 game units",
+    "keys": [
+     {
+      "name": "NumPad5 (axis)",
+      "dik": "0x4C",
+      "extended": false
+     },
+     {
+      "name": "NumPad+ (step up)",
+      "dik": "0x4E",
+      "extended": false
+     },
+     {
+      "name": "NumPad- (step down)",
+      "dik": "0x4A",
+      "extended": false
+     }
+    ],
+    "device": "proxy hotkey",
+    "confidence": "verified-live",
+    "verified": "2026-09-10",
+    "notes": "Works with stereo OFF since the 2026-09-09g send fix (build 7a9dd234e9bc and later). 20 presses = 100 units: right=100 slides the picture -62 px (n=2 launches), up=100 moves it 74 px down, forward=200 puts the camera at the back of Alice's head; each returns to exactly 0 px on the way back. Every press writes a 'HOTKEY NumPad+/-: head offset now right=.. up=.. forward=..' line to the proxy log - READ IT BACK after every step; on 2026-09-09 a wrong harness key name (NPADSUB instead of NPSUB) failed silently for a whole sweep. Harness names: NP5, NPADD, NPSUB."
    }
   ]
  },
@@ -366,8 +391,8 @@
   {
    "hazard": "a rare access violation during the level load",
    "confidence": "measured",
-   "verified": "2026-09-09",
-   "notes": "One launch of four died loading the save: AliceMadnessReturns.exe + 0x00067d48, c0000005, faulting module the exe rather than d3d9.dll. Three further launches across three different proxy builds were clean. n=1, cause not established. If a launch vanishes during the load, relaunch once before investigating it."
+   "verified": "2026-09-10",
+   "notes": "Two of about eight launches died loading the save: 2026-09-09 at AliceMadnessReturns.exe + 0x00067d48, 2026-09-10 at + 0x00be0f63 - different offsets, same phase, faulting module the exe both times, the proxy silent and its head offset 0. Every relaunch loaded cleanly. Cause not established. If a launch vanishes during the load, relaunch once before investigating it."
   },
   {
    "id": "harness-key-names-fail-loudly-but-scroll-past",
