@@ -19,7 +19,9 @@
       "HOLD DURATION MATTERS: 70 ms taps were ignored on the home PC at 1920x1080 (two Esc taps, screen unchanged, game rendering and focused) while 250-300 ms holds registered every time (~20 presses). Use `hold <key> 0.3`, not `key`. [verified-live 2026-09-04] The dev PC's 70 ms taps at 784x561 still stand as recorded there.",
       "Focus BEFORE the first capture: an unfocused BitBlt returned the whole desktop (3424 px wide) around the window; every capture after focusing was the clean 1920x1080 client area. [verified-live 2026-09-04]",
       "CAPTURE MODE'S SETTINGS TABS ARE MOUSE-ONLY: click the tab label, click a row label to select it, click the < / > arrows at the ends of its bar to change it. Keyboard Down/Right, clicking the bar, and dragging the knob all do nothing. game-harness.py has a `click <x> <y>` command (client coordinates) for this. [verified-live 2026-09-04b, dev PC]",
-      "KEYMAP DECODING: `Mad Max\\settings.ini` [KeyMapping] stores alphabetical indices A=0..Z=25 (move_forward=22 W, move_left=0 A, move_backward=18 S, move_right=3 D live-verified; vehicle_fp_cam=21 V, enter_vehicle=exit_vehicle=17 R, overview_camera=23 X, action=4 E, cancel_action=16 Q inferred). Read it before guessing a key. [inferred-static 2026-09-04]"
+      "KEYMAP DECODING: `Mad Max\\settings.ini` [KeyMapping] stores alphabetical indices A=0..Z=25 (move_forward=22 W, move_left=0 A, move_backward=18 S, move_right=3 D live-verified; vehicle_fp_cam=21 V, enter_vehicle=exit_vehicle=17 R, overview_camera=23 X, action=4 E, cancel_action=16 Q inferred). Read it before guessing a key. [inferred-static 2026-09-04]",
+      "CONFIRMED ON THE DEV PC 2026-09-10 (5 launches, 1920x1080): 250-300 ms holds work every time for menus AND for the proxy's own numpad hotkeys; the whole launch-to-gameplay-to-quit loop ran unattended five times on `hold <key> 0.3`. Use holds, never taps. [verified-live 2026-09-10, n=5]",
+      "FORCE NUMLOCK ON AT SESSION START if you intend to drive numpad hotkeys. A non-extended numpad scancode becomes the navigation-cluster VK when NumLock is off, and a probe that only checks the numpad VK then sees nothing. Mad Max's cbfp probe accepts either VK for most keys, but not all pairs match (cur3 checks VK_NUMPAD3 or VK_PRIOR, while scancode 0x51 with NumLock off yields VK_NEXT), so NumLock ON is the reliable state. [verified-live 2026-09-10]"
     ],
     "bindings": [
       {
@@ -261,7 +263,9 @@
         "wait ~60s for the world to load"
       ],
       "confidence": "verified-live",
-      "verified": "2026-09-03"
+      "verified": "2026-09-10",
+      "n": 5,
+      "notes": "Timings measured on the dev PC 2026-09-10: ~70 s from Steam launch to the title screen, ~8 s from Enter to the main menu, ~90 s from Enter on RESUME GAME to a playable world. ALWAYS screenshot the main menu and confirm RESUME GAME is the orange entry before pressing Enter - NEW GAME is directly below it."
     },
     {
       "from": "gameplay",
@@ -276,8 +280,9 @@
         "Enter, then Enter to confirm"
       ],
       "confidence": "verified-live",
-      "verified": "2026-09-03",
-      "notes": "Process exits ~2s after the final confirm."
+      "verified": "2026-09-10",
+      "notes": "Process exits ~2s after the final confirm. Re-verified unattended 5x on 2026-09-10, dev PC: Esc, Down x3, VERIFY 'EXIT TO MAIN MENU' by screenshot, Enter, Enter, wait ~40 s, Down x7, VERIFY 'EXIT GAME' by screenshot, Enter. The process exits on the FIRST Enter after EXIT GAME - a second Enter finds no window, which is success, not a failure to confirm.",
+      "n": 5
     },
     {
       "from": "gameplay",
@@ -344,6 +349,22 @@
       "confidence": "reported",
       "verified": "2026-09-08",
       "notes": "A SHIPPED detached camera driven by a SECOND controller during live gameplay. The CAPTURE VIDEO panel documents: Increase/Decrease Field Of View, Attach/Detach Camera To Max, Toggle Game Camera, Toggle Camera Tracking, Toggle Alternate Camera 1, Toggle Alternate Camera 2, Rotate Camera Axis (two axes), Pan Up, Pan Down, Toggle Depth Of Field, Normal Game Speed, Slow Motion, Start/Stop Recording. The LIST is verified-live as documentation (read off the game's own panel 2026-09-08); every individual binding is REPORTED as behaviour because none has been pressed. Driving pad 1's buttons is the outstanding work - an engine-native attach/detach plus FOV pair would be a decoupled camera reachable with no code."
+    },
+    "proxy_hotkeys": {
+      "what": "The project's own dxgi.dll proxy, not the game. It reads GetAsyncKeyState, so ordinary SendInput scancodes reach it.",
+      "keys": {
+        "numpad3 (scan 0x51)": "dump one frame; since 2026-09-10 it also re-arms the constant-buffer candidate census for 300 frames - press it IN GAMEPLAY, the menu has different buffers",
+        "numpad6 (scan 0x4D)": "stereo on/off",
+        "numpad7 (scan 0x47)": "cycle wiggle / left eye / right eye",
+        "numpad8 (scan 0x48)": "separation x1.25",
+        "numpad9 (scan 0x49)": "separation /1.25",
+        "numpad0 (scan 0x52)": "cycle edit path: per-object / shared / both",
+        "numpad. (scan 0x53)": "read our edit back out of the buffer via a staging copy"
+      },
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 5,
+      "tip": "At the default 0.065 separation a stereo shift is NOT judgeable by eye. Press numpad8 about 20 times (~87x) to make it unmistakable, then numpad7 to switch from wiggle to a single eye so the picture stops rocking and can be compared against a still baseline."
     }
   },
   "hazards": [
@@ -394,6 +415,13 @@
       "confidence": "verified-live",
       "verified": "2026-09-08",
       "notes": "keymap_group_enter_vehicle=17 and keymap_group_exit_vehicle=17 share a value, which no key binding could. Do not read key assignments out of these lines. V and R were established empirically instead."
+    },
+    {
+      "hazard": "A shifted world also shifts the HUD (as of the 2026-09-10 build)",
+      "confidence": "verified-live",
+      "verified": "2026-09-10",
+      "n": 1,
+      "notes": "The per-object camera edit currently fires on constant-buffer widths 192/128/96/64, and at least one of those carries UI draws, so the minimap and health cluster slide with the scene. Cosmetic and expected while that is being narrowed; it is not a crash and it reverts the moment stereo is switched off with numpad6."
     }
   ],
   "disproved": [
@@ -413,5 +441,6 @@
       "result": "no row change, no slider change (EXPOSURE stayed highlighted)",
       "date": "2026-09-04"
     }
-  ]
+  ],
+  "last_updated": "2026-09-10"
 }
