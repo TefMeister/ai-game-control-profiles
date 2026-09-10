@@ -8,139 +8,259 @@
   "store": "Steam (appid 12130)",
   "profile_created": "2026-09-10",
   "created_by": "manhunt-2003-vr /lm session, dev PC",
-
-  "summary": "Self-launch works, but the game stops at an ANSI Win32 launcher dialog that must be clicked. The frontend menu CANNOT currently be driven: this game reads the DirectInput MOUSE and never the DirectInput keyboard, and no synthetic input route reaches it. The working way into live 3D is to bypass the frontend entirely with the game's own SKIP_MENU setting.",
-
+  "summary": "Fully drivable unattended, except moving the character. Self-launch works but stops at an ANSI Win32 launcher dialog that must be BM_CLICKed. The frontend IS drivable: the game reads the DirectInput MOUSE, and proxy-side synthetic DIMOUSESTATE2 moves the cursor, moves the menu highlight, and activates entries -- menu to live gameplay, unattended. The in-game camera responds to the same route. What does NOT work is character movement: no scancode tried has moved him, and the keys this game binds have never been read out of the binary. IMPORTANT: two harness defects made this game look completely input-proof until 2026-09-10 and every input finding before that date is withdrawn -- see input.harness_traps.",
   "input": {
     "measured_paths": [
       {
-        "claim": "The game calls IDirectInputDevice8::GetDeviceState ~11.9 million times per session on the SysMouse device and ZERO times on the SysKeyboard device. GetDeviceData is never called at all.",
-        "numbers": "GetDeviceState=11917105 (keyboard=0), GetDeviceData=0",
+        "claim": "The game polls the DirectInput MOUSE on the order of 20,000 times a second, with cbData = 20 (DIMOUSESTATE2). It also calls GetDeviceState on the KEYBOARD device, but with cbData = 0, which cannot return key state, and that count freezes once gameplay starts. GetDeviceData is never called on either device.",
+        "numbers": "launch 2, mid-gameplay: SysMouse state=22,708,637 cbData=20; SysKeyboard state=12,981 cbData=0; GetDeviceData=0 on both",
+        "confidence": "verified-live",
+        "date": "2026-09-10",
+        "n": 2,
+        "how": "per-device counters in the project's own d3d8 proxy (input.c), after the per-device hooking fix",
+        "implication": "Inject into GetDeviceState on the MOUSE device. Why the keyboard is polled with cbData = 0 is UNEXPLAINED and is the open question -- log the first ~20 keyboard calls with cbData, lpvData, hr and the RETURN ADDRESS to learn who is calling it."
+      }
+    ],
+    "working": [
+      {
+        "route": "Proxy-side synthetic DIMOUSESTATE2 (relative deltas + buttons) added into the buffer returned by GetDeviceState on the SysMouse device, driven by the manhunt_vr_input.txt script file",
+        "drives": [
+          "frontend cursor",
+          "main-menu highlight",
+          "menu activation (left button)",
+          "scene-selection grid",
+          "in-game camera"
+        ],
+        "result": "main menu -> SELECT SCENE -> BORN AGAIN -> live gameplay, entirely unattended; camera pans ~90 degrees on one move in gameplay",
         "confidence": "verified-live",
         "date": "2026-09-10",
         "n": 1,
-        "how": "counters in the project's own d3d8 proxy (input.c), over one full frontend session",
-        "implication": "Any injection must target GetDeviceState on the MOUSE device. Injecting synthetic KEYBOARD state is a no-op in this game."
+        "how_to_get_it_right": "Movement axes are RELATIVE and the game polls ~20,000x/sec, so a delta added on every poll is 100x the intended motion. Hand movement over in TICKS at a real-mouse report rate (~8 ms / 125 Hz), spread over a requested duration. Buttons are the opposite -- a LEVEL, ORed on every poll, because a button missed for one frame is a dropped click.",
+        "calibration_dev_pc": {
+          "x_px_per_count": 1.87,
+          "y_px_per_count": 1.36,
+          "ratio": 1.37,
+          "note": "Measured from a controlled 100-count move away from both window edges. The engine's known horizontal stretch is 1.39x (a 1.28 aspect rendered into a 1.7778 backbuffer), which is suggestively close but not proven to be the same number.",
+          "warning": "Moves that reach a window edge CLAMP silently and make the rate look like 0.70 px/count. Calibrate away from the edges.",
+          "confidence": "verified-live",
+          "date": "2026-09-10",
+          "n": 1
+        }
+      },
+      {
+        "route": "A synthetic left click during the intro credits",
+        "result": "main menu reached ~28 s after Play instead of ~180 s -- appears to skip the credits",
+        "confidence": "verified-live",
+        "date": "2026-09-10",
+        "n": 1,
+        "caveat": "n=1, and the credits do end on their own. 28 s against 180 s is a large gap, but this is not yet a controlled test."
       }
     ],
-    "working": [],
     "disproved": [
       {
-        "route": "SendInput keyboard scancodes (Return 0x1C, Space 0x39, LCtrl 0x1D, Down 0x50 with KEYEVENTF_EXTENDEDKEY)",
+        "route": "Proxy-side synthetic DirectInput KEYBOARD state, with the keyboard device's vtable genuinely hooked",
         "target": "main menu",
-        "result": "no effect; menu highlight never moved, though the menu's on-screen timecode kept ticking and the window was confirmed foreground",
-        "confidence": "verified-live", "date": "2026-09-10", "n": 1
+        "result": "no effect; cursor did not move and the highlight did not change. The keyboard device is called with cbData = 0 and never returns key state.",
+        "confidence": "verified-live",
+        "date": "2026-09-10",
+        "n": 1
       },
       {
-        "route": "SendInput mouse, MOUSEEVENTF_ABSOLUTE|MOVE plus SetCursorPos, then left button down/up over a menu entry",
-        "target": "main menu",
-        "result": "no effect",
-        "confidence": "verified-live", "date": "2026-09-10", "n": 1
+        "route": "SendInput scancodes W (0x11, 6 s) and Up arrow (0x48 + KEYEVENTF_EXTENDEDKEY, 4 s), with the struct size FIXED and the return value confirmed as 1 down / 1 up",
+        "target": "character movement in live gameplay",
+        "result": "scene unchanged; the character did not move",
+        "confidence": "verified-live",
+        "date": "2026-09-10",
+        "n": 2,
+        "scope_warning": "This is a correct negative for TWO scancodes, in one spot, in one level. It is NOT 'the keyboard does nothing'. The keys this game actually binds have never been read out of the binary or its config."
       },
       {
-        "route": "SendInput mouse, relative MOUSEEVENTF_MOVE, 30 steps of dy=+12",
-        "target": "main menu",
-        "result": "no effect",
-        "confidence": "verified-live", "date": "2026-09-10", "n": 1
+        "route": "WITHDRAWN 2026-09-10: all SendInput results recorded before 2026-09-10b (keyboard scancodes, absolute mouse move + click, relative mouse move)",
+        "result": "Not evidence. SendInput was returning 0 with GetLastError = 87 and inserting zero events -- see input.harness_traps. These were never tests.",
+        "confidence": "disproved",
+        "date": "2026-09-10"
       },
       {
-        "route": "proxy-side synthetic DirectInput KEYBOARD state (input.c ORs 0x80 into the 256-byte buffer returned by GetDeviceState), driven by the manhunt_vr_input.txt script file",
-        "target": "main menu, DIK_RETURN 0x1C",
-        "result": "script ran and the file was consumed, but no effect - and the counters explain why: the keyboard device is read zero times",
-        "confidence": "verified-live", "date": "2026-09-10", "n": 1
+        "route": "WITHDRAWN 2026-09-10: 'the white arrow beside the menu entries is menu art and never moves'",
+        "result": "It is the CURSOR. It moves exactly as one under synthetic DIMOUSESTATE2, and the menu highlight follows whichever entry it is over. It never moved before because nothing was ever delivered to the mouse.",
+        "confidence": "disproved",
+        "date": "2026-09-10"
+      }
+    ],
+    "harness_traps": [
+      {
+        "trap": "Only the FIRST DirectInput device was hooked",
+        "detail": "The proxy guarded its vtable hooks with a single global flag. This game creates SysMouse first and SysKeyboard second, and the two devices do NOT share a vtable (mouse 0x742395F4, keyboard 0x74239570, different real function pointers). The keyboard was therefore never instrumented, and the recorded 'GetDeviceState = 11,917,105 on the mouse, 0 on the keyboard' was an uninstrumented device reporting nothing -- not a measurement. Synthetic keyboard state was likewise never installed in the keyboard's vtable, so 'the keyboard route does not work' was untested.",
+        "fix": "Hook every distinct vtable, keep the original function pointers PER vtable, and publish each record before patching its slots.",
+        "confidence": "verified-live",
+        "date": "2026-09-10",
+        "n": 1
+      },
+      {
+        "trap": "SendInput never sent anything (this one is universal, not Manhunt-specific)",
+        "detail": "The PowerShell harness declared the INPUT struct as 28 bytes -- the 32-bit layout -- while running in 64-bit PowerShell, where INPUT is 40 bytes (DWORD type, 4 bytes of padding, then a 32-byte union). Every call returned 0 with GetLastError = 87 (ERROR_INVALID_PARAMETER) and inserted ZERO events. Nothing checked the return value, so it read as 'the game ignores synthetic input'.",
+        "fix": "Always assert SendInput's return value equals the number of events passed, and log GetLastError when it does not. A silently failing input API and an ignored input API are indistinguishable from outside.",
+        "confidence": "verified-numerically",
+        "date": "2026-09-10"
       }
     ],
     "untried": [
-      "proxy-side synthetic DIMOUSESTATE (deltas + buttons) injected into GetDeviceState on the SysMouse device - this is the indicated next step and the measurement above is the evidence for it"
+      "Read the game's real key bindings out of the binary or its settings, rather than guessing scancodes.",
+      "Log the first ~20 SysKeyboard GetDeviceState calls with cbData, lpvData, hr and the caller's return address, to explain the cbData = 0 anomaly.",
+      "A gamepad, via the game's GAME_CONTROL_TYPE setting -- never tried."
     ]
   },
-
   "entry_points": [
     {
       "name": "steam-launch",
       "how": "Start-Process steam://rungameid/12130",
-      "confidence": "verified-live", "date": "2026-09-10", "n": 4,
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 4,
       "notes": "Reaches the launcher dialog in roughly 20-25 s. The proxy DLL loads and patches within 0.6 s of process start."
     },
     {
       "name": "launcher-dialog",
       "how": "A top-level window titled MANHUNT owns a small dialog ('Manhunt launcher', ~414x346) with Play / Quit buttons and video settings. Enumerate its child windows and send BM_CLICK (0x00F5) to the child whose text is 'Play'.",
-      "confidence": "verified-live", "date": "2026-09-10", "n": 4,
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 4,
       "hazard": "Read child window text with GetWindowTextA, NOT GetWindowTextW. The dialog is ANSI, so the W variant returns only the first character - 'P' for Play, 'Q' for Quit - which reads exactly like 'no Play button found'. Same for GetClassNameA ('B' instead of 'BUTTON')."
     },
     {
       "name": "skip-the-frontend",
       "how": "Edit initscripts/FRONTEND/settings.txt with the game CLOSED: set SKIP_MENU 1 and START_LEVEL 0 (the built-in 'Test level'). Launch, click Play in the launcher dialog, then wait ~50 s.",
       "result": "lands directly in live 3D - real in-engine rendering with HUD, crosshair and subtitles - with no frontend involved. Ran 3 min 30 s before hitting a separate, understood crash (spline table, see hazards).",
-      "confidence": "verified-live", "date": "2026-09-10", "n": 1,
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 1,
       "notes": "This is currently the ONLY way to reach a running game unattended, because the frontend cannot be driven. START_LEVEL 1 (the first real level, 'Doorway Into Hell') loads too and shows its title card, but overflows the spline table sooner."
     }
   ],
-
   "states": [
-    {"name": "launcher-dialog", "tell": "a ~414x346 window with 'Manhunt launcher' in its title bar and a Play button"},
-    {"name": "intro-fmv", "tell": "credits over VHS-styled footage with a 'TCR: hh:mm:ss:ff' timecode at the bottom"},
-    {"name": "main-menu", "tell": "'MAIN MENU' under a ticking timecode, entries PLAY / SELECT SCENE / LOAD GAME / SETTINGS / BONUS FEATURES / QUIT"},
-    {"name": "level-title-card", "tell": "the level name in large type over a VHS-tape image"},
-    {"name": "in-game", "tell": "3D scene with a crosshair, two tape-timer widgets and subtitle text"}
-  ],
-
-  "routes": [
     {
-      "from": "intro-fmv", "to": "main-menu",
-      "how": "the credits end on their own after roughly 90 s",
-      "confidence": "verified-live", "date": "2026-09-10", "n": 2,
-      "warning": "Escape was sent while these were playing and the credits did end, but they also end unprompted; do NOT record Escape as a working skip - it was never a controlled test, and no other key has ever reached this game."
+      "name": "launcher-dialog",
+      "tell": "a ~414x346 window with 'Manhunt launcher' in its title bar and a Play button"
     },
     {
-      "from": "main-menu", "to": "in-game",
-      "how": "UNSOLVED - see input.disproved. Use the skip-the-frontend entry point instead.",
-      "confidence": "disproved", "date": "2026-09-10"
+      "name": "intro-fmv",
+      "tell": "credits over VHS-styled footage with a 'TCR: hh:mm:ss:ff' timecode at the bottom"
+    },
+    {
+      "name": "main-menu",
+      "tell": "'MAIN MENU' under a ticking timecode, entries PLAY / SELECT SCENE / LOAD GAME / SETTINGS / BONUS FEATURES / QUIT"
+    },
+    {
+      "name": "level-title-card",
+      "tell": "the level name in large type over a VHS-tape image"
+    },
+    {
+      "name": "in-game",
+      "tell": "3D scene with a crosshair, two tape-timer widgets and subtitle text"
+    },
+    {
+      "name": "scene-selection",
+      "tell": "'SCENE SELECTION' under the timecode, a 2x2 grid of tape thumbnails with '1-4' beneath and 'Back' bottom-right; locked scenes read '???'"
     }
   ],
-
+  "routes": [
+    {
+      "from": "launcher-dialog",
+      "to": "intro-fmv",
+      "how": "BM_CLICK (0x00F5) the child button whose GetWindowTextA is 'Play'",
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 6
+    },
+    {
+      "from": "intro-fmv",
+      "to": "main-menu",
+      "how": "a synthetic left click (MB 0) -- reached the menu in ~28 s instead of the ~180 s the credits take on their own",
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 1,
+      "warning": "The credits also end unprompted. Treat this as a strong lead, not a settled skip, until it is run again."
+    },
+    {
+      "from": "main-menu",
+      "to": "in-game",
+      "how": "Move the cursor onto SELECT SCENE with synthetic mouse deltas, CAPTURE and VERIFY the highlight, left-click; then move onto the first scene thumbnail, verify again, click. Reaches live gameplay in about a minute.",
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 1,
+      "supersedes": "the 2026-09-10 entry that recorded this route as UNSOLVED",
+      "hazard": "QUIT is the bottom entry of the main menu. Never blind key-count or blind-move past it -- move, capture, verify the highlight, and only then click."
+    },
+    {
+      "from": "in-game",
+      "to": "camera pan",
+      "how": "synthetic mouse X deltas; ~900 counts pans roughly 90 degrees",
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 1
+    }
+  ],
   "commands": {
     "console": "none known; not exercised",
     "settings_file": {
       "path": "initscripts/FRONTEND/settings.txt",
       "notes": "Plain text, read at startup only - edit with the game closed. Useful keys: START_LEVEL (0 = Test level, 1-n = real levels), SKIP_MENU (1 = boot straight into START_LEVEL), GAME_CONTROL_TYPE, GAME_CONTROL_INVERT_Y, FX_MODE. There is also a 'Frontend disable (FOR DEBUG ONLY!)' option.",
-      "confidence": "verified-live", "date": "2026-09-10", "n": 2
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 2
     },
     "registry": {
       "path": "HKCU\\SOFTWARE\\Rockstar Games\\Manhunt\\Video",
       "notes": "Device / Mode / Index. Mode is a RenderWare video-mode index handed verbatim to RwEngineSetVideoMode. Deleting the Video key makes the game recreate its defaults. On the dev PC, mode index 0 enumerated as 1920x1080 WINDOWED (the desktop resolution).",
-      "confidence": "verified-live", "date": "2026-09-10", "n": 1
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 1
     }
   },
-
   "capture": {
     "method": "BitBlt from the screen DC (Graphics.CopyFromScreen over the window rect), after SetForegroundWindow",
-    "confidence": "verified-live", "date": "2026-09-10", "n": 12,
+    "confidence": "verified-live",
+    "date": "2026-09-10",
+    "n": 12,
     "warning": "Do not use PrintWindow - it serves stale DWM-cached frames when the game stops presenting, with no error. This is a portfolio-wide rule, not specific to Manhunt.",
     "notes": "The game window is a normal top-level window; the proxy resizes its client area to 800x600. Several invisible top-level windows share the PID, so pick the largest VISIBLE one."
   },
-
   "hazards": [
     {
-      "what": "Spline table overflow crash",
-      "detail": "The spline (camera path) loader writes into a fixed 100-entry table at 0x007134F4 whose count variable sits in the word immediately after the last slot (0x00713684), with no bounds check. The 101st spline overwrites the count with a heap pointer and the next iteration faults at 0x00471FFB. The project's proxy now clamps the count (SPLINEGUARD), which removes that crash but moves the fault to a memcpy into a null spline at 0x0061166A. Expect a direct-start session to end after roughly 3-4 minutes until the table is relocated.",
-      "confidence": "verified-numerically", "date": "2026-09-10"
+      "what": "Spline table overflow crash -- RELOCATED, and it held for one level",
+      "detail": "The spline (camera path) loader wrote into a fixed 100-entry table at 0x007134F4 whose count sits in the word immediately after the last slot (0x00713684), with no bounds check; the 101st spline overwrote the count and the next iteration faulted at 0x00471FFB. Clamping the count (SPLINEGUARD) removed that crash but only MOVED the fault to a memcpy into a null spline at 0x0061166A. The project's proxy now RELOCATES the table to a 1024-slot buffer (SPLINERELOC) after verifying that the base literal occurs exactly six times in the whole image and that nothing reaches the table by a computed base. A full real level then ran ~8 minutes with no overflow and no crash. NOT yet closed: that level was reached through the menu, and the original crash happened on a SKIP_MENU DIRECT START, which has not been re-run since the relocation.",
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 1
     },
     {
       "what": "SecuROM remnant sabotage",
-      "detail": "Sixteen call sites in the retail exe run leftover anti-tamper checks that deliberately sabotage the game (stuck gates, item/useable crashes, broken saving, ammo drain). The project's proxy patches fifteen of them at runtime; the sixteenth is provably inert. Without that proxy, expect the documented bug cluster.",
-      "confidence": "verified-live", "date": "2026-09-10", "n": 3
+      "detail": "Sixteen call sites in the retail exe run leftover anti-tamper checks that deliberately sabotage the game (stuck gates, item/useable crashes, broken saving, ammo drain). The project's proxy patches all sixteen at runtime, first try on every launch that carried them. Confirmed firing IN GAMEPLAY for the first time on 2026-09-10: Broken Health 1, Broken SaveGame EntityData, and Help Text Crash (the last roughly every 5-8 s), all returning the repaired value with the game continuing normally. Without the proxy, expect the documented bug cluster.",
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 5
     },
     {
       "what": "x64dbg/x32dbg cannot attach",
       "detail": "The exe is packed at rest by a SecuROM protector stub and external debugger attach fails ('Could not open process'). All static analysis must be done against a dump of the unpacked image; all patching must be done in-process from an injected DLL.",
-      "confidence": "verified-live", "date": "2026-08-25"
+      "confidence": "verified-live",
+      "date": "2026-08-25"
+    },
+    {
+      "what": "Window-edge clamping makes mouse calibration lie",
+      "detail": "A synthetic mouse move that reaches a window edge stops there silently. Two probe moves that both clamped made the cursor rate look like 0.70 px/count when it is 1.87 (X) and 1.36 (Y). Calibrate with a move that starts and ends well away from every edge.",
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 2
     }
   ],
-
   "process_exit": {
     "how": "SendMessage(hwnd, WM_CLOSE) to the game's visible top-level window",
-    "confidence": "verified-live", "date": "2026-09-10", "n": 3,
+    "confidence": "verified-live",
+    "date": "2026-09-10",
+    "n": 3,
     "notes": "Exits cleanly, no taskkill needed. Historically, once the SecuROM bug cluster has been hit in gameplay the process can become unresponsive and need a force-kill; that has not recurred since the DRM patches went in, but n is small."
-  }
+  },
+  "last_updated": "2026-09-10",
+  "updated_by": "manhunt-2003-vr /lm session, dev PC (second pass, 2026-09-10b)"
 }
