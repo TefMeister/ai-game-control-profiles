@@ -1,355 +1,413 @@
 {
- "schema_version": "0.1",
- "game": {
-  "title": "DOOM",
-  "year": 2016,
-  "developer": "id Software",
-  "publisher": "Bethesda Softworks",
-  "engine": "id Tech 6",
-  "renderer": "Vulkan (r_renderAPI 1) or OpenGL (0)",
-  "distribution": "Steam (app 379720)",
-  "build_notes": "Verified 2026-09-04 dev PC, windowed 1280x720, Vulkan, with our vulkan-1.dll proxy present. Launched via staging/doom-2016-vr/proxy-vulkan/scripts/install-and-launch.bat (sets r_renderAPI 1, enables the file command channel). Driven by external synthetic keyboard/mouse AND a ViGEm virtual XInput pad."
- },
- "input": {
-  "api": "Win32 SendInput (scancode kbd + relative mouse) for menus/look; ViGEm virtual XInput pad for in-game movement+look",
-  "api_notes": [
-   "DOOM imports DINPUT8, XINPUT1_4 (directly), the Win32 key-state calls and GetCursorPos/SetCursorPos; ZERO raw-input imports. [measured 2026-08-31]",
-   "sendinput drives menus, movement and look but ONLY while DOOM is the foreground window. [verified-live 2026-08-31]",
-   "inproc-keystate does NOT work: gameplay keyboard goes through DirectInput 8, which our key-state hooks do not feed. [disproved 2026-08-31]",
-   "Console toggle is on physical SCANCODE 0x29 and the VK that reaches it is layout-dependent and can differ between two launches of the same game. Send the scancode (scan 0x29), do not send a VK. It is also a dead key: after opening, send space then backspace before typing. [measured 2026-09-01]",
-   "The window title is 'DOOM'. The window does not exist for the first several seconds after launch (process starts, then creates it) - a find-window failure then is 'still starting', not 'wrong title'.",
-   "Capture with BitBlt from the screen DC and foreground the window first; an unfocused grab returns the whole desktop.",
-   "VIRTUAL XInput PAD (flat-to-vr-RE-toolkit/tools/virtual-pad.py, ViGEmBus + vgamepad) is the best in-game route: XInput is imported directly, so the game binds the virtual pad as a real Xbox 360 controller regardless of focus rules or DirectInput exclusive mode. left stick = move, right stick = look. [verified-live 2026-09-04, n=2 per axis with reversal]",
-   "2026-09-08 (dev PC), the single most important thing to set before driving this game: the proxy's own default input backend DOES NOT REACH IT. `ctest` types one probe digit down each route and the console showed \"]0122\": 0 = sendinput-scancode WORKS, 1 = postmessage-key WORKS, 2 = postmessage-char WORKS but is delivered TWICE, 3 = inproc-keystate NEVER LANDED. inproc-keystate is what `status` reports as [default], so a key/move/type issued through the file channel without changing it silently does nothing - which reads exactly like 'the game ignores that input'. Always send `backend sendinput` and `typeroute sendinput` first; with those set, `move fwd 90` walked the player ~700 units and `type getviewpos` typed cleanly. The doubled 2 is NOT the low-frame-rate auto-repeat the help warns about: the game held ~60 FPS with camoff set throughout, so postmessage-char appears to double on its own. [n=1]"
+  "schema_version": "0.1",
+  "game": {
+    "title": "DOOM",
+    "year": 2016,
+    "developer": "id Software",
+    "publisher": "Bethesda Softworks",
+    "engine": "id Tech 6",
+    "renderer": "Vulkan (r_renderAPI 1) or OpenGL (0)",
+    "distribution": "Steam (app 379720)",
+    "build_notes": "Verified 2026-09-04 dev PC, windowed 1280x720, Vulkan, with our vulkan-1.dll proxy present. Launched via staging/doom-2016-vr/proxy-vulkan/scripts/install-and-launch.bat (sets r_renderAPI 1, enables the file command channel). Driven by external synthetic keyboard/mouse AND a ViGEm virtual XInput pad."
+  },
+  "input": {
+    "api": "Win32 SendInput (scancode kbd + relative mouse) for menus/look; ViGEm virtual XInput pad for in-game movement+look",
+    "api_notes": [
+      "DOOM imports DINPUT8, XINPUT1_4 (directly), the Win32 key-state calls and GetCursorPos/SetCursorPos; ZERO raw-input imports. [measured 2026-08-31]",
+      "sendinput drives menus, movement and look but ONLY while DOOM is the foreground window. [verified-live 2026-08-31]",
+      "inproc-keystate does NOT work: gameplay keyboard goes through DirectInput 8, which our key-state hooks do not feed. [disproved 2026-08-31]",
+      "Console toggle is on physical SCANCODE 0x29 and the VK that reaches it is layout-dependent and can differ between two launches of the same game. Send the scancode (scan 0x29), do not send a VK. It is also a dead key: after opening, send space then backspace before typing. [measured 2026-09-01]",
+      "The window title is 'DOOM'. The window does not exist for the first several seconds after launch (process starts, then creates it) - a find-window failure then is 'still starting', not 'wrong title'.",
+      "Capture with BitBlt from the screen DC and foreground the window first; an unfocused grab returns the whole desktop.",
+      "VIRTUAL XInput PAD (flat-to-vr-RE-toolkit/tools/virtual-pad.py, ViGEmBus + vgamepad) is the best in-game route: XInput is imported directly, so the game binds the virtual pad as a real Xbox 360 controller regardless of focus rules or DirectInput exclusive mode. left stick = move, right stick = look. [verified-live 2026-09-04, n=2 per axis with reversal]",
+      "2026-09-08 (dev PC), the single most important thing to set before driving this game: the proxy's own default input backend DOES NOT REACH IT. `ctest` types one probe digit down each route and the console showed \"]0122\": 0 = sendinput-scancode WORKS, 1 = postmessage-key WORKS, 2 = postmessage-char WORKS but is delivered TWICE, 3 = inproc-keystate NEVER LANDED. inproc-keystate is what `status` reports as [default], so a key/move/type issued through the file channel without changing it silently does nothing - which reads exactly like 'the game ignores that input'. Always send `backend sendinput` and `typeroute sendinput` first; with those set, `move fwd 90` walked the player ~700 units and `type getviewpos` typed cleanly. The doubled 2 is NOT the low-frame-rate auto-repeat the help warns about: the game held ~60 FPS with camoff set throughout, so postmessage-char appears to double on its own. [n=1]"
+    ],
+    "bindings": [
+      {
+        "action": "clear the promo overlay / open the quit prompt at the main menu",
+        "keys": [
+          {
+            "name": "Escape",
+            "dik": "0x01",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "At the main menu Esc raises a NOTICE quit prompt (default No). Pick No (highlighted) to stay."
+      },
+      {
+        "action": "move focus up to the CAMPAIGN/MULTIPLAYER/SNAPMAP tab row from the promo tiles",
+        "keys": [
+          {
+            "name": "Up",
+            "dik": "0x48",
+            "extended": true
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "move between the top tabs",
+        "keys": [
+          {
+            "name": "Left",
+            "dik": "0x4B",
+            "extended": true
+          },
+          {
+            "name": "Right",
+            "dik": "0x4D",
+            "extended": true
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "move the vertical menu selection",
+        "keys": [
+          {
+            "name": "Down",
+            "dik": "0x50",
+            "extended": true
+          },
+          {
+            "name": "Up",
+            "dik": "0x48",
+            "extended": true
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "select the highlighted item",
+        "keys": [
+          {
+            "name": "Enter",
+            "dik": "0x1C",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "continue past the level-load screen",
+        "keys": [
+          {
+            "name": "Space",
+            "dik": "0x39",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "'Press [SPACE] to continue' after the loading animation."
+      },
+      {
+        "action": "open the in-game pause menu",
+        "keys": [
+          {
+            "name": "Escape",
+            "dik": "0x01",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-04"
+      },
+      {
+        "action": "move / look on foot (keyboard+mouse route)",
+        "keys": [
+          {
+            "name": "W/A/S/D + relative mouse",
+            "dik": "0x11/0x1E/0x1F/0x20",
+            "extended": false
+          }
+        ],
+        "device": "keyboard + relative mouse",
+        "confidence": "verified-live",
+        "verified": "2026-08-31"
+      },
+      {
+        "action": "move (in-game, virtual pad)",
+        "keys": [
+          {
+            "name": "left stick",
+            "dik": "vigem",
+            "extended": false
+          }
+        ],
+        "device": "ViGEm virtual XInput pad",
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "virtual-pad.py stick left 0 1.0 <secs>; ~820-unit pure translation for a 2 s forward hold, basis unchanged, reversible."
+      },
+      {
+        "action": "look (in-game, virtual pad)",
+        "keys": [
+          {
+            "name": "right stick",
+            "dik": "vigem",
+            "extended": false
+          }
+        ],
+        "device": "ViGEm virtual XInput pad",
+        "confidence": "verified-live",
+        "verified": "2026-09-04",
+        "notes": "virtual-pad.py stick right 1.0 0 <secs>; ~98 deg pure yaw for a 1.5 s hold, position unchanged, reversible."
+      },
+      {
+        "action": "open the console (in-game)",
+        "keys": [
+          {
+            "name": "scancode 0x29",
+            "dik": "0x29",
+            "extended": false
+          }
+        ],
+        "confidence": "verified-live",
+        "verified": "2026-09-01",
+        "notes": "Send the scancode via the proxy scan 0x29, then space+backspace (dead key). Needs +com_allowconsole 1 at launch to be ungated; retail gates it."
+      }
+    ]
+  },
+  "states": [
+    {
+      "name": "main_menu",
+      "detect": "DOOM logo top-left; CAMPAIGN / MULTIPLAYER / SNAPMAP tabs; large 'The Dark Ages' promo tiles below; [ENTER] SELECT / [ESC] EXIT / [R] CREDITS at the bottom.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "quit_prompt",
+      "detect": "NOTICE 'Are you sure you want to quit the game?' with Yes / No; No highlighted by default.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "select_campaign",
+      "detect": "SELECT CAMPAIGN; list GAME SLOT 1 / GAME SLOT 2 / NEW SLOT / ARCADE MODE; [R] DELETE GAME SLOT at the bottom.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "campaign_main_menu",
+      "detect": "MAIN MENU; CONTINUE GAME / MISSION SELECT / RUNE TRIAL SELECT / CLASSIC MAPS / COLLECTIBLES / SETTINGS; slot summary (The UAC, last played, difficulty) on the right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "loading_press_space",
+      "detect": "Level name top-left (e.g. 'The UAC'), a UAC glyph animation, 'Press [SPACE] to continue' top-right.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "gameplay",
+      "detect": "First-person, weapon bottom-right, health/armor bottom-left, waypoint distance top-center.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "name": "pause_menu",
+      "detect": "IN GAME; RESUME / SETTINGS / LOAD CHECKPOINT / RESTART MISSION / EXIT TO MAIN MENU / EXIT TO DESKTOP.",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    }
   ],
-  "bindings": [
-   {
-    "action": "clear the promo overlay / open the quit prompt at the main menu",
-    "keys": [
-     {
-      "name": "Escape",
-      "dik": "0x01",
-      "extended": false
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04",
-    "notes": "At the main menu Esc raises a NOTICE quit prompt (default No). Pick No (highlighted) to stay."
-   },
-   {
-    "action": "move focus up to the CAMPAIGN/MULTIPLAYER/SNAPMAP tab row from the promo tiles",
-    "keys": [
-     {
-      "name": "Up",
-      "dik": "0x48",
-      "extended": true
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04"
-   },
-   {
-    "action": "move between the top tabs",
-    "keys": [
-     {
-      "name": "Left",
-      "dik": "0x4B",
-      "extended": true
-     },
-     {
-      "name": "Right",
-      "dik": "0x4D",
-      "extended": true
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04"
-   },
-   {
-    "action": "move the vertical menu selection",
-    "keys": [
-     {
-      "name": "Down",
-      "dik": "0x50",
-      "extended": true
-     },
-     {
-      "name": "Up",
-      "dik": "0x48",
-      "extended": true
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04"
-   },
-   {
-    "action": "select the highlighted item",
-    "keys": [
-     {
-      "name": "Enter",
-      "dik": "0x1C",
-      "extended": false
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04"
-   },
-   {
-    "action": "continue past the level-load screen",
-    "keys": [
-     {
-      "name": "Space",
-      "dik": "0x39",
-      "extended": false
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04",
-    "notes": "'Press [SPACE] to continue' after the loading animation."
-   },
-   {
-    "action": "open the in-game pause menu",
-    "keys": [
-     {
-      "name": "Escape",
-      "dik": "0x01",
-      "extended": false
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-04"
-   },
-   {
-    "action": "move / look on foot (keyboard+mouse route)",
-    "keys": [
-     {
-      "name": "W/A/S/D + relative mouse",
-      "dik": "0x11/0x1E/0x1F/0x20",
-      "extended": false
-     }
-    ],
-    "device": "keyboard + relative mouse",
-    "confidence": "verified-live",
-    "verified": "2026-08-31"
-   },
-   {
-    "action": "move (in-game, virtual pad)",
-    "keys": [
-     {
-      "name": "left stick",
-      "dik": "vigem",
-      "extended": false
-     }
-    ],
-    "device": "ViGEm virtual XInput pad",
-    "confidence": "verified-live",
-    "verified": "2026-09-04",
-    "notes": "virtual-pad.py stick left 0 1.0 <secs>; ~820-unit pure translation for a 2 s forward hold, basis unchanged, reversible."
-   },
-   {
-    "action": "look (in-game, virtual pad)",
-    "keys": [
-     {
-      "name": "right stick",
-      "dik": "vigem",
-      "extended": false
-     }
-    ],
-    "device": "ViGEm virtual XInput pad",
-    "confidence": "verified-live",
-    "verified": "2026-09-04",
-    "notes": "virtual-pad.py stick right 1.0 0 <secs>; ~98 deg pure yaw for a 1.5 s hold, position unchanged, reversible."
-   },
-   {
-    "action": "open the console (in-game)",
-    "keys": [
-     {
-      "name": "scancode 0x29",
-      "dik": "0x29",
-      "extended": false
-     }
-    ],
-    "confidence": "verified-live",
-    "verified": "2026-09-01",
-    "notes": "Send the scancode via the proxy scan 0x29, then space+backspace (dead key). Needs +com_allowconsole 1 at launch to be ungated; retail gates it."
-   }
-  ]
- },
- "states": [
-  {
-   "name": "main_menu",
-   "detect": "DOOM logo top-left; CAMPAIGN / MULTIPLAYER / SNAPMAP tabs; large 'The Dark Ages' promo tiles below; [ENTER] SELECT / [ESC] EXIT / [R] CREDITS at the bottom.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
+  "routes": [
+    {
+      "from": "launch",
+      "to": "gameplay",
+      "steps": [
+        "run install-and-launch.bat (Vulkan + automation on); wait for the window (~20 s)",
+        "the game opens on the main menu with a promo tile focused",
+        "Esc raises a quit prompt -> Enter on No to dismiss (or just Up to the tabs)",
+        "Up to the CAMPAIGN/MULTIPLAYER/SNAPMAP tab row",
+        "Left to CAMPAIGN if needed, Enter",
+        "SELECT CAMPAIGN: GAME SLOT 1 highlighted, Enter",
+        "MAIN MENU: CONTINUE GAME highlighted, Enter",
+        "wait ~40 s for the loading screen, then Space at 'Press [SPACE] to continue'"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Drive the menu by KEYBOARD, not mouse: a click on a promo tile opens the Steam store overlay (see hazards)."
+    },
+    {
+      "from": "gameplay",
+      "to": "process_exit",
+      "steps": [
+        "Esc (pause menu, RESUME highlighted)",
+        "Down x5 to EXIT TO DESKTOP - VERIFY the highlight (RESTART MISSION is passed on the way)",
+        "Enter",
+        "quit dialog defaults to No: Up to Yes - VERIFY - then Enter",
+        "process exits in ~5 s"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    }
+  ],
+  "entry_points": {
+    "process_name": "DOOMx64vk.exe (Vulkan) or DOOMx64.exe (GL)",
+    "window_title_substring": "DOOMx64",
+    "launch_note": "Direct launch needs SteamAppId=379720 in the environment (no steam_appid.txt exists); install-and-launch.bat sets it. 2026-09-08: launching via Steam (steam://rungameid/379720) works and loads the vulkan-1.dll proxy normally. Steam briefly shows DOOMx64.exe in the task list - that is a bootstrap, and DOOMx64vk.exe is what ends up running; do not read it as 'the OpenGL exe started, so the Vulkan proxy will not load'. Startup to main menu is ~90 s.",
+    "window_title_note": "CORRECTION 2026-09-08: this profile previously recorded the window title as \"DOOM\". The real titles are \"DOOMx64vk\" (Vulkan) and \"DOOMx64\" (GL). An EXACT match on \"DOOM\" finds nothing, and a bare substring match on \"DOOM\" can select a terminal window whose title merely mentions the game. Match on the \"DOOMx64\" prefix. [verified-live 2026-09-08]"
   },
-  {
-   "name": "quit_prompt",
-   "detect": "NOTICE 'Are you sure you want to quit the game?' with Yes / No; No highlighted by default.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
+  "commands": {
+    "file_channel": {
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "The proxy reads doom_automation_cmds.txt beside the exe and answers in doom_vk_proxy_log.txt; helper scripts/doom-auto.ps1. Opt-in (DOOM_AUTOMATION=1 or doom_automation_enable.txt). Commands: status/help/mappings, snapa/snapb/dump, ringlearn/ringstat/ringyaw/ringeye/ringoff, framespy, probe, backend <name>, move/look, key/type/scan/console, tol. NUMPAD 1/2/3 are a manual fallback."
+    },
+    "console": {
+      "open": "send PHYSICAL scancode 0x29 (the proxy's `scan 0x29`). The virtual-key that reaches it changes with the active keyboard layout - which has differed between two launches of the same game on the same machine - so send the scancode, never a VK.",
+      "dead_key_flush": "IMMEDIATELY after opening, send `scan 0x39` then `scan 0x0E` (space, backspace). The console key is a DEAD key: it leaves a pending accent and the first character typed afterwards composes with it. ⚠️ `key 0x39` is NOT the same thing - `key` takes a virtual-key, `scan` takes a scancode, so `key 0x39` types a literal '9'.",
+      "typing": "`typeroute sendinput` FIRST, then `type <text>`, then `key enter`. The default type route is `inproc-keystate`, which is the one route this console ignores - typing on the default gives silence and no error.",
+      "capture": "`type conDump <name>.txt` writes the console buffer to Saved Games\\id Software\\DOOM\base\\. ⚠️ conDump NEVER overwrites - it appends _1, _2 ... until the name is free, so an unattended loop polling a fixed path reads the FIRST capture for ever and reports a frozen camera. Scan by modification time. Capped at the last 4095 lines.",
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 1,
+      "worked_example": "scan 0x29 / scan 0x39 / scan 0x0E / typeroute sendinput / type getviewpos / key enter -> `1728 5440 6372.16 30.0 -0.0`"
+    },
+    "camera_position_read": {
+      "available": true,
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "Two independent routes agree to printed precision, which is why the offset is now trustworthy: (1) the console command `getviewpos`; (2) the proxy's `pdump` at DOOMx64vk.exe + 0x360F6B0 (dossier 6h camera global), which returned 1762.941 5461.524 6367.585 against the console's 1762.94 5461.52 6367.59. Route (2) needs no console and no typing, so it is the one to automate."
+    },
+    "console_verified_again": "2026-09-08: console opened with `scan 0x29` on a plain Steam launch, and `getviewpos` returned '1728 5440 6372.16 30.0 -0.0' then '2345.03 5795.69 6333.47 30.0 -0.0' after a move. Console read AND write confirmed live again, n=3 across three sessions. Typing requires `typeroute sendinput` - see input.api_notes.",
+    "rvhold": "[verified-live 2026-09-08] rvhold <hexaddr> [fov] [frames] writes explicitProjectionMatrix AND the useExplicitProjectionMatrix flag every frame, which is the only form of the section 6c experiment that can produce a meaningful result - a one-shot write is zeroed before any frame consumes it. PROVED the engine honours the field: held fov 40 and fov 140 each changed the picture well above the scene-animation floor and each reverted on release, and the two values gave different pictures. Addresses need a 0x prefix and no zero padding. The address can be DERIVED as module base + 0x360F6B0 rather than re-hunted with psearch/pnarrow.",
+    "input_routes_measured": {
+      "claim": "Of the four routes the proxy's `ctest` probes, three reach the console and one does not.",
+      "result": {
+        "0 sendinput-scancode": "works",
+        "1 postmessage-key": "works",
+        "2 postmessage-char": "works, but DOUBLED (TranslateMessage turns the posted key-down into a second WM_CHAR)",
+        "3 inproc-keystate": "does NOT reach the console"
+      },
+      "confidence": "verified-live",
+      "date": "2026-09-10",
+      "n": 1,
+      "warning": "⚠️ RUN `status` FIRST and ⚠️ FLUSH THE DEAD KEY FIRST. ctest sends its route-0 digit first and route 0 is the only one going through ToUnicode, so an unflushed accent eats exactly the digit that proves the OS input path works - the probe then reads 'WM_CHAR only', which is a false claim about the engine. And without `status`, a missing '3' cannot be told from a hook that never installed."
+    },
+    "existing_dumps_on_disk": {
+      "what": "This game writes its own answers to disk and they survive between sessions.",
+      "where": "%USERPROFILE%\\Saved Games\\id Software\\DOOM\base\\ - doomcmds.txt (full listCmds), doomcvars.txt/doomcvars2.txt (full listCvars), doomview.txt (a conDump), consoleHistory.txt",
+      "why": "Answers 'does command X exist' in seconds, with no launch and no packed-binary archaeology. getviewpos, conDump and bind were all confirmed this way; com_allowconsole was disproved.",
+      "confidence": "verified-numerically",
+      "date": "2026-09-10"
+    }
   },
-  {
-   "name": "select_campaign",
-   "detect": "SELECT CAMPAIGN; list GAME SLOT 1 / GAME SLOT 2 / NEW SLOT / ARCADE MODE; [R] DELETE GAME SLOT at the bottom.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "campaign_main_menu",
-   "detect": "MAIN MENU; CONTINUE GAME / MISSION SELECT / RUNE TRIAL SELECT / CLASSIC MAPS / COLLECTIBLES / SETTINGS; slot summary (The UAC, last played, difficulty) on the right.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "loading_press_space",
-   "detect": "Level name top-left (e.g. 'The UAC'), a UAC glyph animation, 'Press [SPACE] to continue' top-right.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "gameplay",
-   "detect": "First-person, weapon bottom-right, health/armor bottom-left, waypoint distance top-center.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "name": "pause_menu",
-   "detect": "IN GAME; RESUME / SETTINGS / LOAD CHECKPOINT / RESTART MISSION / EXIT TO MAIN MENU / EXIT TO DESKTOP.",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  }
- ],
- "routes": [
-  {
-   "from": "launch",
-   "to": "gameplay",
-   "steps": [
-    "run install-and-launch.bat (Vulkan + automation on); wait for the window (~20 s)",
-    "the game opens on the main menu with a promo tile focused",
-    "Esc raises a quit prompt -> Enter on No to dismiss (or just Up to the tabs)",
-    "Up to the CAMPAIGN/MULTIPLAYER/SNAPMAP tab row",
-    "Left to CAMPAIGN if needed, Enter",
-    "SELECT CAMPAIGN: GAME SLOT 1 highlighted, Enter",
-    "MAIN MENU: CONTINUE GAME highlighted, Enter",
-    "wait ~40 s for the loading screen, then Space at 'Press [SPACE] to continue'"
-   ],
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "Drive the menu by KEYBOARD, not mouse: a click on a promo tile opens the Steam store overlay (see hazards)."
-  },
-  {
-   "from": "gameplay",
-   "to": "process_exit",
-   "steps": [
-    "Esc (pause menu, RESUME highlighted)",
-    "Down x5 to EXIT TO DESKTOP - VERIFY the highlight (RESTART MISSION is passed on the way)",
-    "Enter",
-    "quit dialog defaults to No: Up to Yes - VERIFY - then Enter",
-    "process exits in ~5 s"
-   ],
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  }
- ],
- "entry_points": {
-  "process_name": "DOOMx64vk.exe (Vulkan) or DOOMx64.exe (GL)",
-  "window_title_substring": "DOOMx64",
-  "launch_note": "Direct launch needs SteamAppId=379720 in the environment (no steam_appid.txt exists); install-and-launch.bat sets it. 2026-09-08: launching via Steam (steam://rungameid/379720) works and loads the vulkan-1.dll proxy normally. Steam briefly shows DOOMx64.exe in the task list - that is a bootstrap, and DOOMx64vk.exe is what ends up running; do not read it as 'the OpenGL exe started, so the Vulkan proxy will not load'. Startup to main menu is ~90 s.",
-  "window_title_note": "CORRECTION 2026-09-08: this profile previously recorded the window title as \"DOOM\". The real titles are \"DOOMx64vk\" (Vulkan) and \"DOOMx64\" (GL). An EXACT match on \"DOOM\" finds nothing, and a bare substring match on \"DOOM\" can select a terminal window whose title merely mentions the game. Match on the \"DOOMx64\" prefix. [verified-live 2026-09-08]"
- },
- "commands": {
-  "file_channel": {
-   "available": true,
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "The proxy reads doom_automation_cmds.txt beside the exe and answers in doom_vk_proxy_log.txt; helper scripts/doom-auto.ps1. Opt-in (DOOM_AUTOMATION=1 or doom_automation_enable.txt). Commands: status/help/mappings, snapa/snapb/dump, ringlearn/ringstat/ringyaw/ringeye/ringoff, framespy, probe, backend <name>, move/look, key/type/scan/console, tol. NUMPAD 1/2/3 are a manual fallback."
-  },
-  "console": {
-   "available": true,
-   "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "Opens and executes on a plain retail launch - no +com_allowconsole 1 needed. Send scancode 0x29 (scan 0x29); `getviewpos` returned '1762.94 5461.52 6367.59 31.5 0.3' on 2026-09-08 with no launch flag, re-confirming the 2026-08-26 result (n=2 across two sessions). CORRECTION: this profile previously said 'Needs +com_allowconsole 1 at launch to be ungated; retail gates it.' That was wrong and the dossier never said it - ENGINE-DOSSIER.md section 9 has recorded the console as verified live since 2026-08-26, with getviewpos as the camera ground-truth instrument and `g_fov 110` as a WORKING WRITE, so console writes are not in question either. Section 11's +com_allowconsole note is a narrow untested candidate for the cvars present in the binary but never REGISTERED (the stereoRender_* family, noclip, rp, renameRenderProg) - not for console access. A hedged dossier claim had been copied outward as a broader settled one. STILL TRUE: the stereo switch is a call argument, not a cvar (dossier 6a). STILL A GAP: typing into the console is not reliable automation - the proxy's `type` burst-sends and only 1 char of 'getviewpos' arrived; a paced external typer needed four attempts and then stopped landing entirely (external SendInput follows focus, and SetForegroundWindow is refused to a background process). Build the in-process route: one character per command, so each lands on its own frame. Until then prefer the pdump route under commands.camera_position_read, which needs no console and no typing."
-  },
-  "camera_position_read": {
-   "available": true,
-   "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "Two independent routes agree to printed precision, which is why the offset is now trustworthy: (1) the console command `getviewpos`; (2) the proxy's `pdump` at DOOMx64vk.exe + 0x360F6B0 (dossier 6h camera global), which returned 1762.941 5461.524 6367.585 against the console's 1762.94 5461.52 6367.59. Route (2) needs no console and no typing, so it is the one to automate."
-  },
-  "console_verified_again": "2026-09-08: console opened with `scan 0x29` on a plain Steam launch, and `getviewpos` returned '1728 5440 6372.16 30.0 -0.0' then '2345.03 5795.69 6333.47 30.0 -0.0' after a move. Console read AND write confirmed live again, n=3 across three sessions. Typing requires `typeroute sendinput` - see input.api_notes.",
-  "rvhold": "[verified-live 2026-09-08] rvhold <hexaddr> [fov] [frames] writes explicitProjectionMatrix AND the useExplicitProjectionMatrix flag every frame, which is the only form of the section 6c experiment that can produce a meaningful result - a one-shot write is zeroed before any frame consumes it. PROVED the engine honours the field: held fov 40 and fov 140 each changed the picture well above the scene-animation floor and each reverted on release, and the two values gave different pictures. Addresses need a 0x prefix and no zero padding. The address can be DERIVED as module base + 0x360F6B0 rather than re-hunted with psearch/pnarrow."
- },
- "hazards": [
-  {
-   "hazard": "Clicking a promo tile on the main menu opens the Steam store overlay",
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "A left-click aimed at the CAMPAIGN tab (155,140 at 1280x720) hit a 'DOOM: The Dark Ages' promo tile instead and opened the Steam overlay. Drive the main menu by keyboard (Up to the tabs), not mouse clicks on tiles."
-  },
-  {
-   "hazard": "SELECT CAMPAIGN can DELETE a save",
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "[R] DELETE GAME SLOT is bound on that screen, and NEW SLOT / ARCADE MODE sit below the real slots. Navigate, capture, verify the highlight, then Enter."
-  },
-  {
-   "hazard": "The pause menu has RESTART MISSION",
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "Two rows above EXIT TO MAIN MENU. Verify the highlight before Enter when heading for an exit row."
-  },
-  {
-   "hazard": "Both quit dialogs default to No",
-   "confidence": "verified-live",
-   "verified": "2026-09-04",
-   "notes": "The main-menu Esc quit prompt and the EXIT TO DESKTOP confirm both start on No; press Up to reach Yes and verify before Enter."
-  },
-  {
-   "hazard": "DOOM must be the foreground window for synthetic keyboard/mouse",
-   "confidence": "verified-live",
-   "verified": "2026-08-31",
-   "notes": "sendinput follows focus. The virtual XInput pad does NOT need focus, which is one reason it is the better in-game route."
-  },
-  {
-   "hazard": "The window does not exist for several seconds after launch",
-   "confidence": "verified-live",
-   "verified": "2026-09-04"
-  },
-  {
-   "hazard": "`camwatch` costs ~60x the framerate - it is not a 'leave it on' mode",
-   "confidence": "measured",
-   "verified": "2026-09-08",
-   "notes": "Measured from the proxy's own 1000-frame markers: ~60 FPS before, ~1.1 FPS with camwatch on, ~60 FPS immediately after camoff (16.7s -> 889s -> 16.7s per 1000 frames), the slow interval matching the two commands to the second. The dev PC's low power is non-diagnostic by standing rule, which makes this exactly the kind of slowdown that gets shrugged off - it should not be. Take the reading, then camoff."
-  },
-  {
-   "hazard": "The HUD waypoint distance is a BAD odometer - do not judge movement by it",
-   "confidence": "measured",
-   "verified": "2026-09-08",
-   "notes": "It read 272.0 -> 271.2 across roughly 41 world units of actual movement, because the waypoint is not along the walk direction. It reads as 'input is being ignored' when input is working fine. Judge movement by `getviewpos` or by pdump on the camera global, never by the HUD."
-  },
-  {
-   "hazard": "doom-auto.ps1 races the proxy when sending more than ~8 commands at once",
-   "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "The script Add-Content's one line at a time while the proxy truncates the same file after reading it. A 64-command send died mid-way with 'Add-Content : Stream was not readable' after 35 landed. Batch to 8 or fewer, with a wait between batches."
-  },
-  {
-   "hazard": "rvmat / rvcheck reject the address format rvscan itself prints",
-   "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "rvscan lists survivors as zero-padded addresses (000000E5E2DEB7A0). Pasting one into rvcheck returns 'usage:', and into rvmat returns '0000000000000000: window not readable' - a SILENTLY WRONG answer, not an error. Both need 0x-prefixed unpadded addresses (0xE5E2DEB7A0). rvexplicit accepts the padded form, so the three commands disagree about their own address syntax."
-  },
-  {
-   "hazard": "the automation channel does not drain until the game is fully loaded",
-   "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "Commands appended to doom_automation_cmds.txt before the game finishes loading (~2 min from launch on the dev PC) are queued silently and answered only once the proxy prints \"[auto] automation ON\". Wait for that line before expecting a reply, or a command will look like it was ignored."
-  },
-  {
-   "hazard": "timed probes can expire before the capture, which reads as a false null",
-   "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "rvhold takes a frame budget. A 600-frame arm is about 10 s at 60 fps and expired before the screenshot, which read as \"this value has no effect\" and nearly became a finding. Check the log ARMED / \"released (frame budget expired)\" timestamps against the capture time before believing any null from a self-expiring probe, or give it a long budget."
-  }
- ]
+  "hazards": [
+    {
+      "hazard": "Clicking a promo tile on the main menu opens the Steam store overlay",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "A left-click aimed at the CAMPAIGN tab (155,140 at 1280x720) hit a 'DOOM: The Dark Ages' promo tile instead and opened the Steam overlay. Drive the main menu by keyboard (Up to the tabs), not mouse clicks on tiles."
+    },
+    {
+      "hazard": "SELECT CAMPAIGN can DELETE a save",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "[R] DELETE GAME SLOT is bound on that screen, and NEW SLOT / ARCADE MODE sit below the real slots. Navigate, capture, verify the highlight, then Enter."
+    },
+    {
+      "hazard": "The pause menu has RESTART MISSION",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "Two rows above EXIT TO MAIN MENU. Verify the highlight before Enter when heading for an exit row."
+    },
+    {
+      "hazard": "Both quit dialogs default to No",
+      "confidence": "verified-live",
+      "verified": "2026-09-04",
+      "notes": "The main-menu Esc quit prompt and the EXIT TO DESKTOP confirm both start on No; press Up to reach Yes and verify before Enter."
+    },
+    {
+      "hazard": "DOOM must be the foreground window for synthetic keyboard/mouse",
+      "confidence": "verified-live",
+      "verified": "2026-08-31",
+      "notes": "sendinput follows focus. The virtual XInput pad does NOT need focus, which is one reason it is the better in-game route."
+    },
+    {
+      "hazard": "The window does not exist for several seconds after launch",
+      "confidence": "verified-live",
+      "verified": "2026-09-04"
+    },
+    {
+      "hazard": "`camwatch` costs ~60x the framerate - it is not a 'leave it on' mode",
+      "confidence": "measured",
+      "verified": "2026-09-08",
+      "notes": "Measured from the proxy's own 1000-frame markers: ~60 FPS before, ~1.1 FPS with camwatch on, ~60 FPS immediately after camoff (16.7s -> 889s -> 16.7s per 1000 frames), the slow interval matching the two commands to the second. The dev PC's low power is non-diagnostic by standing rule, which makes this exactly the kind of slowdown that gets shrugged off - it should not be. Take the reading, then camoff."
+    },
+    {
+      "hazard": "The HUD waypoint distance is a BAD odometer - do not judge movement by it",
+      "confidence": "measured",
+      "verified": "2026-09-08",
+      "notes": "It read 272.0 -> 271.2 across roughly 41 world units of actual movement, because the waypoint is not along the walk direction. It reads as 'input is being ignored' when input is working fine. Judge movement by `getviewpos` or by pdump on the camera global, never by the HUD."
+    },
+    {
+      "hazard": "doom-auto.ps1 races the proxy when sending more than ~8 commands at once",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "The script Add-Content's one line at a time while the proxy truncates the same file after reading it. A 64-command send died mid-way with 'Add-Content : Stream was not readable' after 35 landed. Batch to 8 or fewer, with a wait between batches."
+    },
+    {
+      "hazard": "rvmat / rvcheck reject the address format rvscan itself prints",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "rvscan lists survivors as zero-padded addresses (000000E5E2DEB7A0). Pasting one into rvcheck returns 'usage:', and into rvmat returns '0000000000000000: window not readable' - a SILENTLY WRONG answer, not an error. Both need 0x-prefixed unpadded addresses (0xE5E2DEB7A0). rvexplicit accepts the padded form, so the three commands disagree about their own address syntax."
+    },
+    {
+      "hazard": "the automation channel does not drain until the game is fully loaded",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "Commands appended to doom_automation_cmds.txt before the game finishes loading (~2 min from launch on the dev PC) are queued silently and answered only once the proxy prints \"[auto] automation ON\". Wait for that line before expecting a reply, or a command will look like it was ignored."
+    },
+    {
+      "hazard": "timed probes can expire before the capture, which reads as a false null",
+      "confidence": "verified-live",
+      "verified": "2026-09-08",
+      "notes": "rvhold takes a frame budget. A 600-frame arm is about 10 s at 60 fps and expired before the screenshot, which read as \"this value has no effect\" and nearly became a finding. Check the log ARMED / \"released (frame budget expired)\" timestamps against the capture time before believing any null from a self-expiring probe, or give it a long budget."
+    },
+    {
+      "hazard": "Esc on the MAIN MENU opens a quit prompt, not a back action",
+      "confidence": "verified-live",
+      "verified": "2026-09-10",
+      "n": 1,
+      "notes": "It defaults to 'No', so it is recoverable - but it is not a safe 'cancel'. Screenshot after any Esc on a menu."
+    },
+    {
+      "hazard": "The quit confirm defaults to No",
+      "confidence": "verified-live",
+      "verified": "2026-09-10",
+      "n": 1,
+      "notes": "Exiting needs Up, then a VERIFIED highlight, then Enter. Pause menu route: Esc, Down x5 to EXIT TO DESKTOP (RESTART MISSION is passed on the way), Enter, Up, Enter."
+    },
+    {
+      "hazard": "Resuming a save can land in a scripted opening where the player cannot move",
+      "confidence": "verified-live",
+      "verified": "2026-09-10",
+      "n": 1,
+      "notes": "game/sp/intro/intro. Several input probes read as 'the game ignores movement' before a working route separated the two. If getviewpos returns an identical origin with fixed-looking angles (pitch exactly 30.0, yaw -0.0), suspect a scripted camera before suspecting the harness."
+    },
+    {
+      "hazard": "The proxy's `move` takes fwd/back/left/right/jump, NOT w/a/s/d",
+      "confidence": "verified-numerically",
+      "verified": "2026-09-10",
+      "notes": "`move w` is refused with `no recognised keys in \"w\"` printed in the log at the moment it is issued. A session recorded 'the proxy cannot move the player' and retracted it the same session. READ THE TOOL'S ANSWER BEFORE THE GAME'S."
+    },
+    {
+      "hazard": "DOOM binds F1/F2 by default (equipment cycle)",
+      "confidence": "verified-live",
+      "verified": "2026-09-10",
+      "notes": "The level-load screen says so outright. The numpad is completely free across all 11 bindsets - use KP_1 (scan 0x4F) / KP_2 (0x50) rather than F-keys. Avoid KP_ENTER and KP_SLASH: extended scancodes the harness sends without KEYEVENTF_EXTENDEDKEY."
+    }
+  ],
+  "last_updated": "2026-09-10"
 }
