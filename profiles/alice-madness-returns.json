@@ -8,10 +8,10 @@
   "engine": "Unreal Engine 3",
   "renderer": "Direct3D 9",
   "distribution": "Steam (EA/Origin activation; SteamStub-wrapped exe)",
-  "build_notes": "Verified 2026-09-04 dev PC, windowed 1280x720, with our d3d9.dll proxy present. Driven by external synthetic keyboard (SendInput scancodes) for menus and the proxy's own F-key hotkeys for stereo. MUST be windowed (see hazards). Re-verified 2026-09-07 (dev PC): full menu->gameplay drive, character movement, all six proxy hotkeys, and a graceful self-close, all unassisted after the user's launch. Harness: alice-madness-returns-vr/dev-archive/tools/alice_harness.py. Re-verified 2026-09-10 (dev PC): three self-launches, menu->gameplay with a screenshot check per screen, proxy head-offset hotkeys on all three axes, graceful self-close."
+  "build_notes": "Verified 2026-09-04 dev PC, windowed 1280x720, with our d3d9.dll proxy present. Driven by external synthetic keyboard (SendInput scancodes) for menus and the proxy's own F-key hotkeys for stereo. MUST be windowed (see hazards). Re-verified 2026-09-07 (dev PC): full menu->gameplay drive, character movement, all six proxy hotkeys, and a graceful self-close, all unassisted after the user's launch. Harness: alice-madness-returns-vr/dev-archive/tools/alice_harness.py. Re-verified 2026-09-10 (dev PC): three self-launches, menu->gameplay with a screenshot check per screen, proxy head-offset hotkeys on all three axes, graceful self-close. 2026-09-10b (/pd, no launch): every proxy stereo hotkey moved off the F-keys onto the numpad, build ade1d41d34b7 - compile-verified only, NOT yet exercised live."
  },
  "input": {
-  "api": "Win32 SendInput (scancode keyboard) for menus; proxy F-key hotkeys (GetAsyncKeyState, polled each Present) for stereo controls",
+  "api": "Win32 SendInput (scancode keyboard) for menus; proxy NUMPAD hotkeys (GetAsyncKeyState, polled each Present) for stereo and head-offset controls",
   "api_notes": [
    "The window title is 'Alice Madness Returns' (match substring 'Alice').",
    "MUST run windowed: Fullscreen=True gives fullscreen-exclusive which BitBlt captures as solid black, so the harness cannot see or drive it. Set Fullscreen=False in the live config while the game is CLOSED (UE3 rewrites config on exit). [verified-live 2026-09-04]",
@@ -21,7 +21,9 @@
    "2026-09-08: to test whether keys reach this game, use a key whose action is unambiguously LIVE - W (walk) changes the frame by ~14.6 mean luma against a ~1.05 idle floor. Do NOT use the F1-F4 `viewmode` binds as the probe: they are dev commands that may be stripped from retail, so their doing nothing is equally explained by the command being absent rather than the key not arriving. A binding surviving in a shipped ini is not evidence the feature is live.",
    "2026-09-09: this game keeps its ACTION bindings in AliceControlLayout.ini, NOT AliceInput.ini (which holds only axes and aliases). Several sessions read the latter and concluded features were absent. On a UE3 title read every *Input* and *ControlLayout* ini before saying a feature does not exist.",
    "2026-09-09: the third-person camera turns about 94 degrees per numpad press at the harness default 80 ms hold, and presses compose linearly (n=4, spread ~1%). HOLD DURATION IS NOT A DIAL - 20/40/160 ms gave -5.3/-168.7/+75.4 degrees, neither monotonic nor proportional. Use press COUNT at the default hold, and expect a quarter turn each time.",
-   "2026-09-10: the first Enter after launch is SWALLOWED if it is sent before the title screen is interactive (about 30 s after the process starts on the dev PC). Do not count Enters blind: capture, classify the screen (PROFILE SELECT has the red profile blot; the main menu has the red blot behind CONTINUE GAME), and press again only while still on title/copyright. dev-archive/tools/ has no driver for this yet; the session's scratch script did it in six lines."
+   "2026-09-10: the first Enter after launch is SWALLOWED if it is sent before the title screen is interactive (about 30 s after the process starts on the dev PC). Do not count Enters blind: capture, classify the screen (PROFILE SELECT has the red profile blot; the main menu has the red blot behind CONTINUE GAME), and press again only while still on title/copyright. dev-archive/tools/ has no driver for this yet; the session's scratch script did it in six lines.",
+   "2026-09-10: THE NUMPAD IS FREE ON THIS GAME, and that was checked rather than assumed. AliceControlLayout.ini (the action bindings) names no numpad key at all - its whole key set is C, CapsLock, E, Enter, Escape, Four, L, LeftControl, LeftMouseButton, LeftShift, MouseScrollDown, MouseScrollUp, One, Q, R, RightMouseButton, SpaceBar, T, Tab, Three, Two, U - and the only numpad Bindings= rows in AliceInput.ini are the six camera axes we added ourselves. So exactly six keys were free (0, 1, 3, '.', '/', '*') for seven proxy functions, which is why eye-swap and wiggle were merged onto one cycling key.",
+   "2026-09-10: DO NOT USE Ctrl AS A HOTKEY MODIFIER ON THIS GAME. AliceControlLayout.ini ships KeyBindArray1=(Name=\"LeftControl\",Command=\"ChangeShrinkingMode | OnRelease UnShrinking\"), so holding Ctrl is a gameplay action - it makes Alice shrink. A Ctrl-qualified hotkey helper written on 2026-09-09 has been deleted for this reason."
   ],
   "bindings": [
    {
@@ -93,29 +95,49 @@
     "action": "toggle stereo (proxy)",
     "keys": [
      {
-      "name": "F9",
-      "dik": "0x43",
+      "name": "NumPad0",
+      "dik": "0x52",
       "extended": false
      }
     ],
     "device": "proxy hotkey",
-    "confidence": "verified-live",
-    "verified": "2026-09-04",
-    "notes": "Logs 'HOTKEY F9: stereo ON/OFF (... p00=known|NOT SEEN YET)'. p00 is only recovered while enabled, so read it on a SECOND toggle after enabled frames have run."
+    "confidence": "compile-verified",
+    "verified": "2026-09-10",
+    "notes": "MOVED off F9 on 2026-09-10 (build ade1d41d34b7) - NOT yet exercised live; the F9 form was verified-live 2026-09-04. Logs 'HOTKEY NumPad0: stereo ON/OFF (... p00=known|NOT SEEN YET)'. p00 is only recovered while enabled, so read it on a SECOND toggle after enabled frames have run. Harness key: NP0. REQUIRES NUMLOCK ON - see the NumLock hazard."
    },
    {
-    "action": "eye swap / ipd / convergence (proxy)",
+    "action": "eye mode, ipd and convergence (proxy)",
     "keys": [
      {
-      "name": "F10 eye, F11/F12 ipd, F7/F8 convergence",
-      "dik": "0x44/0x57/0x58/0x41/0x42",
+      "name": "NumPad1 - eye mode cycle LEFT->RIGHT->WIGGLE",
+      "dik": "0x4F",
+      "extended": false
+     },
+     {
+      "name": "NumPad/ - ipd minus",
+      "dik": "0x35",
+      "extended": true
+     },
+     {
+      "name": "NumPad* - ipd plus",
+      "dik": "0x37",
+      "extended": false
+     },
+     {
+      "name": "NumPad3 - convergence minus",
+      "dik": "0x51",
+      "extended": false
+     },
+     {
+      "name": "NumPad. - convergence plus",
+      "dik": "0x53",
       "extended": false
      }
     ],
     "device": "proxy hotkey",
-    "confidence": "verified-live",
-    "verified": "2026-09-07",
-    "notes": "F6 wiggle, F7/F8 convergence, F9 stereo, F11/F12 ipd ALL exercised live 2026-09-07 and all reversible. F10 is refused while wiggle is on (the wiggle owns the eye). F12 is also Steam's screenshot key - harmless, but the toast overlay sits in screen captures for ~10 s and will contaminate image analysis of the bottom-right corner."
+    "confidence": "compile-verified",
+    "verified": "2026-09-10",
+    "notes": "MOVED off F6/F7/F8/F10/F11/F12 on 2026-09-10 (build ade1d41d34b7) - compile-verified, NOT yet exercised live; the F-key forms were verified-live 2026-09-07. Two changes of behaviour, not just of key: (1) eye swap and wiggle are now ONE key cycling LEFT->RIGHT->WIGGLE, which removes the old wart where F10 was REFUSED while the wiggle owned the eye - there is now no state in which a press does nothing. (2) F12 is no longer involved, so Steam's screenshot toast no longer contaminates captures. !! NumPad/ is the ONLY one of these that is an EXTENDED scancode (E0 35); bare 0x35 is the main-row slash key. Harness keys: NP1, NPDIV, NPMUL, NP3, NPDEC. NumPad1/NumPad3/NumPad. REQUIRE NUMLOCK ON; NumPad/ and NumPad* do not."
    },
    {
     "action": "walk the character forward (and W/A/S/D generally)",
@@ -377,10 +399,10 @@
    "notes": "Esc out of EXTRA CONTENT and the main menu highlight is back on CONTINUE GAME, not where you were. Always re-capture and count from the top; never reuse a Down-count across a submenu visit. This menu has no destructive row, but PROFILE SELECT does."
   },
   {
-   "hazard": "every F-key F1-F12 is claimed, by the game AND by our own proxy",
+   "hazard": "every F-key F1-F12 is claimed by the game - the PROXY no longer uses any of them (resolved 2026-09-10)",
    "confidence": "verified-live",
-   "verified": "2026-09-08",
-   "notes": "Alice binds F1-F9 by default in AliceInput.ini: F1 viewmode wireframe, F2 unlit, F3 lit, F4 shadercomplexity, F5 QUICKSAVE, F6 QUICKLOAD, F7/F8 toggle bUsePostProcessEffects, F9 shot. Separately the alice-madness-returns-vr d3d9 proxy polls VK_F6 through VK_F12 for its stereo hotkeys. So an F-key chosen for automation can fire TWO unintended actions and neither reports anything. F5/F6 are the dangerous pair - quicksave and quickload both alter save state. Take a key back deliberately instead: F1 is now rebound to `exec commands`, and it is outside the proxy's F6-F12 range."
+   "verified": "2026-09-10",
+   "notes": "Alice binds F1-F9 by default in AliceInput.ini: F1 viewmode wireframe, F2 unlit, F3 lit, F4 shadercomplexity, F5 QUICKSAVE, F6 QUICKLOAD, F7/F8 toggle bUsePostProcessEffects, F9 shot. F5/F6 are the dangerous pair - quicksave and quickload both alter save state. THE PROXY SIDE OF THIS IS RESOLVED: as of build ade1d41d34b7 (2026-09-10) it polls no F-key at all, VK_F6..VK_F12 appear nowhere in the binary, and every stereo control lives on the numpad. The game's own binds are unchanged, so an F-key is still a bad choice for anything new - use the numpad, which this game leaves entirely unbound."
   },
   {
    "hazard": "numpad scancodes are arrow scancodes WITHOUT the extended flag",
@@ -401,6 +423,22 @@
    "detail": "Numpad minus is NPSUB (not NPADSUB) and Enter is ENTER (not RETURN). The KeyError is printed, but inside a chained shell command it scrolls past above the useful output. On 2026-09-09 every 'step the head offset back down' in a sweep failed this way: the offset climbed monotonically to 390 while the session believed it was returning to 40, and five correlation readings measured nothing. Read the value back from the game's own log after every state-changing key, rather than trusting that the key was sent.",
    "confidence": "verified-live",
    "verified": "2026-09-09"
+  },
+  {
+   "id": "numlock-off-silently-kills-four-numpad-hotkeys",
+   "severity": "high",
+   "summary": "With NumLock OFF, four of the six stereo hotkeys never reach the proxy, and nothing errors.",
+   "detail": "GetAsyncKeyState reads VIRTUAL keys, and with NumLock off the numpad digits deliver the navigation VKs instead: NumPad0 -> VK_INSERT, NumPad1 -> VK_END, NumPad3 -> VK_NEXT, NumPad. -> VK_DELETE. So stereo toggle, eye mode and convergence-down go quiet while ipd (VK_DIVIDE/VK_MULTIPLY) and the head offset (VK_ADD/VK_SUBTRACT) keep working, because those four VKs are NumLock-independent. A PARTIAL failure like that reads as 'the build ignores that key' rather than as a keyboard-state problem. Two guards: the proxy prints NumLock state in its startup banner with a warning naming the affected keys, and every hotkey logs when it fires - so a missing HOTKEY line means the key never arrived. Deliberately NOT aliased to the navigation VKs, which would give the grey Insert/End/PageDown/Delete keys a second way to fire the stereo controls.",
+   "confidence": "inferred-static",
+   "verified": "2026-09-10"
+  },
+  {
+   "id": "numpad-plus-minus-drag-menu-sliders",
+   "severity": "low",
+   "summary": "The head-offset step keys also move menu sliders, but only while a settings screen is open.",
+   "detail": "AliceInput.ini maps Add and Subtract to the UISlider Increment/DecrementSliderValue aliases and to the ShiftUp/ShiftDown button prompts, so pressing NumPad+ or NumPad- with the Video or Audio screen open drags whatever slider has focus. It cannot bite in gameplay, which is the only place the head offset is used. Recorded rather than fixed: moving the head offset would cost the three keys verified live on 2026-09-10.",
+   "confidence": "measured",
+   "verified": "2026-09-10"
   }
  ],
  "disproved": [
