@@ -324,7 +324,8 @@
    ],
    "confidence": "verified-live",
    "verified": "2026-09-09",
-   "notes": "Reverse it with a weapon-switch key One..Four - VERIFIED LIVE 2026-09-09 (pressing One returned the view to third person). Other actions carrying QuitFPS in the ini (attacking, most context actions) are still only [inferred-static]. FIRST PERSON SURVIVES: walking (12 taps), jumping, and running-then-jumping [verified-live 2026-09-09, n=1 each]. COMBAT IS UNTESTED - Chapter 1's opening has no enemies. FREE STATE DETECTOR: the proxy log's p00cam reads ~1.5697 in first person and ~1.4281 in third, so the state can be read without a screenshot."
+   "notes": "Reverse it with a weapon-switch key One..Four - VERIFIED LIVE 2026-09-09 (pressing One returned the view to third person). Other actions carrying QuitFPS in the ini (attacking, most context actions) are still only [inferred-static]. FIRST PERSON SURVIVES: walking (12 taps), jumping, and running-then-jumping [verified-live 2026-09-09, n=1 each]. COMBAT IS UNTESTED - Chapter 1's opening has no enemies. FREE STATE DETECTOR: the proxy log's p00cam reads ~1.5697 in first person and ~1.4281 in third, so the state can be read without a screenshot.",
+   "caveat_2026_09_11": "T did NOT enter first person on 2026-09-11 (dev PC, the Wonderland save, n=1 launch): three presses including a 1.5 s hold, the binding present in AliceControlLayout.ini, W walking fine. It worked on 2026-09-09 in London. Cause unknown; the Wonderland spawn archetype's FPSCamera setup (Distance 100) differs from London's (0) [hypothesis]."
   }
  ],
  "entry_points": {
@@ -339,7 +340,8 @@
    "available": true,
    "confidence": "verified-live",
    "verified": "2026-09-04",
-   "notes": "The d3d9.dll proxy polls F7-F12 via GetAsyncKeyState each Present; answers in alice_vr_proxy_log.txt. F9 toggle stereo (confirmed live). No in-game developer console investigated."
+   "notes": "The d3d9.dll proxy polls F7-F12 via GetAsyncKeyState each Present; answers in alice_vr_proxy_log.txt. F9 toggle stereo (confirmed live). No in-game developer console investigated.",
+   "update_2026_09_11": "The stereo keys moved to the NUMPAD on 2026-09-10 and are re-proven: NumPad0 stereo on/off, NumPad1 eye mode (left/right/wiggle), NumPad* / NumPad/ ipd +/-, NumPad3 / NumPad. convergence -/+ all fire from external SendInput, each logging its HOTKEY line; NumLock ON per the startup banner [verified-live 2026-09-11, n=1 each]. Stereo ON shifts the view -4 px and an eye swap +8 px. NumPad5 cycles the head-offset axis RIGHT/UP/FORWARD and NumPad-/+ step it by 5 game units when no tracker is live."
   },
   "console": {
    "available": false,
@@ -362,6 +364,12 @@
   }
  },
  "hazards": [
+  {
+   "hazard": "Occasional exit with no crash report",
+   "confidence": "verified-live",
+   "verified": "2026-09-11",
+   "notes": "On 2026-09-11 launch 1 exited on its own about a minute into gameplay after CONTINUE GAME: the proxy log ends in a normal 'unloading' line and Windows wrote no AppCrash report (the 2026-09-09/10 load crashes did). Relaunch; cause unknown. Unit scale for anyone driving by coordinates: ~95 game units per metre (Alice ~160 units tall) [verified-live 2026-09-11, n=2]."
+  },
   {
    "hazard": "Fullscreen-exclusive is invisible to BitBlt",
    "confidence": "verified-live",
