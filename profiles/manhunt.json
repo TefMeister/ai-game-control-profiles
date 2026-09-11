@@ -8,17 +8,18 @@
   "store": "Steam (appid 12130)",
   "profile_created": "2026-09-10",
   "created_by": "manhunt-2003-vr /lm session, dev PC",
-  "summary": "Fully drivable unattended, except moving the character. Self-launch works but stops at an ANSI Win32 launcher dialog that must be BM_CLICKed. The frontend IS drivable: the game reads the DirectInput MOUSE, and proxy-side synthetic DIMOUSESTATE2 moves the cursor, moves the menu highlight, and activates entries -- menu to live gameplay, unattended. The in-game camera responds to the same route. What does NOT work is character movement: no scancode tried has moved him, and the keys this game binds have never been read out of the binary. IMPORTANT: two harness defects made this game look completely input-proof until 2026-09-10 and every input finding before that date is withdrawn -- see input.harness_traps.",
+  "summary": "Fully drivable unattended, character movement included (since 2026-09-11). Self-launch works but stops at an ANSI Win32 launcher dialog that must be BM_CLICKed. The MOUSE is read through DirectInput, and proxy-side synthetic DIMOUSESTATE2 drives the cursor, menu highlight, menu clicks and the in-game camera. The KEYBOARD is read from ordinary window messages: PostMessage(WM_KEYDOWN / WM_KEYUP) straight to the game window walks, strafes and runs the character with the default bindings (W/A/S/D, Shift to run, Enter/Space to use). SendInput returns success but never reaches the game -- do not use it. IMPORTANT: two harness defects made this game look completely input-proof until 2026-09-10 and every input finding before that date is withdrawn -- see input.harness_traps.",
   "input": {
     "measured_paths": [
       {
-        "claim": "The game polls the DirectInput MOUSE on the order of 20,000 times a second, with cbData = 20 (DIMOUSESTATE2). It also calls GetDeviceState on the KEYBOARD device, but with cbData = 0, which cannot return key state, and that count freezes once gameplay starts. GetDeviceData is never called on either device.",
-        "numbers": "launch 2, mid-gameplay: SysMouse state=22,708,637 cbData=20; SysKeyboard state=12,981 cbData=0; GetDeviceData=0 on both",
+        "claim": "The game polls the DirectInput MOUSE ~64,000 times a second in the menu and ~200 a second (the frame rate) in gameplay, with cbData = 20 (DIMOUSESTATE2). It calls GetDeviceState on the KEYBOARD about once a frame with cbData = 0 -- on purpose: that single call site (0x00492376) is a 'still acquired?' probe with a re-Acquire loop, and the game never reads key state through DirectInput at all. GetDeviceData is never called on either device.",
+        "numbers": "2026-09-11, gameplay, 26 s: SysKeyboard 44,865 -> 50,110 (cbData=0); SysMouse 23,041,787 -> 23,047,032 (cbData=20)",
         "confidence": "verified-live",
-        "date": "2026-09-10",
-        "n": 2,
-        "how": "per-device counters in the project's own d3d8 proxy (input.c), after the per-device hooking fix",
-        "implication": "Inject into GetDeviceState on the MOUSE device. Why the keyboard is polled with cbData = 0 is UNEXPLAINED and is the open question -- log the first ~20 keyboard calls with cbData, lpvData, hr and the RETURN ADDRESS to learn who is calling it."
+        "date": "2026-09-11",
+        "n": 1,
+        "how": "per-device counters in the project's own d3d8 proxy (input.c REPORT command); call site from static analysis of the unpacked image (verified-numerically 2026-09-11)",
+        "implication": "Mouse: inject into GetDeviceState on the MOUSE device. Keyboard: post window messages. Injecting DIK state through the proxy can never press a key in this game.",
+        "supersedes": "the 2026-09-10 claim that the keyboard count 'freezes once gameplay starts' -- it pauses during the level load and resumes in play"
       }
     ],
     "working": [
@@ -49,11 +50,25 @@
       },
       {
         "route": "A synthetic left click during the intro credits",
-        "result": "main menu reached ~28 s after Play instead of ~180 s -- appears to skip the credits",
+        "result": "main menu reached 16-28 s after the click instead of the ~180 s the credits take on their own",
         "confidence": "verified-live",
-        "date": "2026-09-10",
+        "date": "2026-09-11",
+        "n": 2
+      },
+      {
+        "route": "PostMessage(hwnd, WM_KEYDOWN, vk, lParam) then later WM_KEYUP, posted straight to the game's main window from an external 64-bit PowerShell",
+        "drives": [
+          "walk forward (W, vk 0x57, scan 0x11)",
+          "walk back (S), strafe left (A), strafe right (D)",
+          "run (Shift vk 0x10 held together with W)",
+          "item pickup (walk over it)"
+        ],
+        "result": "the character walks, strafes and runs; one key-down with no auto-repeat is enough for a held action",
+        "confidence": "verified-live",
+        "date": "2026-09-11",
         "n": 1,
-        "caveat": "n=1, and the credits do end on their own. 28 s against 180 s is a large gap, but this is not yet a controlled test."
+        "how_to_get_it_right": "lParam = 1 | (scancode << 16) | (extended << 24); WM_KEYUP adds bits 30 and 31. Arrow keys NEED the extended bit (24) or the game reads them as the numpad keys. Foreground the window first; the main loop only runs a frame while the window has focus.",
+        "bindings_default": "Forward Up/W, Back Down/S, Strafe Left/A, Right/D, Run Right Ctrl/Shift, Sneak Numpad 0/Left Ctrl (plain Ctrl is SNEAK), Use Enter/Space, Attack Left mouse, Action 2 Middle mouse, Reload Numpad 1/R, Inventory swap Right mouse/Tab, Look back Numpad 4/F, Peek Delete/Page Down or Q/E, First person End/X, Pause Esc, Items 1-4, Inventory up/down wheel. Read from the binary's default tables; Documents\\Manhunt User Files\\SaveGames\\Settings.dat was byte-identical to them (verified-numerically 2026-09-11)."
       }
     ],
     "disproved": [
@@ -63,16 +78,17 @@
         "result": "no effect; cursor did not move and the highlight did not change. The keyboard device is called with cbData = 0 and never returns key state.",
         "confidence": "verified-live",
         "date": "2026-09-10",
-        "n": 1
+        "n": 1,
+        "explained": "2026-09-11: the game never reads keys through DirectInput (its one keyboard GetDeviceState is an acquisition probe with cbData = 0). This route can never work, on any screen."
       },
       {
-        "route": "SendInput scancodes W (0x11, 6 s) and Up arrow (0x48 + KEYEVENTF_EXTENDEDKEY, 4 s), with the struct size FIXED and the return value confirmed as 1 down / 1 up",
+        "route": "SendInput scancodes W (0x11) and Up arrow (0x48 + KEYEVENTF_EXTENDEDKEY), 40-byte INPUT, return value confirmed as 1 down / 1 up",
         "target": "character movement in live gameplay",
-        "result": "scene unchanged; the character did not move",
+        "result": "scene unchanged; the character did not move -- including on 2026-09-11 straight after a POSTED W had walked him, in the same spot",
         "confidence": "verified-live",
-        "date": "2026-09-10",
-        "n": 2,
-        "scope_warning": "This is a correct negative for TWO scancodes, in one spot, in one level. It is NOT 'the keyboard does nothing'. The keys this game actually binds have never been read out of the binary or its config."
+        "date": "2026-09-11",
+        "n": 3,
+        "scope_warning": "The keys are right (W and extended Up are FORWARD). The failure is delivery: SendInput reports success but the key never reaches the game's window procedure. Why is open -- injected input going to a different keyboard-focus thread, or a filter on this machine, are both hypotheses. Use PostMessage instead."
       },
       {
         "route": "WITHDRAWN 2026-09-10: all SendInput results recorded before 2026-09-10b (keyboard scancodes, absolute mouse move + click, relative mouse move)",
@@ -105,8 +121,7 @@
       }
     ],
     "untried": [
-      "Read the game's real key bindings out of the binary or its settings, rather than guessing scancodes.",
-      "Log the first ~20 SysKeyboard GetDeviceState calls with cbData, lpvData, hr and the caller's return address, to explain the cbData = 0 anomaly.",
+      "SendInput from INSIDE the 32-bit game process (the project's kbdprobe.c 'KI' command, compiled but not wired) -- would separate 'injected input is filtered' from 'it goes to the wrong focus thread'.",
       "A gamepad, via the game's GAME_CONTROL_TYPE setting -- never tried."
     ]
   },
@@ -134,7 +149,7 @@
       "confidence": "verified-live",
       "date": "2026-09-10",
       "n": 1,
-      "notes": "This is currently the ONLY way to reach a running game unattended, because the frontend cannot be driven. START_LEVEL 1 (the first real level, 'Doorway Into Hell') loads too and shows its title card, but overflows the spline table sooner."
+      "notes": "No longer needed: the frontend is drivable (see routes). START_LEVEL 1 via SKIP_MENU crashes about two minutes in at 0x0061166A even with the spline table relocated (verified-live 2026-09-11, n=1; identical to two earlier runs) -- a direct-start-only fault. Use the menu. Set SKIP_MENU back to 0 afterwards."
     }
   ],
   "states": [
@@ -175,19 +190,19 @@
     {
       "from": "intro-fmv",
       "to": "main-menu",
-      "how": "a synthetic left click (MB 0) -- reached the menu in ~28 s instead of the ~180 s the credits take on their own",
+      "how": "a synthetic left click (MB 0) -- reached the menu 16-28 s later instead of the ~180 s the credits take on their own",
       "confidence": "verified-live",
-      "date": "2026-09-10",
-      "n": 1,
-      "warning": "The credits also end unprompted. Treat this as a strong lead, not a settled skip, until it is run again."
+      "date": "2026-09-11",
+      "n": 2
     },
     {
       "from": "main-menu",
       "to": "in-game",
       "how": "Move the cursor onto SELECT SCENE with synthetic mouse deltas, CAPTURE and VERIFY the highlight, left-click; then move onto the first scene thumbnail, verify again, click. Reaches live gameplay in about a minute.",
       "confidence": "verified-live",
-      "date": "2026-09-10",
-      "n": 1,
+      "date": "2026-09-11",
+      "n": 2,
+      "calibration_note": "From the post-click cursor spot beside PLAY, M 72 -10 lands on SELECT SCENE; on the scene grid, M -168 -107 lands on BORN AGAIN (dev PC, 800x600 client).",
       "supersedes": "the 2026-09-10 entry that recorded this route as UNSOLVED",
       "hazard": "QUIT is the bottom entry of the main menu. Never blind key-count or blind-move past it -- move, capture, verify the highlight, and only then click."
     },
@@ -197,6 +212,14 @@
       "how": "synthetic mouse X deltas; ~900 counts pans roughly 90 degrees",
       "confidence": "verified-live",
       "date": "2026-09-10",
+      "n": 1
+    },
+    {
+      "from": "in-game",
+      "to": "character movement",
+      "how": "PostMessage WM_KEYDOWN / WM_KEYUP to the game window: W forward, S back, A / D strafe, Shift + W run (see input.working)",
+      "confidence": "verified-live",
+      "date": "2026-09-11",
       "n": 1
     }
   ],
@@ -228,17 +251,17 @@
   "hazards": [
     {
       "what": "Spline table overflow crash -- RELOCATED, and it held for one level",
-      "detail": "The spline (camera path) loader wrote into a fixed 100-entry table at 0x007134F4 whose count sits in the word immediately after the last slot (0x00713684), with no bounds check; the 101st spline overwrote the count and the next iteration faulted at 0x00471FFB. Clamping the count (SPLINEGUARD) removed that crash but only MOVED the fault to a memcpy into a null spline at 0x0061166A. The project's proxy now RELOCATES the table to a 1024-slot buffer (SPLINERELOC) after verifying that the base literal occurs exactly six times in the whole image and that nothing reaches the table by a computed base. A full real level then ran ~8 minutes with no overflow and no crash. NOT yet closed: that level was reached through the menu, and the original crash happened on a SKIP_MENU DIRECT START, which has not been re-run since the relocation.",
+      "detail": "The spline (camera path) loader wrote into a fixed 100-entry table at 0x007134F4 whose count sits in the word immediately after the last slot (0x00713684), with no bounds check; the 101st spline overwrote the count and the next iteration faulted at 0x00471FFB. Clamping the count (SPLINEGUARD) removed that crash but only MOVED the fault to a memcpy into a null spline at 0x0061166A. The project's proxy now RELOCATES the table to a 1024-slot buffer (SPLINERELOC) after verifying that the base literal occurs exactly six times in the whole image and that nothing reaches the table by a computed base. A full real level then ran ~8 minutes with no overflow and no crash. 2026-09-11: a SKIP_MENU direct start with the relocation logged no overflow and no 0x00471FFB -- but still crashed at 0x0061166A, identically to the earlier runs, so that second crash is NOT caused by dropped splines. It happens only on the direct start; the same level through the menu ran most of an hour.",
       "confidence": "verified-live",
-      "date": "2026-09-10",
+      "date": "2026-09-11",
       "n": 1
     },
     {
       "what": "SecuROM remnant sabotage",
-      "detail": "Sixteen call sites in the retail exe run leftover anti-tamper checks that deliberately sabotage the game (stuck gates, item/useable crashes, broken saving, ammo drain). The project's proxy patches all sixteen at runtime, first try on every launch that carried them. Confirmed firing IN GAMEPLAY for the first time on 2026-09-10: Broken Health 1, Broken SaveGame EntityData, and Help Text Crash (the last roughly every 5-8 s), all returning the repaired value with the game continuing normally. Without the proxy, expect the documented bug cluster.",
+      "detail": "Sixteen call sites in the retail exe run leftover anti-tamper checks that deliberately sabotage the game (stuck gates, item/useable crashes, broken saving, ammo drain). The project's proxy patches all sixteen at runtime, first try on every launch that carried them. Confirmed firing IN GAMEPLAY for the first time on 2026-09-10: Broken Health 1, Broken SaveGame EntityData, and Help Text Crash (the last roughly every 5-8 s), all returning the repaired value with the game continuing normally. 2026-09-11: those three again, plus Broken Level Initialization 1 and Ignore Control 1 for the first time (a timer: 10 minutes apart); the player still had full control 24-34 minutes after Ignore Control fired. Without the proxy, expect the documented bug cluster.",
       "confidence": "verified-live",
-      "date": "2026-09-10",
-      "n": 5
+      "date": "2026-09-11",
+      "n": 7
     },
     {
       "what": "x64dbg/x32dbg cannot attach",
@@ -261,6 +284,6 @@
     "n": 3,
     "notes": "Exits cleanly, no taskkill needed. Historically, once the SecuROM bug cluster has been hit in gameplay the process can become unresponsive and need a force-kill; that has not recurred since the DRM patches went in, but n is small."
   },
-  "last_updated": "2026-09-10",
-  "updated_by": "manhunt-2003-vr /lm session, dev PC (second pass, 2026-09-10b)"
+  "last_updated": "2026-09-11",
+  "updated_by": "manhunt-2003-vr /lm session, dev PC (2026-09-11: keyboard by posted window messages)"
 }
