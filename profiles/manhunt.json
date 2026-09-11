@@ -224,6 +224,39 @@
       "n": 1
     },
     {
+      "from": "in-game, behind a hunter",
+      "to": "stealth execution",
+      "how": "The project's proxy HUNTERS command logs each hunter's map position, facing, health, state and whether the player is BEHIND him. Sneak (hold Left Ctrl: WM_KEYDOWN vk 0x11 scan 0x1D, not extended, together with W) toward him turning at most ~25 deg per step, re-reading HUNTERS each step; at ~1.1 m while BEHIND, hold the attack button (synthetic left mouse) ~1.5 s. The green lock-on triangles appear first; the camcorder execution scene follows; HUNTERS then reads health -1, state 0x1B DEAD.",
+      "confidence": "verified-live",
+      "date": "2026-09-11",
+      "n": 1,
+      "warning": "Walking in from the front turns it into a fist fight (state 0xF) that the player tends to lose. A weapon must be in hand; the plastic bag is used up by one execution."
+    },
+    {
+      "from": "in-game, standing on a second item",
+      "to": "item swap",
+      "how": "Hold the INVENTORY SWAP key (Tab, vk 0x09 scan 0x0F, or right mouse) ~1.5 s when the game shows 'Press and hold the inventory button to swap this item'.",
+      "confidence": "verified-live",
+      "date": "2026-09-11",
+      "n": 1
+    },
+    {
+      "from": "main-menu (no saves present)",
+      "to": "new game",
+      "how": "PLAY shows a BRIGHTNESS screen (Enter = OK; a mouse click on OK did not register), then DIFFICULTY (FETISH highlighted = standard; Enter), then a SAVE GAME slot list (Enter saves to the highlighted slot; Esc continues without saving), then 'Game saved successfully' (Enter). ⚠️ With any save present, PLAY instead CONTINUES the newest save by its internal timestamp — it is not a fresh start.",
+      "confidence": "verified-live",
+      "date": "2026-09-11",
+      "n": 1
+    },
+    {
+      "from": "Scene Failed!",
+      "to": "restart from checkpoint",
+      "how": "Enter = Continue (restart from the last checkpoint); Esc = quit to menu.",
+      "confidence": "verified-live",
+      "date": "2026-09-11",
+      "n": 2
+    },
+    {
       "from": "main-menu / load-game",
       "to": "confirm or back",
       "how": "Posted WM_KEYDOWN Enter (vk 0x0D, scan 0x1C) confirms (loaded a save); Esc (vk 0x1B, scan 0x01) backs out. The mouse route also works.",
@@ -279,6 +312,20 @@
       "confidence": "verified-live",
       "date": "2026-09-11",
       "n": 7
+    },
+    {
+      "what": "The game pauses itself when its window loses focus",
+      "detail": "The pause menu (SETTINGS / QUIT / CONTINUE) opens whenever another window takes focus -- including a person typing into another app on the same PC. Synthetic input then moves the menu cursor and nothing in the world changes, which reads exactly like 'stuck'. Esc does not close this menu; Enter on the highlighted CONTINUE does. ⚠️ QUIT is directly above CONTINUE: verify the highlight before pressing Enter.",
+      "confidence": "verified-live",
+      "date": "2026-09-11",
+      "n": 3
+    },
+    {
+      "what": "Restart / save-load crash from the project's own SecuROM site-1 patch (FIXED, opt-in)",
+      "detail": "The project's patch for 'Broken SaveGame EntityData' wrote 1 where the game writes 0, which made the entity snapshot record one entity 12 bytes short; every restart after death and every load of a save written by those builds crashed at 0x00431820 ('No archetype of this name exists : d'). Fixed in the project's proxy by manhunt_vr_fix_entitydata (write stock, repair poisoned snapshots on re-parse), all live checks passed 2026-09-11. Poisoned saves can also be repaired offline (one byte).",
+      "confidence": "verified-live",
+      "date": "2026-09-11",
+      "n": 4
     },
     {
       "what": "x64dbg/x32dbg cannot attach",
