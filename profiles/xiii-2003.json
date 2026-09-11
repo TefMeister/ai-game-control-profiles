@@ -14,7 +14,8 @@
     "api": "Unreal Engine 2 native input",
     "api_notes": [
       "This game does not need synthetic input for most automation: it has a real console and an internal command dispatcher that can be driven directly (see `commands`).",
-      "A native console exists on F2."
+      "A native console exists on F2.",
+      "Synthetic keyboard input works: `keybd_event` with the virtual-key code, sent to the FOREGROUND window, drives menus (Enter/Escape/arrows), movement (W/A/S/D), turning (U/J, bound to TurnLeft/TurnRight: a 120 ms hold is about 20 degrees, 300 ms about 45) and numpad hotkeys (verified live 2026-09-11). Send numpad keys by virtual-key code; a scancode-only send becomes Home/arrows when NumLock is off."
     ],
     "bindings": [
       {
@@ -74,7 +75,25 @@
   },
 
   "entry_points": {
-    "notes": "Level codes exist for this engine but were not catalogued for this game."
+    "notes": "Level codes exist for this engine but were not catalogued for this game.",
+    "routes": [
+      {
+        "id": "direct-map",
+        "how": "Run `XIII.exe Plage01` with the working directory set to `system\\`. Any map name works the same way (standard Unreal Engine 2 command line).",
+        "lands_in": "Plage01 (the first level with free control), after a short in-engine cutscene",
+        "confidence": "verified-live",
+        "verified": "2026-09-11",
+        "notes": "No Steam round-trip happened: the process that started is the game itself, and XIII.log shows `Browse: Plage01`. `-windowed` is not a switch this game parses; windowed mode comes from the ini."
+      },
+      {
+        "id": "steam-continue",
+        "how": "`steam://rungameid/1170760`, wait for the profile screen (intro videos end by themselves in about 20 s), then Enter x3: the pre-selected profile, then Continue, then PLAY. Space dismisses the objectives card.",
+        "lands_in": "the profile's last checkpoint (Banque01 on the dev PC, 2026-09-11)",
+        "confidence": "verified-live",
+        "verified": "2026-09-11",
+        "notes": "On the profile screen Up wraps to 'Create new profile'; Escape backs out of it. The menu cursor does not follow Windows mouse clicks, so drive menus with the keyboard."
+      }
+    ]
   },
 
   "hazards": [
@@ -92,6 +111,15 @@
       "impact": "A queued command sits unexecuted, which can look like the harness being broken.",
       "confidence": "verified-live",
       "verified": "2026-08-27"
+    },
+    {
+      "id": "command-harness-is-build-specific",
+      "description": "The external command queue (`xiii_automation_cmds.txt`) and camera telemetry exist only in the 0.2.8/0.2.9 graphics-proxy builds. The M2 stereo builds have neither, and no focus fix either.",
+      "impact": "With a stereo build installed, commands in the queue file are ignored and the engine stops ticking whenever the window loses focus.",
+      "mitigation": "Drive stereo builds with keyboard input to the foreground window and start levels from the command line. Before re-activating 0.2.9, empty the queue file and set `[VR] AutomationEngineExec=0`: two stale engine-tier lines left in it would replay the known crash on the first gameplay tick.",
+      "confidence": "measured",
+      "confidence_notes": "The harness strings are absent from the stereo builds' binaries (measured). The crash replay is read from code, not reproduced.",
+      "verified": "2026-09-11"
     },
     {
       "id": "windowed-vs-fullscreen",
