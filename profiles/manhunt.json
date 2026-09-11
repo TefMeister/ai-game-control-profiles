@@ -149,7 +149,7 @@
       "confidence": "verified-live",
       "date": "2026-09-10",
       "n": 1,
-      "notes": "No longer needed: the frontend is drivable (see routes). START_LEVEL 1 via SKIP_MENU crashes about two minutes in at 0x0061166A even with the spline table relocated (verified-live 2026-09-11, n=1; identical to two earlier runs) -- a direct-start-only fault. Use the menu. Set SKIP_MENU back to 0 afterwards."
+      "notes": "DOES NOT REACH GAMEPLAY on the stock game: the level's folder name is copied before levels.txt is read, so the world never loads, the load retries every frame and memory runs out (crash at 0x0061166A, or 0x00496C4F with the project's TOC fix). The level's intro Bink movie still plays, which looks like success. The 2026-09-10 'lands in live 3D' was very probably the reporter's camcorder movie. With the project's opt-in level-name fix (flag file manhunt_vr_fix_levelname) there is no crash but the screen stays black (2026-09-11). START_LEVEL is a raw index into initscripts/LEVELS/levels.txt: 0 = Jury_Turf (BORN AGAIN), 1 = Derelict; the '0 : Test level' comment in settings.txt is stale. Use the menu. Set SKIP_MENU back to 0 afterwards."
     }
   ],
   "states": [
@@ -202,7 +202,7 @@
       "confidence": "verified-live",
       "date": "2026-09-11",
       "n": 2,
-      "calibration_note": "From the post-click cursor spot beside PLAY, M 72 -10 lands on SELECT SCENE; on the scene grid, M -168 -107 lands on BORN AGAIN (dev PC, 800x600 client).",
+      "calibration_note": "From the post-click cursor spot beside PLAY, M 45 -37 lands on PLAY and M 72 -10 on SELECT SCENE; on the scene grid, M -168 -107 lands on BORN AGAIN (dev PC, 800x600 client). PLAY always starts level 0 (BORN AGAIN), whatever START_LEVEL says.",
       "supersedes": "the 2026-09-10 entry that recorded this route as UNSOLVED",
       "hazard": "QUIT is the bottom entry of the main menu. Never blind key-count or blind-move past it -- move, capture, verify the highlight, and only then click."
     },
@@ -212,6 +212,23 @@
       "how": "synthetic mouse X deltas; ~900 counts pans roughly 90 degrees",
       "confidence": "verified-live",
       "date": "2026-09-10",
+      "n": 1
+    },
+    {
+      "from": "in-game",
+      "to": "a map point (steering by coordinates)",
+      "how": "The project's proxy (build 8ceea3a4+) has a POS script command that logs the player's map position (X, Y, Z-up) and yaw (0 = +X, 90 = +Y, counter-clockwise) read from memory: player [0x00715B9C], frame [[player+0x80]+4], position frame+0x40, forward frame+0x30 (engine Y-up; map = (x, -z, y)). Loop: POS -> turn the camera by -(bearing - yaw) / 0.343 synthetic mouse-X counts -> post W for distance / 2.2 seconds -> repeat. Straight lines hit walls; use waypoints.",
+      "calibration": "+100 synthetic mouse-X counts = yaw -34.3 deg (positive X turns clockwise); walking ~2.2 map units/s; item pickup radius ~0.5",
+      "confidence": "verified-live",
+      "date": "2026-09-11",
+      "n": 1
+    },
+    {
+      "from": "main-menu / load-game",
+      "to": "confirm or back",
+      "how": "Posted WM_KEYDOWN Enter (vk 0x0D, scan 0x1C) confirms (loaded a save); Esc (vk 0x1B, scan 0x01) backs out. The mouse route also works.",
+      "confidence": "verified-live",
+      "date": "2026-09-11",
       "n": 1
     },
     {
