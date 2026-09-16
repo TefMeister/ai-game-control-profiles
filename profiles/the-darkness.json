@@ -12,7 +12,7 @@
   "api_notes": [
    "VIRTUAL XBOX 360 PAD WORKS. ViGEmBus (Nefarius, running) driven from Python with the vgamepad package. START and A navigate the menus; the RIGHT STICK turns the camera. Create the pad BEFORE launching the game so SDL sees it at initialisation. [verified-live 2026-09-16, n=3 runs for menus, n=1 run for look]",
    "The build's input backend is SDL (input_backend = 'sdl').",
-   "NOT TESTED: whether the pad works WITHOUT the game window having focus. The game had focus in every run so far, so no claim either way. Matters for hands-off testing while the user works on the same machine.",
+   "THE PAD ROUTE APPEARS TO NEED THE GAME WINDOW FOCUSED. A diagnostic run with Microsoft Edge in front for all 135 s: the menu presses did nothing, memory never rose past ~680 MB (a level needs ~1.1 GB) and the idle trailer played. Every run that reached gameplay had the game focused. Consistent with SDL ignoring game controllers while unfocused by default. [verified-live 2026-09-16, n=1 failing vs n=3 succeeding - correlational, not proven]. An SDK option, input_background_events = true in darknessrecomp.toml, sets SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS before the gamepad subsystem starts; it is built and switched on but UNPROVEN - in its one run the game took focus by itself. Until proven, bring the game window to the front before driving it.",
    "NOT TESTED: the keyboard route. The SDK maps keys to pad buttons by default even with mnk_mode = false - keybind_start = 'X', keybind_a = 'Semicolon', keybind_back = 'Z', keybind_dpad_down = 'Shift+Down' (defaults read from the SDK source). Untried on this game.",
    "LOOK SPEED RAMPS. A short, small nudge (right stick 0.55 for 0.35 s) produced NO visible turn at all, even by eye; full deflection for 0.8 s turned it clearly. Do not read a null from a short nudge as 'look is disabled'. [verified-live 2026-09-16, n=1 each]"
   ]
@@ -63,7 +63,7 @@
    ],
    "confidence": "verified-live",
    "verified": "2026-09-16",
-   "notes": "n=3 runs, identical outcome. The presses MUST land before ~94 s, when the idle attract trailer starts. The route is timing-based, not state-verified - a slower machine or a changed intro would shift it. Driver: the-darkness-vr/dev-archive/build-scripts/padpress.py and looktest.py."
+   "notes": "n=3 runs, identical outcome. The presses MUST land before ~94 s, when the idle attract trailer starts. The route is timing-based, not state-verified - a slower machine or a changed intro would shift it. Driver: the-darkness-vr/dev-archive/build-scripts/padpress.py and looktest.py. 2026-09-16: FAILED once when Microsoft Edge held focus for the whole run - the presses did not register and the trailer played. Treat 'game window focused' as a precondition."
   },
   {
    "from": "launch",
@@ -126,6 +126,12 @@
    "confidence": "verified-live",
    "verified": "2026-09-16",
    "notes": "Every automated run so far ended with taskkill /F. No graceful in-game quit route has been mapped. Low risk on a dev build with no save of value, but the in-game quit route is still a missing capability."
+  },
+  {
+   "hazard": "Pad input silently ignored when the game window is not focused",
+   "confidence": "verified-live",
+   "verified": "2026-09-16",
+   "notes": "n=1 failing run, correlational. The failure looks exactly like 'the route is broken' or 'the new build broke input': no error, the menu simply never advances and the attract trailer starts. Log the foreground process per sample so the cause is visible. See input.api_notes for the SDK option that should remove the dependency."
   }
  ],
  "notes": [
