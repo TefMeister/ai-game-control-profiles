@@ -1,0 +1,157 @@
+{
+ "schema_version": "0.1",
+ "game": {
+  "title": "Burnout Paradise Remastered",
+  "year": 2018,
+  "developer": "Criterion Games (remaster by Stellar Entertainment)",
+  "publisher": "Electronic Arts",
+  "engine": "Criterion in-house engine",
+  "renderer": "Direct3D 11 (32-bit exe)",
+  "distribution": "Steam (app 1238080), activated and started through the EA app; Denuvo Anti-Tamper",
+  "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): launch -> intro -> main menu -> quit, windowed via config.ini. Our full-export 32-bit d3d11.dll logging proxy LOADS UNDER DENUVO, the game reaches the main menu, and the log shows D3D11CreateDeviceAndSwapChain [verified-live 2026-09-17, n=2 launches]."
+ },
+ "input": {
+  "api": "keyboard",
+  "bindings": [
+   {
+    "action": "skip the intro movie / continue past the saving-icon notice",
+    "keys": [
+     {
+      "name": "Enter",
+      "dik": "0x1C",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1
+   },
+   {
+    "action": "move the main-menu selection",
+    "keys": [
+     {
+      "name": "Up",
+      "dik": "0x48",
+      "extended": true
+     },
+     {
+      "name": "Down",
+      "dik": "0x50",
+      "extended": true
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1
+   },
+   {
+    "action": "select; Yes in 'LEAVE PARADISE?'",
+    "keys": [
+     {
+      "name": "Enter",
+      "dik": "0x1C",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1
+   }
+  ]
+ },
+ "states": [
+  {
+   "name": "intro_movie",
+   "detect": "Intro movie after launch.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "saving_icon_notice",
+   "detect": "A notice explaining the saving icon; Enter continues.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "main_menu",
+   "detect": "Enter Paradise City / Start a Party / Big Surf Island / Quit.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "leave_confirm",
+   "detect": "'LEAVE PARADISE?' after Quit; Enter = Yes.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  }
+ ],
+ "routes": [
+  {
+   "from": "launch",
+   "to": "main_menu",
+   "steps": [
+    "launch through Steam (steam://rungameid/1238080); the EA app starts",
+    "wait for BurnoutPR.exe: ~140 s on the first run, ~6 s when the EA app is already running",
+    "Enter to skip the intro",
+    "Enter on the saving-icon notice",
+    "a Windows Firewall prompt may appear on the first run (Cancel was pressed)",
+    "verify the main menu"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "from": "main_menu",
+   "to": "process_exit",
+   "steps": [
+    "Down to Quit, verify the highlight",
+    "Enter",
+    "'LEAVE PARADISE?': Enter = Yes",
+    "verify the process has exited"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "from": "any state",
+   "to": "process_exit",
+   "steps": [
+    "PostMessage WM_CLOSE to the game window",
+    "verify the process has exited"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Also exits cleanly."
+  }
+ ],
+ "entry_points": {
+  "process_name": "BurnoutPR.exe",
+  "config_files": [
+   "%LOCALAPPDATA%\\Criterion Games\\Burnout Paradise Remastered\\config.ini [Display]: Width=1280 Height=720 WindowMode=1 gives a 1296x759 window (client 1280x720); WindowMode=2 = borderless sized to the work area (3440x1392, WS_POPUP); WindowMode=0 (the original value) = fullscreen 3440x1440 [verified-live 2026-09-17, n=1 each]."
+  ],
+  "proxy_dll": "d3d11.dll beside BurnoutPR.exe: 32-bit, all 51 exports forwarded (staging/burnout-paradise-vr/proxy-d3d11-full). Loads under Denuvo; log shows D3D11CreateDeviceAndSwapChain [verified-live 2026-09-17, n=2 launches]."
+ },
+ "hazards": [
+  {
+   "hazard": "The first launch is slow and goes through the EA app",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "~140 s from the Steam launch to the process on the first run. Do not treat a missing process at 60 s as a failed launch."
+  },
+  {
+   "hazard": "A Windows Firewall prompt on the first run steals focus",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "A Windows Defender Firewall 'allow access' dialog appeared on the first launch on this machine and took focus from the game. The main session pressed Cancel; answering it is left to the user. Losing focus can minimise a fullscreen game."
+  }
+ ]
+}

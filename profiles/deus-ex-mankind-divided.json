@@ -1,0 +1,101 @@
+{
+ "schema_version": "0.1",
+ "game": {
+  "title": "Deus Ex: Mankind Divided",
+  "year": 2016,
+  "developer": "Eidos Montreal",
+  "publisher": "Square Enix",
+  "engine": "Dawn Engine",
+  "renderer": "Direct3D 11 (registry EnableDX12=0; DX12 is selectable) [inferred-static 2026-09-17]",
+  "distribution": "Steam (app 337000)",
+  "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): version 1.19 build 801.0. Steam launch -> the launcher inside the exe -> Play -> main menu, windowed 1280x720 via the registry, quit with WM_CLOSE + Yes."
+ },
+ "input": {
+  "api": "mouse clicks for the launcher and the quit dialog; keyboard menu driving not established"
+ },
+ "states": [
+  {
+   "name": "launcher",
+   "detect": "A launcher window inside the exe, 790x445, window class NxApp: 'Play Deus Ex: Mankind Divided', Options, Website..., Quit.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "main_menu",
+   "detect": "STORY / BREACH / JENSEN'S STORIES / EXTRAS / OPTIONS / SHOP / SQUARE ENIX / QUIT.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "quit_confirm",
+   "detect": "In-game 'Quit game?' with Yes / No, raised by WM_CLOSE.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  }
+ ],
+ "routes": [
+  {
+   "from": "launch",
+   "to": "main_menu",
+   "steps": [
+    "launch through Steam (steam://rungameid/337000)",
+    "wait for the launcher window (class NxApp)",
+    "click Play at about (345*1.79, 40*1.79) px from the launcher's top-left (1.79 = the display scale on RTX)",
+    "verify the main menu"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "from": "any menu",
+   "to": "process_exit",
+   "steps": [
+    "PostMessage WM_CLOSE to the game window",
+    "the in-game 'Quit game?' dialog appears",
+    "click Yes",
+    "VERIFY the process has exited before the next step"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "A WM_CLOSE alone leaves the game running (see hazards)."
+  }
+ ],
+ "entry_points": {
+  "process_name": "DXMD.exe",
+  "working_directory": "<game>\\retail",
+  "launcher_skip_switch": "-nolauncher is in the exe's strings [inferred-static 2026-09-17]; not tried.",
+  "config_files": [
+   "Registry HKCU\\Software\\Eidos Montreal\\Deus Ex: MD\\Graphics (DWORDs): Fullscreen=0, WindowWidth=1280, UserWindowWidth=1280, WindowHeight=720, UserWindowHeight=720 gave a 1296x759 window [verified-live 2026-09-17, n=1]. A .reg backup was exported first."
+  ],
+  "logs": "Documents\\Deus Ex -  Mankind Divided\\Deus Ex -  Mankind Divided.log (note the double space)",
+  "proxy_dll": "dxgi.dll beside DXMD.exe: hit the AcGenral early call, then CreateDXGIFactory2, CompatValue, CreateDXGIFactory [verified-live 2026-09-17, n=1]."
+ },
+ "hazards": [
+  {
+   "hazard": "WM_CLOSE asks 'Quit game?' instead of exiting",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "A WM_CLOSE sent while the next step assumed the game was gone left it running. Click Yes, then verify the process has exited."
+  },
+  {
+   "hazard": "The dxgi proxy is called before its DllMain runs",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Windows' AcGenral compatibility shim calls dxgi SetAppCompatStringPointer before the proxy's DllMain has loaded the real dxgi.dll (found in x64dbg). A proxy must resolve the real function on that early call instead of jumping through an empty table."
+  },
+  {
+   "hazard": "Launcher click positions are display-scaled",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "The launcher's layout is scaled 1.79x on RTX; scale click offsets by the window's display scale on other machines."
+  }
+ ]
+}

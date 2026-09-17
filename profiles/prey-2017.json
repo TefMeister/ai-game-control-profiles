@@ -1,0 +1,241 @@
+{
+ "schema_version": "0.1",
+ "game": {
+  "title": "Prey",
+  "year": 2017,
+  "developer": "Arkane Studios",
+  "publisher": "Bethesda Softworks",
+  "engine": "CryEngine (Arkane fork)",
+  "renderer": "Direct3D 11 - a dxgi.dll proxy loads in-process; the device calls were not recorded [inferred-static 2026-09-17]",
+  "distribution": "Steam (app 480490)",
+  "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): title -> main menu -> Options -> Video by keyboard, windowed 1280x720 via system.cfg, closed with WM_CLOSE. Exe Binaries\\Danielle\\x64\\Release\\Prey.exe; the renderer is in PreyDll.dll. The user has a 31 h campaign save (see hazards)."
+ },
+ "input": {
+  "api": "keyboard (synthetic key presses); mouse clicks on menu items do NOT register",
+  "api_notes": [
+   "Mouse clicks on menu items did nothing (n=2). Drive the menus with the keyboard."
+  ],
+  "bindings": [
+   {
+    "action": "leave the 'Press Any Key' title",
+    "keys": [
+     {
+      "name": "Space",
+      "dik": "0x39",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1
+   },
+   {
+    "action": "move the main-menu / options selection",
+    "keys": [
+     {
+      "name": "Up",
+      "dik": "0x48",
+      "extended": true
+     },
+     {
+      "name": "Down",
+      "dik": "0x50",
+      "extended": true
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1
+   },
+   {
+    "action": "select the highlighted item",
+    "keys": [
+     {
+      "name": "Enter",
+      "dik": "0x1C",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1
+   },
+   {
+    "action": "next options tab",
+    "keys": [
+     {
+      "name": "E",
+      "dik": "0x12",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1,
+    "notes": "Two presses moved Gameplay -> Video."
+   },
+   {
+    "action": "open 'Apply changes?' in the Video tab, then confirm it",
+    "keys": [
+     {
+      "name": "E",
+      "dik": "0x12",
+      "extended": false
+     },
+     {
+      "name": "Enter",
+      "dik": "0x1C",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1,
+    "notes": "E opens it, Enter confirms."
+   },
+   {
+    "action": "confirm the 'Confirm Video Settings' countdown (~5 s)",
+    "keys": [
+     {
+      "name": "Enter",
+      "dik": "0x1C",
+      "extended": false
+     },
+     {
+      "name": "E",
+      "dik": "0x12",
+      "extended": false
+     }
+    ],
+    "confidence": "disproved",
+    "verified": "2026-09-17",
+    "n": 3,
+    "notes": "Neither Enter, E nor a mouse click confirmed it in time; it reverted three times."
+   }
+  ]
+ },
+ "states": [
+  {
+   "name": "title",
+   "detect": "'Press Any Key' title screen.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "main_menu",
+   "detect": "Vertical list: CONTINUE, LOAD GAME, NEW GAME, NEW GAME+, OPTIONS, LAUNCH MOONCRASH, EXIT.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "options_video",
+   "detect": "Options tabs; Video has Monitor, Resolution (dropdown), Display Mode (Windowed / Fullscreen / Borderless Windowed).",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "confirm_video_settings",
+   "detect": "'Confirm Video Settings' with a ~5 s countdown that reverts the change.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  }
+ ],
+ "routes": [
+  {
+   "from": "launch",
+   "to": "main_menu",
+   "steps": [
+    "launch through Steam (steam://rungameid/480490)",
+    "wait for 'Press Any Key'",
+    "press Space",
+    "verify the main menu"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "from": "game closed",
+   "to": "windowed_1280x720",
+   "steps": [
+    "with the game CLOSED, back up <game>\\system.cfg (system.cfg.bak-2026-09-17 on RTX)",
+    "append three lines: r_Fullscreen=0, r_Width=1280, r_Height=720",
+    "launch"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Window 1296x759, client 1280x720 [verified-live 2026-09-17, n=1]. The in-game Video route is disproved."
+  },
+  {
+   "from": "any menu",
+   "to": "process_exit",
+   "steps": [
+    "PostMessage WM_CLOSE to the game's top-level window",
+    "verify the process has exited"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Exits cleanly with no prompt."
+  }
+ ],
+ "entry_points": {
+  "process_name": "Prey.exe",
+  "working_directory": "<game>\\Binaries\\Danielle\\x64\\Release",
+  "config_files": [
+   "<game>\\system.cfg - CryEngine cvars read at start; the three r_ lines give a window [verified-live 2026-09-17, n=1]. r_Fullscreen 0 = window, 1 = fullscreen, 2 = fullscreen windowed, per the cvar help text in PreyDll.dll [inferred-static 2026-09-17].",
+   "Saved Games\\Arkane Studios\\Prey\\ - profiles and saves. The engine also names a %USER%/game.cfg, which does not exist on RTX [inferred-static 2026-09-17]."
+  ],
+  "logs": "<game>\\Game.log, rewritten each launch; it lists the r_Width / r_Height / r_Fullscreen values in effect.",
+  "proxy_dll": "dxgi.dll beside Prey.exe (logging, full export). Needs early-call handling - see hazards."
+ },
+ "hazards": [
+  {
+   "hazard": "NEW GAME sits two rows under CONTINUE, and the user has a 31 h campaign",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Never press Down blind on the main menu. Verify the highlight before Enter. Whether a new game would touch the existing save is untested - do not test it."
+  },
+  {
+   "hazard": "Video settings revert unless confirmed within ~5 s, and no synthetic input confirms them",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 3,
+   "notes": "Enter, E and a mouse click all failed (3 reverts). Use system.cfg with the game closed."
+  },
+  {
+   "hazard": "The dxgi proxy is called before its DllMain runs",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Windows' AcGenral compatibility shim calls dxgi SetAppCompatStringPointer before the proxy's DllMain has loaded the real dxgi.dll (found in x64dbg). A proxy must resolve the real function on that early call instead of jumping through an empty table."
+  },
+  {
+   "hazard": "A Windows Firewall prompt on the first run steals focus",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "A Windows Defender Firewall 'allow access' dialog appeared on the first launch on this machine and took focus from the game. The main session pressed Cancel; answering it is left to the user. Losing focus can minimise a fullscreen game."
+  }
+ ],
+ "disproved": [
+  {
+   "claim": "Confirm the 'Confirm Video Settings' countdown with Enter, E or a mouse click",
+   "result": "No - reverted every time.",
+   "date": "2026-09-17",
+   "n": 3
+  },
+  {
+   "claim": "Mouse clicks select menu items",
+   "result": "No - clicks did not register.",
+   "date": "2026-09-17",
+   "n": 2
+  }
+ ]
+}

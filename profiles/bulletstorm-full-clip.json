@@ -1,0 +1,75 @@
+{
+ "schema_version": "0.1",
+ "game": {
+  "title": "Bulletstorm: Full Clip Edition",
+  "year": 2017,
+  "developer": "People Can Fly",
+  "publisher": "Gearbox Publishing",
+  "engine": "Unreal Engine 3",
+  "renderer": "Direct3D 11 (the window title reads '(64-bit, DX11)')",
+  "distribution": "Steam (app 501590)",
+  "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): started StormGame-Win64-Shipping.exe directly windowed; main menu background after ~45 s; closed with WM_CLOSE. The game ships StormGame-Win64-Shipping.pdb - full symbols."
+ },
+ "states": [
+  {
+   "name": "main_menu_background",
+   "detect": "Main menu background scene about 45 s after start, showing the Steam account name.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  }
+ ],
+ "routes": [
+  {
+   "from": "launch",
+   "to": "main_menu (windowed 1280x720)",
+   "steps": [
+    "start <game>\\Binaries\\Win64\\StormGame-Win64-Shipping.exe directly with the arguments -windowed ResX=1280 ResY=720",
+    "wait ~45 s",
+    "verify the main menu background"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "from": "any menu",
+   "to": "process_exit",
+   "steps": [
+    "PostMessage WM_CLOSE to the game's top-level window",
+    "verify the process has exited"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Exits cleanly with no prompt."
+  }
+ ],
+ "entry_points": {
+  "process_name": "StormGame-Win64-Shipping.exe",
+  "window_title_substring": "(64-bit, DX11)",
+  "working_directory": "<game>\\Binaries\\Win64",
+  "command_line": "-windowed ResX=1280 ResY=720 [verified-live 2026-09-17, n=1]",
+  "config_files": [
+   "The user config would live under Documents\\My Games\\Bulletstorm Full Clip Edition\\ (MyDocumentsSubDirName in DefaultEngine.ini); the shipped StormGame\\Config\\Steamworks\\SteamworksSystemSettings.ini forces FullScreen=true [inferred-static 2026-09-17]."
+  ],
+  "symbols": "StormGame-Win64-Shipping.pdb beside the exe [verified-live 2026-09-17]",
+  "proxy_dll": "dxgi.dll beside the exe; log shows CreateDXGIFactory, CompatValue, CreateDXGIFactory1 [verified-live 2026-09-17, n=1]."
+ },
+ "hazards": [
+  {
+   "hazard": "Launched through Steam it runs fullscreen and minimises when it loses focus",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "A firewall prompt stole focus and the game minimised. Start the exe directly with -windowed."
+  },
+  {
+   "hazard": "A Windows Firewall prompt on the first run steals focus",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "A Windows Defender Firewall 'allow access' dialog appeared on the first launch on this machine and took focus from the game. The main session pressed Cancel; answering it is left to the user. Losing focus can minimise a fullscreen game."
+  }
+ ]
+}

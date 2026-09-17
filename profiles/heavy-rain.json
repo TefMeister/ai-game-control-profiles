@@ -1,0 +1,173 @@
+{
+ "schema_version": "0.1",
+ "game": {
+  "title": "Heavy Rain",
+  "year": 2019,
+  "developer": "Quantic Dream",
+  "publisher": "Quantic Dream",
+  "engine": "Quantic Dream in-house engine (2019 PC port)",
+  "renderer": "Direct3D 11",
+  "distribution": "Steam (app 960910)",
+  "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): launched, reached the main menu and Options -> Graphics, set windowed 1280x720, closed. Our d3d11.dll logging proxy was present; its log shows D3D11CreateDevice [verified-live 2026-09-17, n=1]."
+ },
+ "input": {
+  "api": "Win32 messages; the menus are MOUSE-driven (clicks at screen coordinates), Esc = back",
+  "api_notes": [
+   "Menu items accept synthetic mouse clicks at screen coordinates [verified-live 2026-09-17, n=1]. Esc goes back one level.",
+   "Enter from the keyboard did NOT confirm the 'keep these settings?' dialog after Apply (see disproved)."
+  ],
+  "bindings": [
+   {
+    "action": "back out of a menu",
+    "keys": [
+     {
+      "name": "Escape",
+      "dik": "0x01",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1
+   },
+   {
+    "action": "apply graphics settings (Options -> Graphics)",
+    "keys": [
+     {
+      "name": "F",
+      "dik": "0x21",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1,
+    "notes": "Opens a 'keep settings?' confirmation with a 15 s revert timer."
+   },
+   {
+    "action": "confirm the 'keep settings?' dialog",
+    "keys": [
+     {
+      "name": "Enter",
+      "dik": "0x1C",
+      "extended": false
+     }
+    ],
+    "confidence": "disproved",
+    "verified": "2026-09-17",
+    "n": 1,
+    "notes": "Enter did not confirm; the timer ran out and the settings reverted once. The user then confirmed by hand. A mouse click on its button is the untested next route."
+   }
+  ]
+ },
+ "states": [
+  {
+   "name": "main_menu",
+   "detect": "The game's main menu, about 30 s after launch; borderless 3440x1440 by default on this machine.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "options_graphics",
+   "detect": "Options -> Graphics: Resolution row with left/right arrows, Display Mode row with arrows (Borderless / ... / Windowed), F = Apply.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "keep_settings_confirm",
+   "detect": "A 'keep these settings?' dialog with a 15 s countdown that reverts the change.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "exit_confirm_win32",
+   "detect": "A native Win32 message box 'ARE YOU SURE YOU WISH TO EXIT GAME?' with OK, raised by WM_CLOSE.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  }
+ ],
+ "routes": [
+  {
+   "from": "launch",
+   "to": "main_menu",
+   "steps": [
+    "launch through Steam (steam://rungameid/960910)",
+    "wait ~30 s",
+    "verify the main menu"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "from": "main_menu",
+   "to": "windowed_1280x720",
+   "steps": [
+    "click Options, then Graphics",
+    "Resolution: click the RIGHT arrow repeatedly. The list WRAPS: after 3440x1440 come 640x480, 720x480, 720x576, 800x600, 1024x768, 1152x864, 1176x664, 1280x720 ... Read the shown value after each click.",
+    "Display Mode: arrows to Windowed, verify",
+    "press F (Apply)",
+    "confirm 'keep settings?' within 15 s. Enter does NOT work; the user clicked it by hand."
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Worked once with a manual confirm. The file route (entry_points.config_files) avoids the timer."
+  },
+  {
+   "from": "any menu",
+   "to": "process_exit",
+   "steps": [
+    "PostMessage WM_CLOSE to the game window",
+    "a Win32 box 'ARE YOU SURE YOU WISH TO EXIT GAME?' appears",
+    "send BM_CLICK to its OK button",
+    "verify the process has exited"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  }
+ ],
+ "entry_points": {
+  "process_name": "HeavyRain.exe",
+  "config_files": [
+   "<game folder>\\user_setting.ini [GRAPHIC_SECTION]: Resolution=1280 x 720 and ScreenMode=2 = WINDOWED (the menu showed Windowed while the file read 2) [verified-live 2026-09-17, n=1]. What ScreenMode 0 and 1 mean is not established."
+  ],
+  "proxy_dll": "d3d11.dll beside HeavyRain.exe (logging, full export); log shows D3D11CreateDevice [verified-live 2026-09-17, n=1]."
+ },
+ "hazards": [
+  {
+   "hazard": "Graphics changes revert after 15 s unless confirmed",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Apply (F) opens a keep-settings dialog with a 15 s timer. Enter does not confirm it and the change reverted once. Edit user_setting.ini with the game closed instead."
+  },
+  {
+   "hazard": "WM_CLOSE does not exit directly",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "It raises a Win32 'ARE YOU SURE YOU WISH TO EXIT GAME?' box. Click OK (BM_CLICK works), then verify the process has gone before the next step."
+  },
+  {
+   "hazard": "The resolution list wraps around",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Pressing right past the desktop resolution wraps to 640x480. Read the shown value; do not press a fixed count."
+  }
+ ],
+ "disproved": [
+  {
+   "claim": "Enter confirms the 'keep these settings?' dialog",
+   "result": "No - the 15 s timer ran out and the settings reverted.",
+   "date": "2026-09-17",
+   "n": 1
+  }
+ ]
+}
