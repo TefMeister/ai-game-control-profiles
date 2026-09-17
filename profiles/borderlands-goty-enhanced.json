@@ -1,0 +1,113 @@
+{
+ "schema_version": "0.1",
+ "game": {
+  "title": "Borderlands Game of the Year Enhanced",
+  "year": 2019,
+  "developer": "Gearbox Software (Enhanced edition by Blind Squirrel Games)",
+  "publisher": "2K",
+  "engine": "Unreal Engine 3",
+  "renderer": "Direct3D 11",
+  "renderer_notes": "A d3d9.dll proxy saw only D3DPERF_BeginEvent/EndEvent while d3d11.dll and dxgi.dll are loaded in-process, so it draws with D3D11 [verified-live 2026-09-17, n=1]. The exe's static d3d9 import is misleading.",
+  "distribution": "Steam (app 729040)",
+  "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): started BorderlandsGOTY.exe directly, windowed 1280x720 from the command line, closed with WM_CLOSE."
+ },
+ "input": {
+  "api": "keyboard",
+  "bindings": [
+   {
+    "action": "leave the 'Press [ENTER]' title",
+    "keys": [
+     {
+      "name": "Enter",
+      "dik": "0x1C",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-17",
+    "n": 1
+   }
+  ]
+ },
+ "states": [
+  {
+   "name": "2k_launcher_error",
+   "detect": "The Steam launch opens Launcher.exe (a WPF 2K launcher), which showed 'Initialization error. Please ensure the game files have not been corrupted or moved.' with Ok, on a clean install.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  },
+  {
+   "name": "title",
+   "detect": "'Press [ENTER]' title screen.",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1
+  }
+ ],
+ "routes": [
+  {
+   "from": "launch",
+   "to": "title (windowed 1280x720)",
+   "steps": [
+    "with Steam running, start <game>\\Binaries\\Win64\\BorderlandsGOTY.exe directly (steam_appid.txt is beside it) with the arguments -windowed ResX=1280 ResY=720",
+    "wait for 'Press [ENTER]'"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "1296x759 window [verified-live 2026-09-17, n=1]. This skips the 2K launcher, which errored."
+  },
+  {
+   "from": "any menu",
+   "to": "process_exit",
+   "steps": [
+    "PostMessage WM_CLOSE to the game's top-level window",
+    "verify the process has exited"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "Exits cleanly with no prompt."
+  }
+ ],
+ "entry_points": {
+  "process_name": "BorderlandsGOTY.exe",
+  "working_directory": "<game>\\Binaries\\Win64",
+  "command_line": "-windowed ResX=1280 ResY=720 [verified-live 2026-09-17, n=1]",
+  "config_files": [
+   "Documents\\My Games\\Borderlands Game of the Year\\WillowGame\\Config\\WillowEngine.ini [SystemSettings] WindowMode: 0 fullscreen, 1 windowed, 2 borderless, per the comment in the game's DefaultEngine.ini [inferred-static 2026-09-17]. WindowMode=1 gives a window [verified-live 2026-09-17, n=1], but ResX/ResY there do not hold (see disproved)."
+  ],
+  "proxy_dll": "d3d9.dll is the wrong DLL (see game.renderer_notes); use dxgi.dll or d3d11.dll."
+ },
+ "hazards": [
+  {
+   "hazard": "The Steam launch goes through the 2K Launcher, which errored",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "'Initialization error' on a clean install. Start BorderlandsGOTY.exe directly."
+  },
+  {
+   "hazard": "A Windows Firewall prompt on the first run steals focus",
+   "confidence": "verified-live",
+   "verified": "2026-09-17",
+   "n": 1,
+   "notes": "A Windows Defender Firewall 'allow access' dialog appeared on the first launch on this machine and took focus from the game. The main session pressed Cancel; answering it is left to the user. Losing focus can minimise a fullscreen game."
+  }
+ ],
+ "disproved": [
+  {
+   "claim": "WillowEngine.ini ResX=1280 ResY=720 sets the window size",
+   "result": "No - rewritten to 1920x1080 on launch. Use the command line.",
+   "date": "2026-09-17",
+   "n": 1
+  },
+  {
+   "claim": "The game renders through d3d9 because it imports d3d9.dll",
+   "result": "No - the d3d9 proxy saw only D3DPERF_BeginEvent/EndEvent; d3d11 and dxgi are loaded.",
+   "date": "2026-09-17",
+   "n": 1
+  }
+ ]
+}
