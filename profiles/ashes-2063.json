@@ -1,0 +1,51 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "Ashes 2063 (Enriched), played in GZDoomVR",
+    "year": 2018,
+    "developer": "Vostyok (GZDoom total conversion)",
+    "engine": "GZDoom (GZDoomVR 4.13.2.2 by hh79)",
+    "renderer": "OpenGL",
+    "distribution": "Free: https://www.moddb.com/mods/ashes-2063/downloads (this install came from a PCVR hub, at C:\NonSteam\Ashes 2063 VR)",
+    "build_notes": "Verified on the home PC (RTX), Windows 11, 2026-09-17, flat mode (+vr_mode 0) in a window."
+  },
+  "input": {
+    "api": "SDL/Win32 via GZDoom",
+    "api_notes": [
+      "SendInput with scancodes works once the window is truly in front (verified-live 2026-09-17).",
+      "Plain SetForegroundWindow from the automation process FAILED here, and so did the ALT-tap trick; joining the foreground thread's input queue (AttachThreadInput) then BringWindowToTop + SetForegroundWindow + SetFocus worked every time. Without it, keys and clicks silently go nowhere and the captures look like 'the game ignores input'.",
+      "Mouse left click (SendInput MOUSEEVENTF_LEFTDOWN/UP) fires the weapon."
+    ],
+    "bindings": [
+      { "action": "open/close the console", "keys": [ { "name": "grave / tilde", "dik": "0x29", "extended": false } ], "confidence": "verified-live", "verified": "2026-09-17", "notes": "Bound as '`=toggleconsole' in ashes-vr.ini." },
+      { "action": "fire", "keys": [ { "name": "Mouse1" } ], "confidence": "verified-live", "verified": "2026-09-17" },
+      { "action": "reload", "keys": [], "confidence": "verified-live", "verified": "2026-09-17", "notes": "NO keyboard key is bound to reload in ashes-vr.ini (only Pad_B). Bind one from the console: 'bind r +reload'. '+' needs Shift held (scancode 0x2A)." }
+    ]
+  },
+  "states": [
+    { "id": "gameplay", "description": "In a level with the player in control.", "detect": [ { "method": "window-title", "cue": "title becomes '<map name> - ASHES 2063: Enriched'" } ], "confidence": "verified-live", "verified": "2026-09-17" }
+  ],
+  "entry_points": [
+    {
+      "id": "flat-windowed-straight-into-map01",
+      "description": "Skip every menu: launch straight into MAP01 (Outskirts) in a window, on a COPY of the VR config so the VR settings are never rewritten.",
+      "command": "gzdoomvr\gzdoomvr.exe -iwad Resources\freedoom-0.12.1\freedoom2.wad -file Resources\AshesSAMenu.pk3 Resources\lightmodepatch.pk3 Resources\Ashes2063Enriched2_23.pk3 Resources\Ashes2063EnrichedFDPatch.pk3 [extra pk3] -config gzdoomvr\ashes-flat-test.ini +vr_mode 0 +vid_fullscreen 0 +win_w 1280 +win_h 720 +set language enu -skill 3 +map MAP01",
+      "confidence": "verified-live",
+      "verified": "2026-09-17",
+      "notes": "Run from C:\NonSteam\Ashes 2063 VR. The player starts holding the .45 revolver. Client area measured 1264x681 (not 1280x720) with these settings. Harness: ashes-2063-weapons/tools/gzdrive.py and revolver_test.py."
+    }
+  ],
+  "routes": [
+    { "id": "quit", "to": "process_exit", "steps": [ "console: quit" ], "confidence": "verified-live", "verified": "2026-09-17", "notes": "Graceful; exit code 0." }
+  ],
+  "commands": {
+    "dispatch_notes": [ "Standard GZDoom console: give <item>, bind <key> <command>, map <MAPxx>, quit. Several commands can be joined with ';'." ]
+  },
+  "hazards": [
+    "SteamVR / Virtual Desktop running in the background did not stop flat mode (+vr_mode 0) from working (verified-live 2026-09-17, n=1)."
+  ],
+  "disproved": [
+    { "claim": "Pressing R reloads.", "result": "Nothing happens: reload has no keyboard binding in this config.", "verified": "2026-09-17" },
+    { "claim": "SetForegroundWindow alone (or after an ALT tap) brings the game to the front from a background script.", "result": "Returned without focusing; input was lost.", "verified": "2026-09-17" }
+  ]
+}
