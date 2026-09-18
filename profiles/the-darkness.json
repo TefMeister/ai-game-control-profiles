@@ -14,7 +14,8 @@
    "The build's input backend is SDL (input_backend = 'sdl').",
    "THE PAD ROUTE APPEARS TO NEED THE GAME WINDOW FOCUSED. A diagnostic run with Microsoft Edge in front for all 135 s: the menu presses did nothing, memory never rose past ~680 MB (a level needs ~1.1 GB) and the idle trailer played. Every run that reached gameplay had the game focused. Consistent with SDL ignoring game controllers while unfocused by default. [verified-live 2026-09-16, n=1 failing vs n=3 succeeding - correlational, not proven]. An SDK option, input_background_events = true in darknessrecomp.toml, sets SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS before the gamepad subsystem starts; it is built and switched on but UNPROVEN - in its one run the game took focus by itself. Until proven, bring the game window to the front before driving it.",
    "NOT TESTED: the keyboard route. The SDK maps keys to pad buttons by default even with mnk_mode = false - keybind_start = 'X', keybind_a = 'Semicolon', keybind_back = 'Z', keybind_dpad_down = 'Shift+Down' (defaults read from the SDK source). Untried on this game.",
-   "LOOK SPEED RAMPS. A short, small nudge (right stick 0.55 for 0.35 s) produced NO visible turn at all, even by eye; full deflection for 0.8 s turned it clearly. Do not read a null from a short nudge as 'look is disabled'. [verified-live 2026-09-16, n=1 each]"
+   "LOOK SPEED RAMPS. A short, small nudge (right stick 0.55 for 0.35 s) produced NO visible turn at all, even by eye; full deflection for 0.8 s turned it clearly. Do not read a null from a short nudge as 'look is disabled'. [verified-live 2026-09-16, n=1 each]",
+   "LOOK STICK: 0.55 deflection held for 1.6 s produced NO camera movement at all, twice. FULL deflection (1.0) held for 2 s turned the camera clearly. This is the same ramping noted above, and it is a trap for measurement: a look test at 0.55 yields 'nothing changed', which is indistinguishable from a real negative result. Always confirm the picture moved before drawing any conclusion from a look test. [verified-live 2026-09-18, n=2 failing at 0.55, n=1 working at 1.0]"
   ]
  },
  "states": [
@@ -95,6 +96,13 @@
    "confidence": "verified-live",
    "verified": "2026-09-18",
    "notes": "Timing that worked, measured from launch: title visible ~70 s, START 74 s, A 78 s, START 82 s, menu up by 86 s."
+  },
+  {
+   "from": "main_menu",
+   "to": "gameplay",
+   "how": "CONTINUE (top item, already highlighted) with A, once a save exists. NEW GAME works too but raises a 'Starting a new game will delete all your saves. Are you sure?' prompt with NO preselected - press DPAD DOWN then A for YES. Live 3D (the opening car chase, first person, Jackie's hands, 'Use to look around') is on screen about 55 s after the press.",
+   "confidence": "verified-live",
+   "verified": "2026-09-18"
   }
  ],
  "entry_points": {
@@ -164,6 +172,12 @@
    "confidence": "verified-live",
    "verified": "2026-09-18",
    "notes": "Across five runs the game took the foreground at launch in some and left it with the launching shell for entire runs in others (n=2 each way). The 2026-09-16 hazard below still stands for INPUT, but 'the foreground changed' must not be read as 'the game grabbed focus'. Record the foreground process name at every sample."
+  },
+  {
+   "hazard": "Boot time varies by tens of seconds, so a fixed-clock menu drive silently misses every press",
+   "confidence": "verified-live",
+   "verified": "2026-09-18",
+   "notes": "Time to the title screen moved between about 56 s and 100 s across runs on the same machine, apparently with shader/pipeline cache state. A schedule tuned on one run lands on the wrong screen on the next and the run produces nothing - which looks exactly like 'the pad route is broken'. Three runs were lost to this. Fix: poll window captures until the title art appears, then alternate START and A four times rather than following a clock. A on the title does nothing, START on the menu does nothing, and a spare A on the menu is CONTINUE."
   }
  ],
  "notes": [
