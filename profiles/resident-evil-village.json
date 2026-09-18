@@ -270,7 +270,8 @@
     "slot": "Continue (last save)",
     "lands": "village near the well/scarecrows, sniper rifle equipped, daylight (2026-09-05 save)",
     "confidence": "verified-live",
-    "verified": "2026-09-05"
+    "verified": "2026-09-18",
+    "notes": "Re-verified 2026-09-18 on the home PC: five consecutive title-to-gameplay runs, no deviation from the title-to-last-save route. Lands at the Duke's shop with the sniper rifle in hand and 7 rounds in the magazine, 0 in reserve."
    }
   ]
  },
@@ -325,6 +326,28 @@
    "confidence": "verified-live",
    "verified": "2026-09-12",
    "notes": "Five launches driven end to end on 2026-09-12 (home PC). Without a headset present REFramework logs XR_ERROR_FORM_FACTOR_UNAVAILABLE and falls back to flat cleanly."
+  },
+  {
+   "issue": "The `ads` hook leaves the game in GAMEPAD input mode and does not reliably release it",
+   "effect": "After any `ads 1` / `ads 0` cycle, synthetic keyboard input stops moving the character. `w`, `c` (crouch) and `lctrl` produced no change in the plugin's `cam=` position or in the `head` figure of its `ground:` line, repeatedly, with `ads 0` sent and acknowledged in the log first. Nothing errors -- the words are accepted and echoed -- so it reads as 'this game ignores the keyboard' rather than 'the hook is still holding pad mode'. Weapon-slot number keys registered once and could not be made to repeat.",
+   "mitigation": "Do keyboard-driven work (movement, crouch, inventory, weapon switching) BEFORE the first `ads` of the session, or drive it through the same virtual pad the hook already owns. The real fix belongs in re8_scope_harness.lua's ads hook: restore the previous input mode on `ads 0`.",
+   "confidence": "verified-live",
+   "verified": "2026-09-18",
+   "notes": "Home PC (RTX), flat, n=several across two launches. This is the already-documented 'pad mode while held' behaviour, except that it does not come back. It silently blocked three separate test rows."
+  },
+  {
+   "hazard": "With NO headset connected, REFramework does not enter VR (`XR_ERROR_FORM_FACTOR_UNAVAILABLE`) -- which makes the desktop window repaint normally, so BitBlt capture WORKS and screenshots are a usable oracle again.",
+   "confidence": "verified-live",
+   "verified": "2026-09-18",
+   "notes": "The opposite of the existing VR hazard, and worth stating: flat automation on this game is fully sighted as long as Virtual Desktop is not streaming to a headset. Five launches driven end to end from the title screen to a loaded save on 2026-09-18, every step verified by screenshot."
+  },
+  {
+   "issue": "The scope project's own picture was black on every flat launch on the home PC",
+   "effect": "Not an input or automation fault, but it invalidates any visual A/B driven through this profile: the scope disc at ~(963,522) r~140 renders pure black while every status indicator reports success.",
+   "mitigation": "Verify the picture is live before judging anything through it. See re-village-scope-vr ENGINE-DOSSIER section 9ak.",
+   "confidence": "measured",
+   "verified": "2026-09-18",
+   "notes": "n=5 launches, two different plugin builds."
   }
  ],
  "automation_scored": {
