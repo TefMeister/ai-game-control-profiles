@@ -49,6 +49,18 @@
    "confidence": "verified-live",
    "verified": "2026-09-16",
    "notes": "The camera starts pointed DOWN at the hands. The look stick works here. The first-person hands framing is fixed until the stick moves, so it is a good stable state for input tests - but the car is moving, so compare frames a fraction of a second apart, not seconds apart."
+  },
+  {
+   "name": "main_menu",
+   "detect": "CONTINUE / NEW GAME / CHECKPOINTS / MULTIPLAYER / OPTIONS / EXTRA CONTENT, stacked centre-screen over the dark skin texture. CONTINUE is highlighted on arrival.",
+   "confidence": "verified-live",
+   "verified": "2026-09-18"
+  },
+  {
+   "name": "save_notice_dialogue",
+   "detect": "A cassette icon over 'When this icon is displayed game content is being saved...' with a single OK button. Appears after the FIRST START press, before the main menu. A is needed to dismiss it; X and Space do nothing here.",
+   "confidence": "verified-live",
+   "verified": "2026-09-18"
   }
  ],
  "routes": [
@@ -75,6 +87,14 @@
    "confidence": "disproved",
    "verified": "2026-09-16",
    "notes": "DISPROVED as a working route - KEPT so it is not retried blind. The config IS read (verbose log resolves D:\\EnvironmentXbox.cfg) and the game DOES skip the videos and go to world loading, but about one second later it hits a deliberate debug break (0x80000003 in rexruntime.dll at +0xAB8B0, an int3;ret helper) with no message logged. A control run without the file survives. Two causes ruled out: missing .xw world files and the missing MONOPRO.XFC font are both absent in the WORKING run too. Currently disabled as EnvironmentXbox.cfg.off."
+  },
+  {
+   "from": "title_press_start",
+   "to": "main_menu",
+   "how": "START (pad) -> save_notice_dialogue -> A -> title 'PRESS START' again -> START -> main_menu. The dialogue in the middle is easy to miss; a single START does NOT reach the menu.",
+   "confidence": "verified-live",
+   "verified": "2026-09-18",
+   "notes": "Timing that worked, measured from launch: title visible ~70 s, START 74 s, A 78 s, START 82 s, menu up by 86 s."
   }
  ],
  "entry_points": {
@@ -132,10 +152,39 @@
    "confidence": "verified-live",
    "verified": "2026-09-16",
    "notes": "n=1 failing run, correlational. The failure looks exactly like 'the route is broken' or 'the new build broke input': no error, the menu simply never advances and the attract trailer starts. Log the foreground process per sample so the cause is visible. See input.api_notes for the SDK option that should remove the dependency."
+  },
+  {
+   "hazard": "QUICKMAP / QUICKMENU do not yet reach a level",
+   "confidence": "verified-live",
+   "verified": "2026-09-18",
+   "notes": "Both used to kill the process instantly on one of the game's own debug assertions (guest 0x820DFC60 -> DbgBreakPoint, exit 0x80000003, NOTHING in the log). Fixed in the shared SDK so a guest DbgBreakPoint logs and continues. Past it, the run stops on a missing font ('d:\\content\fonts\text.xfc' -> XamShowDirtyDiscErrorUI) and sits at ~455 MB with nothing drawing. Use the main menu's CHECKPOINTS level select instead until the font question is settled."
+  },
+  {
+   "hazard": "Focus stealing is intermittent, so a focus change proves nothing",
+   "confidence": "verified-live",
+   "verified": "2026-09-18",
+   "notes": "Across five runs the game took the foreground at launch in some and left it with the launching shell for entire runs in others (n=2 each way). The 2026-09-16 hazard below still stands for INPUT, but 'the foreground changed' must not be read as 'the game grabbed focus'. Record the foreground process name at every sample."
   }
  ],
  "notes": [
-  "Automation, scored against the five capabilities as of 2026-09-16: (1) self-launch PROVEN; (2) menu to gameplay PROVEN, timing-based, via the virtual pad; (3) commands MISSING - no console, and the QUICKMAP route traps; (4) camera PROVEN via the right stick, character movement NOT TESTED; (5) self-close by process kill only, graceful quit NOT MAPPED.",
-  "The first real-time 3D in this build and the look-stick result are documented with screenshots in the-darkness-vr/dev-archive/milestone-captures/."
+  "Automation, scored against the five capabilities as of 2026-09-18: (1) self-launch PROVEN; (2) menu to gameplay PROVEN, timing-based, via the virtual pad - and the route now includes the save-notice dialogue (START, A, START); (3) commands MISSING - no console; the QUICKMAP/QUICKMENU ENV route is read but stops on a missing font, and the in-data DevMenu is gated by cheat(); (4) camera PROVEN via the right stick, character movement NOT TESTED; (5) self-close by process kill only, graceful quit NOT MAPPED.",
+  "The first real-time 3D in this build and the look-stick result are documented with screenshots in the-darkness-vr/dev-archive/milestone-captures/.",
+  "Untried and cheapest: the main menu's CHECKPOINTS entry is a retail level select, needing no ENV switch and no patch."
+ ],
+ "disproved": [
+  {
+   "claim": "Setting SHOW_DEVELOPMENT=1 and SHOW_CONFIDENTIAL=1 in EnvironmentXbox.cfg opens the built-in DevMenu",
+   "result": "No. With both keys set, X (GUI_BUTTON2) twice and Space on the main menu changed nothing. The DevMenu, free camera (dbgcam_*), noclip and god-mode are all present in retail CubeWnd.xcr and in the executable, but every entrance is gated by cheat(...) and that gate did not open.",
+   "confidence": "verified-live",
+   "verified": "2026-09-18",
+   "n": 1
+  },
+  {
+   "claim": "EnvironmentXbox.cfg works when placed beside the host executable",
+   "result": "No. Host-side it is ignored entirely - a QUICKMAP run there was indistinguishable from no file. It must go in the GAME's disc root (the Assets junction, guest D:\\), i.e. E:\the-darkness\\game-files\\.",
+   "confidence": "verified-live",
+   "verified": "2026-09-18",
+   "n": 1
+  }
  ]
 }
