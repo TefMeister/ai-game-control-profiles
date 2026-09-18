@@ -169,7 +169,8 @@
  "notes": [
   "Automation, scored against the five capabilities as of 2026-09-18: (1) self-launch PROVEN; (2) menu to gameplay PROVEN, timing-based, via the virtual pad - and the route now includes the save-notice dialogue (START, A, START); (3) commands MISSING - no console; the QUICKMAP/QUICKMENU ENV route is read but stops on a missing font, and the in-data DevMenu is gated by cheat(); (4) camera PROVEN via the right stick, character movement NOT TESTED; (5) self-close by process kill only, graceful quit NOT MAPPED.",
   "The first real-time 3D in this build and the look-stick result are documented with screenshots in the-darkness-vr/dev-archive/milestone-captures/.",
-  "Untried and cheapest: the main menu's CHECKPOINTS entry is a retail level select, needing no ENV switch and no patch."
+  "Untried and cheapest: the main menu's CHECKPOINTS entry is a retail level select, needing no ENV switch and no patch.",
+  "The fonts and models are packed inside Content/Xdf/*.XDF, not loose on the disc. The disc dump is byte-perfect (498 files, 0 missing, 0 size mismatches), so a missing-file error means 'not precached', never 'bad rip'."
  ],
  "disproved": [
   {
@@ -182,6 +183,13 @@
   {
    "claim": "EnvironmentXbox.cfg works when placed beside the host executable",
    "result": "No. Host-side it is ignored entirely - a QUICKMAP run there was indistinguishable from no file. It must go in the GAME's disc root (the Assets junction, guest D:\\), i.e. E:\the-darkness\\game-files\\.",
+   "confidence": "verified-live",
+   "verified": "2026-09-18",
+   "n": 1
+  },
+  {
+   "claim": "QUICKMENU=DevMenu boots straight into the built-in developer menu",
+   "result": "No. It fails exactly like QUICKMAP: the same missing font (d:\\content\fonts\text.xfc) and the same XamShowDirtyDiscErrorUI, with nothing drawing. Every ENV quick-start route skips the front-end GUI precache, so none of them are usable shortcuts. Separately, cheat() - the gate on every dev-menu entrance - was found to be an empty stub that tests nothing, so no config line can open the menu at all; it needs a code hook on sub_8236F300.",
    "confidence": "verified-live",
    "verified": "2026-09-18",
    "n": 1
