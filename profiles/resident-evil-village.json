@@ -348,6 +348,14 @@
    "confidence": "measured",
    "verified": "2026-09-18",
    "notes": "n=5 launches, two different plugin builds."
+  },
+  {
+   "issue": "REFramework's 30-second motion-controls inactivity timer silently stops the VR hands being updated at all",
+   "effect": "VR_MotionControlsInactivityTimer (re2_fw_config.txt, default 30.000000) drives is_using_controllers(), and RE8VR.cpp's update_hand_ik() returns immediately when that is false. The timer is refreshed by BUTTON and STICK activity only -- moving the controllers through space does NOT refresh it. So a session where the controllers are held still, or parked while someone reads a log, can have the hands frozen with nothing logged and nothing erroring. Any hand-offset test run in that state is a false negative, and reads exactly like 'the offset does nothing'.",
+   "mitigation": "Set VR_MotionControlsInactivityTimer to a very large value (99999.000000 on RTX from 2026-09-19; back the config up first and edit it with the game CLOSED, because REFramework rewrites config on exit). Failing that, press any controller button immediately before a hand test. Same setting exists in every REFramework game's config.",
+   "confidence": "inferred-static",
+   "verified": "2026-09-19",
+   "notes": "Read from RE8VR.cpp at our build commit by a static pass; the 99999 value has NOT yet been confirmed to survive a REFramework config rewrite, and the behaviour change has NOT been observed live. The handprobe harness word prints using_controllers once a second and is the check."
   }
  ],
  "automation_scored": {
