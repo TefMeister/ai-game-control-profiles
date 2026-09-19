@@ -1,0 +1,110 @@
+{
+  "schema_version": 1,
+  "game": {
+    "name": "SILENT HILL 2 (2024 remake)",
+    "developer": "Bloober Team",
+    "publisher": "Konami",
+    "engine": "Unreal Engine 5.1.1",
+    "engine_evidence": "5.1.1-0+++UE5+Release-5.1, read from the crash context of the first launch [measured 2026-09-19]",
+    "store": "Steam",
+    "steam_appid": 2124490,
+    "executable": "SHProto/Binaries/Win64/SHProto-Win64-Shipping.exe",
+    "window_title": "Silent Hill 2",
+    "build": "Konami 1.0.0.5 (21/01/2025); in-game version string v.1.1.256.834"
+  },
+
+  "input": {
+    "method": "SendInput with scancodes",
+    "notes": [
+      "Extended keys (arrows, nav cluster) need KEYEVENTF_EXTENDEDKEY or scancode 0x50 arrives as numpad-2 and the menu silently ignores it.",
+      "Foreground the window before sending input and re-check that it took; synthetic input follows focus.",
+      "Enter (scancode 0x1C) dismisses the content-warning screen. [verified-live 2026-09-19, n=1]"
+    ]
+  },
+
+  "window": {
+    "how_to_window": "Edit %LOCALAPPDATA%\\SilentHill2\\Saved\\Config\\Windows\\GameUserSettings.ini with the game CLOSED (the engine rewrites config on exit).",
+    "keys": {
+      "GFXSettings blob": "ScreenMode=Windowed, Resolution=(X=1280,Y=720)",
+      "FullscreenMode": "2 (0=fullscreen, 1=windowed fullscreen, 2=windowed)",
+      "LastConfirmedFullscreenMode": "2",
+      "PreferredFullscreenMode": "2",
+      "ResolutionSizeX / ResolutionSizeY": "1280 / 720",
+      "LastUserConfirmedResolutionSizeX / Y": "1280 / 720",
+      "DesiredScreenWidth / DesiredScreenHeight": "1280 / 720"
+    },
+    "warning": "All three resolution key pairs must agree. Setting only one does not take.",
+    "verified": "client area measured at exactly 1280x720 [measured 2026-09-19]",
+    "no_ingame_countdown_needed": "The config route avoids the in-game 'keep these settings?' timer entirely, which is what reverts unattended runs."
+  },
+
+  "states": [
+    { "id": "steam_controller_prompt", "what": "Steam's 'Grab a controller and kick back!' modal, shown on a first launch only. One OK button.", "leave": "click OK" },
+    { "id": "content_warning", "what": "Black screen, game logo, content warning text, 'PRESS ANY BUTTON TO CONTINUE'", "leave": "Enter (0x1C)" },
+    { "id": "main_menu", "what": "CONTINUE / NEW GAME / LOAD GAME / SETTINGS / CREDITS / EXIT, over a living-room scene", "default_highlight": "CONTINUE" }
+  ],
+
+  "routes": [
+    {
+      "from": "launch",
+      "to": "main_menu",
+      "steps": [
+        "Start-Process steam://rungameid/2124490",
+        "dismiss the Steam controller prompt if it appears (first launch only)",
+        "wait: about 2-3 minutes on the dev PC, most of it shader/PSO compilation",
+        "Enter to clear the content warning"
+      ],
+      "confidence": "verified-live 2026-09-19, n=1"
+    }
+  ],
+
+  "entry_points": [],
+
+  "commands": {
+    "console": "not investigated",
+    "uevr_overlay": {
+      "open": "Insert (UEVR FrameworkConfig_MenuKey=45), or gamepad L3+R3",
+      "confidence": "inferred-static 2026-09-19, read from UEVR's own config"
+    }
+  },
+
+  "hazards": [
+    {
+      "id": "new_game_under_default_highlight",
+      "severity": "destructive",
+      "what": "On the main menu CONTINUE is highlighted by default and NEW GAME is the very next item down. The account's save has 97 hours on it.",
+      "rule": "Never blind key-count downward on this menu. Navigate, capture, verify the highlight, only then commit.",
+      "related": "same family as Enslaved's NEW JOURNEY trap"
+    },
+    {
+      "id": "render_thread_timeout_on_low_spec",
+      "severity": "crash",
+      "what": "LowLevelFatalError RenderingThread.cpp:1273 'GameThread timed out waiting for RenderThread after 120.00 secs' on shipped defaults (1920x1080, all quality 3, Raytracing=On).",
+      "rule": "It is a TIMEOUT, not a renderer fault. Lower the settings AND raise g.TimeoutForBlockOnRenderFence in Engine.ini [ConsoleVariables]. Do not read it as a broken install.",
+      "confidence": "verified-live 2026-09-19, n=1"
+    },
+    {
+      "id": "uevr_dx12_retry_storm",
+      "severity": "misleading-log",
+      "what": "UEVR logs 'Hooked DirectX 12', then 121 consecutive 'Failed to initialize Framework on DirectX 12' over ~2 seconds, and then 'Framework initialized'.",
+      "rule": "Those are retries. The injection succeeded. Reading the log cold would suggest otherwise.",
+      "confidence": "verified-live 2026-09-19, n=1"
+    },
+    {
+      "id": "findwindow_title_mismatch",
+      "severity": "tooling",
+      "what": "FindWindow(null, \"Silent Hill 2\") does not match this game's window even though the title reads exactly that.",
+      "rule": "Take the handle from the process instead (Get-Process ... MainWindowHandle).",
+      "confidence": "verified-live 2026-09-19, n=1"
+    }
+  ],
+
+  "disproved": [],
+
+  "notes": [
+    "Screen capture: use BitBlt from the screen DC, never PrintWindow - PrintWindow silently serves a stale DWM-cached frame the moment the game stops presenting.",
+    "The injector (UEVR) is a WPF GUI with no command line; it has to be driven visually. Its window can start hidden behind the game - foreground it via the taskbar.",
+    "The game appears in UEVR's process list WITHOUT administrator rights, so no UAC prompt is needed for an unattended run [verified-live 2026-09-19, n=1].",
+    "Dev PC is far below this game's minimum spec (i7-3770S, GTX 1660 SUPER). No frame rate measured here means anything."
+  ]
+}
