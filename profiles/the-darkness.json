@@ -103,6 +103,20 @@
    "how": "CONTINUE (top item, already highlighted) with A, once a save exists. NEW GAME works too but raises a 'Starting a new game will delete all your saves. Are you sure?' prompt with NO preselected - press DPAD DOWN then A for YES. Live 3D (the opening car chase, first person, Jackie's hands, 'Use to look around') is on screen about 55 s after the press.",
    "confidence": "verified-live",
    "verified": "2026-09-18"
+  },
+  {
+   "from": "launch (no save, no gamer profile - a fresh machine)",
+   "to": "gameplay_car_opening",
+   "steps": [
+    "create the virtual pad, launch, wait ~50 s (title 'PRESS START' is up by ~45 s on a fast PC)",
+    "START -> save-notice dialogue (single OK) -> A",
+    "'No Gamer Profile selected ... Continue?' appears with NO preselected -> DPAD DOWN -> A (YES)",
+    "main menu shows NEW GAME on top (no CONTINUE without a save) -> A",
+    "car scene ('Use to look around') by ~120 s after launch"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-21",
+   "notes": "Home PC, n=3 runs reaching the car scene. DOWN pressed while the save notice is still up is ignored, and the following A then picks NO and drops back to the title - press in the order above, ~5 s apart. Driver: the-darkness-vr/dev-archive/build-scripts/framerate_run.py --first-press 50 --seq \"START A DOWN A WAIT A WAIT A WAIT A WAIT\" --step 5."
   }
  ],
  "entry_points": {
