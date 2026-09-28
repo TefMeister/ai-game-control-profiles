@@ -7314,5 +7314,8 @@
    "spot_tol": 64,
    "note": "paint screen: 'PAINT FINISH' highlighted strip"
   }
- }
+ },
+ "setup_notes": [
+  "2026-09-28: the end of this route (in the city, in control) is to be set up again WITH Tefa: the car needs the throttle held about a second before it moves, and the on-screen map only shows while driving. Until then it ends with a 40 s wait."
+ ]
 }
