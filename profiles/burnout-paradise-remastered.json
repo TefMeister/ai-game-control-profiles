@@ -56,6 +56,32 @@
     "confidence": "verified-live",
     "verified": "2026-09-17",
     "n": 1
+   },
+   {
+    "action": "accelerate (driving in the city)",
+    "keys": [
+     {
+      "name": "W",
+      "dik": "0x11",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-28",
+    "n": 1
+   },
+   {
+    "action": "steer left (hold together with W; two input processes at once worked)",
+    "keys": [
+     {
+      "name": "A",
+      "dik": "0x1E",
+      "extended": false
+     }
+    ],
+    "confidence": "verified-live",
+    "verified": "2026-09-28",
+    "n": 1
    }
   ]
  },
@@ -129,6 +155,20 @@
    "verified": "2026-09-17",
    "n": 1,
    "notes": "Also exits cleanly."
+  },
+  {
+   "from": "main_menu",
+   "to": "driving_in_city",
+   "steps": [
+    "Enter on 'Enter Paradise City' (verify the highlight)",
+    "Enter on 'Paradise Cars' (vehicle select)",
+    "Enter on the car (Continue)",
+    "Enter on the paint screen (Continue)",
+    "wait ~40 s; the car sits on a road, camera behind it"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-09-28",
+   "n": 3
   }
  ],
  "entry_points": {
@@ -152,6 +192,29 @@
    "verified": "2026-09-17",
    "n": 1,
    "notes": "A Windows Defender Firewall 'allow access' dialog appeared on the first launch on this machine and took focus from the game. The main session pressed Cancel; answering it is left to the user. Losing focus can minimise a fullscreen game."
+  },
+  {
+   "hazard": "Two overlays live inside the game process: EA's igo32.dll and Steam's gameoverlayrenderer.dll",
+   "notes": "A d3d11 proxy that patches the immediate context's vtable sees no draw calls (that table is a heap table built at run time). Detour the functions inside d3d11.dll instead. A Discord overlay prompt can also appear top-left.",
+   "confidence": "verified-live",
+   "verified": "2026-09-28",
+   "n": 3
+  },
+  {
+   "hazard": "With a logging proxy installed, loading and menus take noticeably longer",
+   "notes": "Fixed-delay key sequences drift one screen behind; screenshot before each Enter.",
+   "confidence": "verified-live",
+   "verified": "2026-09-28",
+   "n": 1
+  }
+ ],
+ "disproved": [
+  {
+   "claim": "the Up arrow accelerates in the city",
+   "result": "held 4 s: the car did not move; W does",
+   "confidence": "verified-live",
+   "verified": "2026-09-28",
+   "n": 1
   }
  ]
 }
