@@ -7316,6 +7316,7 @@
   }
  },
  "setup_notes": [
-  "2026-09-28: the end of this route (in the city, in control) is to be set up again WITH Tefa: the car needs the throttle held about a second before it moves, and the on-screen map only shows while driving. Until then it ends with a 40 s wait."
+  "2026-09-28: the end of this route (in the city, in control) is to be set up again WITH Tefa: the car needs the throttle held about a second before it moves, and the on-screen map only shows while driving. Until then it ends with a 40 s wait.",
+  "SUPERSEDED 2026-09-28 by recorded_launch_to_city.json, recorded with Tefa playing; use that one."
  ]
 }
