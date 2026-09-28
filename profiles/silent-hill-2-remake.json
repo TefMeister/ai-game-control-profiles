@@ -12,7 +12,6 @@
     "window_title": "Silent Hill 2",
     "build": "Konami 1.0.0.5 (21/01/2025); in-game version string v.1.1.256.834"
   },
-
   "input": {
     "method": "SendInput with scancodes",
     "notes": [
@@ -21,7 +20,6 @@
       "Enter (scancode 0x1C) dismisses the content-warning screen. [verified-live 2026-09-19, n=1]"
     ]
   },
-
   "window": {
     "how_to_window": "Edit %LOCALAPPDATA%\\SilentHill2\\Saved\\Config\\Windows\\GameUserSettings.ini with the game CLOSED (the engine rewrites config on exit).",
     "keys": {
@@ -37,13 +35,23 @@
     "verified": "client area measured at exactly 1280x720 [measured 2026-09-19]",
     "no_ingame_countdown_needed": "The config route avoids the in-game 'keep these settings?' timer entirely, which is what reverts unattended runs."
   },
-
   "states": [
-    { "id": "steam_controller_prompt", "what": "Steam's 'Grab a controller and kick back!' modal, shown on a first launch only. One OK button.", "leave": "click OK" },
-    { "id": "content_warning", "what": "Black screen, game logo, content warning text, 'PRESS ANY BUTTON TO CONTINUE'", "leave": "Enter (0x1C)" },
-    { "id": "main_menu", "what": "CONTINUE / NEW GAME / LOAD GAME / SETTINGS / CREDITS / EXIT, over a living-room scene", "default_highlight": "CONTINUE" }
+    {
+      "id": "steam_controller_prompt",
+      "what": "Steam's 'Grab a controller and kick back!' modal, shown on a first launch only. One OK button.",
+      "leave": "click OK"
+    },
+    {
+      "id": "content_warning",
+      "what": "Black screen, game logo, content warning text, 'PRESS ANY BUTTON TO CONTINUE'",
+      "leave": "Enter (0x1C)"
+    },
+    {
+      "id": "main_menu",
+      "what": "CONTINUE / NEW GAME / LOAD GAME / SETTINGS / CREDITS / EXIT, over a living-room scene",
+      "default_highlight": "CONTINUE"
+    }
   ],
-
   "routes": [
     {
       "from": "launch",
@@ -55,11 +63,18 @@
         "Enter to clear the content warning"
       ],
       "confidence": "verified-live 2026-09-19, n=1"
+    },
+    {
+      "from": "running game",
+      "to": "UEVR attached, unattended",
+      "steps": [
+        "UEVRInjector.exe --attach=SHProto-Win64-Shipping.exe (command-line option present in nightly AFW beta.6)",
+        "Lua scripts in %APPDATA%/UnrealVRMod/SHProto-Win64-Shipping/scripts run at once; io.open output lands in that profile's data folder"
+      ],
+      "confidence": "verified-live 2026-09-28, n=1"
     }
   ],
-
   "entry_points": [],
-
   "commands": {
     "console": "not investigated",
     "uevr_overlay": {
@@ -67,7 +82,6 @@
       "confidence": "inferred-static 2026-09-19, read from UEVR's own config"
     }
   },
-
   "hazards": [
     {
       "id": "new_game_under_default_highlight",
@@ -96,11 +110,16 @@
       "what": "FindWindow(null, \"Silent Hill 2\") does not match this game's window even though the title reads exactly that.",
       "rule": "Take the handle from the process instead (Get-Process ... MainWindowHandle).",
       "confidence": "verified-live 2026-09-19, n=1"
+    },
+    {
+      "id": "uevr_freezes_without_headset",
+      "severity": "blocking",
+      "what": "Attaching UEVR switches the game to VR rendering; with the headset not connected, the OpenXR runtime (Virtual Desktop here) never paces frames and the game window freezes. Windows still reports it as running. UEVR cannot be detached, so the only way out is ending the process.",
+      "rule": "Attach UEVR only with the headset connected, or only for a read-only probe whose output is written before the freeze, and close the game straight after.",
+      "confidence": "verified-live 2026-09-28, n=1 (home PC, UEVR nightly AFW beta.6)"
     }
   ],
-
   "disproved": [],
-
   "notes": [
     "Screen capture: use BitBlt from the screen DC, never PrintWindow - PrintWindow silently serves a stale DWM-cached frame the moment the game stops presenting.",
     "The injector (UEVR) is a WPF GUI with no command line; it has to be driven visually. Its window can start hidden behind the game - foreground it via the taskbar.",
