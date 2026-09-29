@@ -1,0 +1,81 @@
+{
+ "schema": "menu-o-matic/1",
+ "game": "Prototype",
+ "window": "[PROTOTYPE",
+ "route": "quit_to_desktop",
+ "checkpoints": {},
+ "steps": [
+  {
+   "key": "esc"
+  },
+  {
+   "sleep": 2.0
+  },
+  {
+   "key": "down"
+  },
+  {
+   "sleep": 0.5
+  },
+  {
+   "key": "down"
+  },
+  {
+   "sleep": 0.5
+  },
+  {
+   "key": "down"
+  },
+  {
+   "sleep": 0.5
+  },
+  {
+   "key": "down"
+  },
+  {
+   "sleep": 0.5
+  },
+  {
+   "key": "down"
+  },
+  {
+   "sleep": 0.5
+  },
+  {
+   "key": "enter"
+  },
+  {
+   "sleep": 1.5
+  },
+  {
+   "key": "down"
+  },
+  {
+   "sleep": 0.5
+  },
+  {
+   "key": "down"
+  },
+  {
+   "sleep": 0.5
+  },
+  {
+   "key": "enter"
+  },
+  {
+   "sleep": 1.5
+  },
+  {
+   "key": "down"
+  },
+  {
+   "sleep": 0.5
+  },
+  {
+   "key": "enter"
+  }
+ ],
+ "setup_notes": [
+  "2026-09-29: from gameplay: Esc opens the GENTEK pause menu with LOGS highlighted; Down x5 reaches QUIT (greyed items are skipped); Enter; the QUIT page lists RESTORE CHECKPOINT / QUIT TO MAIN MENU / QUIT TO DESKTOP; Down x2, Enter; the warning highlights CANCEL; Down, Enter quits. Timed steps only, no checkpoints yet. RESTORE CHECKPOINT (Esc, Down x5, Enter, Enter) is the quick way back to the start spot for Move-o-matiC."
+ ]
+}
