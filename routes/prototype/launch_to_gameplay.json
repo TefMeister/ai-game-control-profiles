@@ -1,0 +1,27 @@
+{
+ "schema": "menu-o-matic/1",
+ "game": "Prototype",
+ "window": "[PROTOTYPE",
+ "route": "launch_to_gameplay",
+ "steps": [
+  {
+   "launch": "steam://rungameid/10150"
+  }
+ ],
+ "checkpoints": {},
+ "setup_notes": [
+  "Windowed 1280x720 needs the Steam launch options: windowed width=1280 height=720 (NO dashes on windowed; measured 2026-09-29: borderless window at the top-left, desktop left at 1920x1080). '-windowed' is ignored and '-width 1280 -height 720' switches the whole screen to 1280x720 fullscreen."
+ ],
+ "brief": {
+  "why": "Get from a closed game to Alex in the city, in your control, with no help, so every test starts the same way.",
+  "start": "Game closed. Claude launches it and says LISTENING once the recorder is live; press nothing before that.",
+  "move": [
+   "On each screen, BEFORE doing anything: Page Up if it needs a key (then press it), Page Down if it just needs waiting for.",
+   "Go through the logos and menus the way you normally would, to loading your save.",
+   "When Alex is standing in the game and you could move him: Page Down once more."
+  ],
+  "screen": "Only the game window in front.",
+  "avoid": "Moving Alex, the pause menu, extra keys after arriving.",
+  "end": "End to stop recording (Home undoes a mark pressed by mistake)."
+ }
+}
