@@ -16,7 +16,7 @@
   ],
   "screen": "The car and its shadow on the road the whole time, camera behind the car.",
   "avoid": "Walls, other cars, boost, jumps, crashes; sitting still for long before starting (the game switches to a film-style camera with black bars).",
-  "end": "Stopped on the road facing along it; tap numpad minus there, then numpad star."
+  "end": "Stopped on the road facing along it; tap Page Down there, then End."
  },
  "setup_notes": [
   "2026-09-29: first recording (a free drive, night) cleared: the replay started in daylight at a different spot, so it did not match. Re-record to the brief."
