@@ -305,6 +305,20 @@
       "confidence": "verified-live",
       "verified": "2026-09-09",
       "notes": "Adding a [MonkeyGame.MKInput] section to MonkeyInput.ini (a class name taken from a community report, absent from this build) leaves the game starting normally and character movement working, while Escape and every F-key become inert. Nothing errors and nothing is logged; it reads exactly like 'this game ignores the keyboard', and it cost the 2026-09-07 session its whole objective. Adding Bindings= lines INSIDE a section that already exists is harmless by comparison (run 3 of 2026-09-09 carried two and behaved normally). Rule: never invent a section name; and if input degrades, diff the ini against a known-good copy before suspecting the game or the proxy."
+    },
+    {
+      "hazard": "A/D turn the CHARACTER (and translate it); the chase camera only trails. Used as a camera they walked Monkey into foliage. The right stick is the only real aim control. Tell for 'stuck against scenery': a scan metric that does not change at all across every step.",
+      "confidence": "verified-live",
+      "verified": "2026-09-03",
+      "notes": "",
+      "folded": "2026-09-29 from inbox"
+    },
+    {
+      "hazard": "Menu routes now live as Menu-o-matiC routes (ai-game-control-profiles/routes/enslaved/: closed->gameplay->main menu->closed, 60-66 s, n=2, 2026-09-29); the 2026-09-03 harness routes are superseded.",
+      "confidence": "verified-live",
+      "verified": "2026-09-29",
+      "notes": "",
+      "folded": "2026-09-29 from inbox"
     }
   ],
   "disproved": [
@@ -332,6 +346,13 @@
       "result": "Disproved. That exact build (d3d9.dll, 78,336 B) was installed and running in all three launches on 2026-09-09, including the two in which Escape opened the pause menu on the first press. The cause was the ini section - see hazards.",
       "date": "2026-09-09",
       "notes": "n=3 launches. The same build also proved its re-arm live: two device Resets, slot 94 reverted and was re-patched 0 frames later, and the stereo kept working."
+    },
+    {
+      "route": "mouse-look for the camera",
+      "result": "a 30-step relative SendInput mouse sweep left consecutive frames identical",
+      "confidence": "disproved",
+      "date": "2026-09-03",
+      "folded": "2026-09-29 from inbox"
     }
   ]
 }

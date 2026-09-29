@@ -1,226 +1,240 @@
 {
- "schema_version": 0.1,
- "game": {
-  "title": "The Darkness (2007)",
-  "developer": "Starbreeze Studios (published by 2K Games)",
-  "engine": "Starbreeze in-house engine (Riddick lineage)",
-  "renderer": "Direct3D 12 via ReXGlue (Xenia-derived Xenos GPU emulation)",
-  "platform": "Windows - OUR OWN static recompilation of the Xbox 360 disc (ReXGlue SDK v0.10.0), not an official PC release",
-  "notes": "Project: github.com/TefMeister/the-darkness-vr. Process is darknessrecomp.exe with rexruntime.dll + rexgpu-xenos.dll + TracyClient.dll and an Assets\\ junction to the extracted disc. There has never been a PC version, so every route below was worked out against this recompiled build and may not transfer to any other port."
- },
- "input": {
-  "api_notes": [
-   "VIRTUAL XBOX 360 PAD WORKS. ViGEmBus (Nefarius, running) driven from Python with the vgamepad package. START and A navigate the menus; the RIGHT STICK turns the camera. Create the pad BEFORE launching the game so SDL sees it at initialisation. [verified-live 2026-09-16, n=3 runs for menus, n=1 run for look]",
-   "The build's input backend is SDL (input_backend = 'sdl').",
-   "THE PAD ROUTE APPEARS TO NEED THE GAME WINDOW FOCUSED. A diagnostic run with Microsoft Edge in front for all 135 s: the menu presses did nothing, memory never rose past ~680 MB (a level needs ~1.1 GB) and the idle trailer played. Every run that reached gameplay had the game focused. Consistent with SDL ignoring game controllers while unfocused by default. [verified-live 2026-09-16, n=1 failing vs n=3 succeeding - correlational, not proven]. An SDK option, input_background_events = true in darknessrecomp.toml, sets SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS before the gamepad subsystem starts; it is built and switched on but UNPROVEN - in its one run the game took focus by itself. Until proven, bring the game window to the front before driving it.",
-   "NOT TESTED: the keyboard route. The SDK maps keys to pad buttons by default even with mnk_mode = false - keybind_start = 'X', keybind_a = 'Semicolon', keybind_back = 'Z', keybind_dpad_down = 'Shift+Down' (defaults read from the SDK source). Untried on this game.",
-   "LOOK SPEED RAMPS. A short, small nudge (right stick 0.55 for 0.35 s) produced NO visible turn at all, even by eye; full deflection for 0.8 s turned it clearly. Do not read a null from a short nudge as 'look is disabled'. [verified-live 2026-09-16, n=1 each]",
-   "LOOK STICK: 0.55 deflection held for 1.6 s produced NO camera movement at all, twice. FULL deflection (1.0) held for 2 s turned the camera clearly. This is the same ramping noted above, and it is a trap for measurement: a look test at 0.55 yields 'nothing changed', which is indistinguishable from a real negative result. Always confirm the picture moved before drawing any conclusion from a look test. [verified-live 2026-09-18, n=2 failing at 0.55, n=1 working at 1.0]"
-  ]
- },
- "states": [
-  {
-   "name": "intro_logos",
-   "detect": "Pre-rendered WMV logos: moon over a starfield (~10 s), then storm clouds, crows and the Union Entertainment logo (~20 s). Chain is logo_topcow -> logo_union -> logo_2k -> logo_sbz (Content/Gui/CubeWnd.xcr).",
-   "confidence": "verified-live",
-   "verified": "2026-09-16"
+  "schema_version": 0.1,
+  "game": {
+    "title": "The Darkness (2007)",
+    "developer": "Starbreeze Studios (published by 2K Games)",
+    "engine": "Starbreeze in-house engine (Riddick lineage)",
+    "renderer": "Direct3D 12 via ReXGlue (Xenia-derived Xenos GPU emulation)",
+    "platform": "Windows - OUR OWN static recompilation of the Xbox 360 disc (ReXGlue SDK v0.10.0), not an official PC release",
+    "notes": "Project: github.com/TefMeister/the-darkness-vr. Process is darknessrecomp.exe with rexruntime.dll + rexgpu-xenos.dll + TracyClient.dll and an Assets\\ junction to the extracted disc. There has never been a PC version, so every route below was worked out against this recompiled build and may not transfer to any other port."
   },
-  {
-   "name": "title_screen",
-   "detect": "'THE DARKNESS' lettering over dark tendril textures with warm light blooms, reached ~70 s after launch following a black frame and a ~180 MB memory jump at ~50 s.",
-   "confidence": "verified-live",
-   "verified": "2026-09-16"
+  "input": {
+    "api_notes": [
+      "VIRTUAL XBOX 360 PAD WORKS. ViGEmBus (Nefarius, running) driven from Python with the vgamepad package. START and A navigate the menus; the RIGHT STICK turns the camera. Create the pad BEFORE launching the game so SDL sees it at initialisation. [verified-live 2026-09-16, n=3 runs for menus, n=1 run for look]",
+      "The build's input backend is SDL (input_backend = 'sdl').",
+      "THE PAD ROUTE APPEARS TO NEED THE GAME WINDOW FOCUSED. A diagnostic run with Microsoft Edge in front for all 135 s: the menu presses did nothing, memory never rose past ~680 MB (a level needs ~1.1 GB) and the idle trailer played. Every run that reached gameplay had the game focused. Consistent with SDL ignoring game controllers while unfocused by default. [verified-live 2026-09-16, n=1 failing vs n=3 succeeding - correlational, not proven]. An SDK option, input_background_events = true in darknessrecomp.toml, sets SDL_HINT_JOYSTICK_ALLOW_BACKGROUND_EVENTS before the gamepad subsystem starts; it is built and switched on but UNPROVEN - in its one run the game took focus by itself. Until proven, bring the game window to the front before driving it.",
+      "NOT TESTED: the keyboard route. The SDK maps keys to pad buttons by default even with mnk_mode = false - keybind_start = 'X', keybind_a = 'Semicolon', keybind_back = 'Z', keybind_dpad_down = 'Shift+Down' (defaults read from the SDK source). Untried on this game.",
+      "LOOK SPEED RAMPS. A short, small nudge (right stick 0.55 for 0.35 s) produced NO visible turn at all, even by eye; full deflection for 0.8 s turned it clearly. Do not read a null from a short nudge as 'look is disabled'. [verified-live 2026-09-16, n=1 each]",
+      "LOOK STICK: 0.55 deflection held for 1.6 s produced NO camera movement at all, twice. FULL deflection (1.0) held for 2 s turned the camera clearly. This is the same ramping noted above, and it is a trap for measurement: a look test at 0.55 yields 'nothing changed', which is indistinguishable from a real negative result. Always confirm the picture moved before drawing any conclusion from a look test. [verified-live 2026-09-18, n=2 failing at 0.55, n=1 working at 1.0]"
+    ]
   },
-  {
-   "name": "attract_trailer",
-   "detect": "Plays AUTOMATICALLY after the menu sits idle - Content/Videos/Wmv/DarknessAttractionVideo.wmv opened at ~94 s in a verbose log. Shows cinematic shots including a 'BUTCHER JOYCE' character name card over a lit close-up. LOOKS LIKE GAMEPLAY AND IS NOT.",
-   "confidence": "verified-live",
-   "verified": "2026-09-16",
-   "notes": "Distinguish it from real gameplay by a verbose log (log_verbose = true) - the trailer opens the .wmv and no level file; real gameplay opens NY1_* level files."
-  },
-  {
-   "name": "level_loading",
-   "detect": "Black window; memory climbs from ~630 MB to ~1.1 GB (t ~80-100 s after the menu presses). Verbose log resolves NY1_Tunnel_00001010.XDF, NY1_Tunnel_00001010_Load.XDF, NY1_Tunnel_Common.XDF, NY1_Tunnel_Precache.XDF.",
-   "confidence": "verified-live",
-   "verified": "2026-09-16"
-  },
-  {
-   "name": "gameplay_car_opening",
-   "detect": "First-person: Jackie's hands in the back of a moving car, tutorial prompt 'Use to look around' with two thumbstick icons, lighting sweeping as tunnel lights pass. Later the full car chase: driver, gesturing passenger, tunnel, traffic, dust particles, opening cast credits (e.g. 'Lauren Ambrose').",
-   "confidence": "verified-live",
-   "verified": "2026-09-16",
-   "notes": "The camera starts pointed DOWN at the hands. The look stick works here. The first-person hands framing is fixed until the stick moves, so it is a good stable state for input tests - but the car is moving, so compare frames a fraction of a second apart, not seconds apart."
-  },
-  {
-   "name": "main_menu",
-   "detect": "CONTINUE / NEW GAME / CHECKPOINTS / MULTIPLAYER / OPTIONS / EXTRA CONTENT, stacked centre-screen over the dark skin texture. CONTINUE is highlighted on arrival.",
-   "confidence": "verified-live",
-   "verified": "2026-09-18"
-  },
-  {
-   "name": "save_notice_dialogue",
-   "detect": "A cassette icon over 'When this icon is displayed game content is being saved...' with a single OK button. Appears after the FIRST START press, before the main menu. A is needed to dismiss it; X and Space do nothing here.",
-   "confidence": "verified-live",
-   "verified": "2026-09-18"
-  }
- ],
- "routes": [
-  {
-   "from": "launch",
-   "to": "gameplay_car_opening",
-   "steps": [
-    "create the virtual Xbox 360 pad first (vgamepad.VX360Gamepad), then launch darknessrecomp.exe with the build folder as the working directory",
-    "wait for the process; time everything from the moment it appears",
-    "press START at 55 s, A at 60 s and 65 s, START at 70 s, A at 75, 80, 85 and 90 s (each press held 0.15 s)",
-    "the level loads ~80-100 s; gameplay is visible by ~105-110 s"
-   ],
-   "confidence": "verified-live",
-   "verified": "2026-09-16",
-   "notes": "n=3 runs, identical outcome. The presses MUST land before ~94 s, when the idle attract trailer starts. The route is timing-based, not state-verified - a slower machine or a changed intro would shift it. Driver: the-darkness-vr/dev-archive/build-scripts/padpress.py and looktest.py. 2026-09-16: FAILED once when Microsoft Edge held focus for the whole run - the presses did not register and the trailer played. Treat 'game window focused' as a precondition."
-  },
-  {
-   "from": "launch",
-   "to": "first level, skipping menus",
-   "steps": [
-    "write E:/the-darkness/game-files/EnvironmentXbox.cfg containing QUICKMAP=NY1_Tunnel",
-    "launch"
-   ],
-   "confidence": "disproved",
-   "verified": "2026-09-16",
-   "notes": "DISPROVED as a working route - KEPT so it is not retried blind. The config IS read (verbose log resolves D:\\EnvironmentXbox.cfg) and the game DOES skip the videos and go to world loading, but about one second later it hits a deliberate debug break (0x80000003 in rexruntime.dll at +0xAB8B0, an int3;ret helper) with no message logged. A control run without the file survives. Two causes ruled out: missing .xw world files and the missing MONOPRO.XFC font are both absent in the WORKING run too. Currently disabled as EnvironmentXbox.cfg.off."
-  },
-  {
-   "from": "title_press_start",
-   "to": "main_menu",
-   "how": "START (pad) -> save_notice_dialogue -> A -> title 'PRESS START' again -> START -> main_menu. The dialogue in the middle is easy to miss; a single START does NOT reach the menu.",
-   "confidence": "verified-live",
-   "verified": "2026-09-18",
-   "notes": "Timing that worked, measured from launch: title visible ~70 s, START 74 s, A 78 s, START 82 s, menu up by 86 s."
-  },
-  {
-   "from": "main_menu",
-   "to": "gameplay",
-   "how": "CONTINUE (top item, already highlighted) with A, once a save exists. NEW GAME works too but raises a 'Starting a new game will delete all your saves. Are you sure?' prompt with NO preselected - press DPAD DOWN then A for YES. Live 3D (the opening car chase, first person, Jackie's hands, 'Use to look around') is on screen about 55 s after the press.",
-   "confidence": "verified-live",
-   "verified": "2026-09-18"
-  },
-  {
-   "from": "launch (no save, no gamer profile - a fresh machine)",
-   "to": "gameplay_car_opening",
-   "steps": [
-    "create the virtual pad, launch, wait ~50 s (title 'PRESS START' is up by ~45 s on a fast PC)",
-    "START -> save-notice dialogue (single OK) -> A",
-    "'No Gamer Profile selected ... Continue?' appears with NO preselected -> DPAD DOWN -> A (YES)",
-    "main menu shows NEW GAME on top (no CONTINUE without a save) -> A",
-    "car scene ('Use to look around') by ~120 s after launch"
-   ],
-   "confidence": "verified-live",
-   "verified": "2026-09-21",
-   "notes": "Home PC, n=3 runs reaching the car scene. DOWN pressed while the save notice is still up is ignored, and the following A then picks NO and drops back to the title - press in the order above, ~5 s apart. Driver: the-darkness-vr/dev-archive/build-scripts/framerate_run.py --first-press 50 --seq \"START A DOWN A WAIT A WAIT A WAIT A WAIT\" --step 5."
-  }
- ],
- "entry_points": {
-  "process_name": "darknessrecomp.exe",
-  "window_title_substring": "darknessrecomp",
-  "working_directory": "E:\\the-darkness\\build-local",
-  "config_files": [
-   "darknessrecomp.toml beside the exe - ReXGlue cvars (fullscreen, window size, resolution_scale, log_verbose, log_flush_interval ...). Read at start.",
-   "Assets\\EnvironmentXbox.cfg (falls back to Environment.cfg) - the engine's ENV settings, e.g. QUICKMAP / QUICKMENU / COMMANDLINE. Not shipped on the disc."
+  "states": [
+    {
+      "name": "intro_logos",
+      "detect": "Pre-rendered WMV logos: moon over a starfield (~10 s), then storm clouds, crows and the Union Entertainment logo (~20 s). Chain is logo_topcow -> logo_union -> logo_2k -> logo_sbz (Content/Gui/CubeWnd.xcr).",
+      "confidence": "verified-live",
+      "verified": "2026-09-16"
+    },
+    {
+      "name": "title_screen",
+      "detect": "'THE DARKNESS' lettering over dark tendril textures with warm light blooms, reached ~70 s after launch following a black frame and a ~180 MB memory jump at ~50 s.",
+      "confidence": "verified-live",
+      "verified": "2026-09-16"
+    },
+    {
+      "name": "attract_trailer",
+      "detect": "Plays AUTOMATICALLY after the menu sits idle - Content/Videos/Wmv/DarknessAttractionVideo.wmv opened at ~94 s in a verbose log. Shows cinematic shots including a 'BUTCHER JOYCE' character name card over a lit close-up. LOOKS LIKE GAMEPLAY AND IS NOT.",
+      "confidence": "verified-live",
+      "verified": "2026-09-16",
+      "notes": "Distinguish it from real gameplay by a verbose log (log_verbose = true) - the trailer opens the .wmv and no level file; real gameplay opens NY1_* level files."
+    },
+    {
+      "name": "level_loading",
+      "detect": "Black window; memory climbs from ~630 MB to ~1.1 GB (t ~80-100 s after the menu presses). Verbose log resolves NY1_Tunnel_00001010.XDF, NY1_Tunnel_00001010_Load.XDF, NY1_Tunnel_Common.XDF, NY1_Tunnel_Precache.XDF.",
+      "confidence": "verified-live",
+      "verified": "2026-09-16"
+    },
+    {
+      "name": "gameplay_car_opening",
+      "detect": "First-person: Jackie's hands in the back of a moving car, tutorial prompt 'Use to look around' with two thumbstick icons, lighting sweeping as tunnel lights pass. Later the full car chase: driver, gesturing passenger, tunnel, traffic, dust particles, opening cast credits (e.g. 'Lauren Ambrose').",
+      "confidence": "verified-live",
+      "verified": "2026-09-16",
+      "notes": "The camera starts pointed DOWN at the hands. The look stick works here. The first-person hands framing is fixed until the stick moves, so it is a good stable state for input tests - but the car is moving, so compare frames a fraction of a second apart, not seconds apart."
+    },
+    {
+      "name": "main_menu",
+      "detect": "CONTINUE / NEW GAME / CHECKPOINTS / MULTIPLAYER / OPTIONS / EXTRA CONTENT, stacked centre-screen over the dark skin texture. CONTINUE is highlighted on arrival.",
+      "confidence": "verified-live",
+      "verified": "2026-09-18"
+    },
+    {
+      "name": "save_notice_dialogue",
+      "detect": "A cassette icon over 'When this icon is displayed game content is being saved...' with a single OK button. Appears after the FIRST START press, before the main menu. A is needed to dismiss it; X and Space do nothing here.",
+      "confidence": "verified-live",
+      "verified": "2026-09-18"
+    }
   ],
-  "logs": "logs\\darknessrecomp_NNN.log beside the exe. By default only FAILED file opens are logged; log_verbose = true plus log_flush_interval = 1 records every successful open too (slows the game, ~26 MB in a few minutes)."
- },
- "commands": {
-  "console": "NONE FOUND. The engine's ENV settings (QUICKMAP, QUICKMENU, and a COMMANDLINE key accepting -MAP <name>, -DEMO, -EXEC) are the only command-like route identified, from disassembly, and QUICKMAP traps as above. [inferred-static + verified-live 2026-09-16]"
- },
- "hazards": [
-  {
-   "hazard": "The idle attract trailer masquerades as gameplay",
-   "confidence": "verified-live",
-   "verified": "2026-09-16",
-   "notes": "A hands-off run left at the menu reaches a 'BUTCHER JOYCE' character card that looks in-engine. It is DarknessAttractionVideo.wmv. A session concluded 'probably real 3D' from it before a verbose log proved otherwise. Always confirm gameplay by a level file (NY1_*) opening, not by the look of a frame."
+  "routes": [
+    {
+      "from": "launch",
+      "to": "gameplay_car_opening",
+      "steps": [
+        "create the virtual Xbox 360 pad first (vgamepad.VX360Gamepad), then launch darknessrecomp.exe with the build folder as the working directory",
+        "wait for the process; time everything from the moment it appears",
+        "press START at 55 s, A at 60 s and 65 s, START at 70 s, A at 75, 80, 85 and 90 s (each press held 0.15 s)",
+        "the level loads ~80-100 s; gameplay is visible by ~105-110 s"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-16",
+      "notes": "n=3 runs, identical outcome. The presses MUST land before ~94 s, when the idle attract trailer starts. The route is timing-based, not state-verified - a slower machine or a changed intro would shift it. Driver: the-darkness-vr/dev-archive/build-scripts/padpress.py and looktest.py. 2026-09-16: FAILED once when Microsoft Edge held focus for the whole run - the presses did not register and the trailer played. Treat 'game window focused' as a precondition."
+    },
+    {
+      "from": "launch",
+      "to": "first level, skipping menus",
+      "steps": [
+        "write E:/the-darkness/game-files/EnvironmentXbox.cfg containing QUICKMAP=NY1_Tunnel",
+        "launch"
+      ],
+      "confidence": "disproved",
+      "verified": "2026-09-16",
+      "notes": "DISPROVED as a working route - KEPT so it is not retried blind. The config IS read (verbose log resolves D:\\EnvironmentXbox.cfg) and the game DOES skip the videos and go to world loading, but about one second later it hits a deliberate debug break (0x80000003 in rexruntime.dll at +0xAB8B0, an int3;ret helper) with no message logged. A control run without the file survives. Two causes ruled out: missing .xw world files and the missing MONOPRO.XFC font are both absent in the WORKING run too. Currently disabled as EnvironmentXbox.cfg.off."
+    },
+    {
+      "from": "title_press_start",
+      "to": "main_menu",
+      "how": "START (pad) -> save_notice_dialogue -> A -> title 'PRESS START' again -> START -> main_menu. The dialogue in the middle is easy to miss; a single START does NOT reach the menu.",
+      "confidence": "verified-live",
+      "verified": "2026-09-18",
+      "notes": "Timing that worked, measured from launch: title visible ~70 s, START 74 s, A 78 s, START 82 s, menu up by 86 s."
+    },
+    {
+      "from": "main_menu",
+      "to": "gameplay",
+      "how": "CONTINUE (top item, already highlighted) with A, once a save exists. NEW GAME works too but raises a 'Starting a new game will delete all your saves. Are you sure?' prompt with NO preselected - press DPAD DOWN then A for YES. Live 3D (the opening car chase, first person, Jackie's hands, 'Use to look around') is on screen about 55 s after the press.",
+      "confidence": "verified-live",
+      "verified": "2026-09-18"
+    },
+    {
+      "from": "launch (no save, no gamer profile - a fresh machine)",
+      "to": "gameplay_car_opening",
+      "steps": [
+        "create the virtual pad, launch, wait ~50 s (title 'PRESS START' is up by ~45 s on a fast PC)",
+        "START -> save-notice dialogue (single OK) -> A",
+        "'No Gamer Profile selected ... Continue?' appears with NO preselected -> DPAD DOWN -> A (YES)",
+        "main menu shows NEW GAME on top (no CONTINUE without a save) -> A",
+        "car scene ('Use to look around') by ~120 s after launch"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-21",
+      "notes": "Home PC, n=3 runs reaching the car scene. DOWN pressed while the save notice is still up is ignored, and the following A then picks NO and drops back to the title - press in the order above, ~5 s apart. Driver: the-darkness-vr/dev-archive/build-scripts/framerate_run.py --first-press 50 --seq \"START A DOWN A WAIT A WAIT A WAIT A WAIT\" --step 5."
+    }
+  ],
+  "entry_points": {
+    "process_name": "darknessrecomp.exe",
+    "window_title_substring": "darknessrecomp",
+    "working_directory": "E:\\the-darkness\\build-local",
+    "config_files": [
+      "darknessrecomp.toml beside the exe - ReXGlue cvars (fullscreen, window size, resolution_scale, log_verbose, log_flush_interval ...). Read at start.",
+      "Assets\\EnvironmentXbox.cfg (falls back to Environment.cfg) - the engine's ENV settings, e.g. QUICKMAP / QUICKMENU / COMMANDLINE. Not shipped on the disc."
+    ],
+    "logs": "logs\\darknessrecomp_NNN.log beside the exe. By default only FAILED file opens are logged; log_verbose = true plus log_flush_interval = 1 records every successful open too (slows the game, ~26 MB in a few minutes)."
   },
-  {
-   "hazard": "Whole-frame image comparison is pinned at zero by the fixed HUD prompt",
-   "confidence": "verified-live",
-   "verified": "2026-09-16",
-   "notes": "The 'Use to look around' prompt never moves, so whole-frame phase correlation reports no shift even while the camera turns. Measure a region that excludes the HUD (the lower half of the frame worked). The same flaw once made an automatic verdict print false on a run that had actually succeeded."
+  "commands": {
+    "console": "NONE FOUND. The engine's ENV settings (QUICKMAP, QUICKMENU, and a COMMANDLINE key accepting -MAP <name>, -DEMO, -EXEC) are the only command-like route identified, from disassembly, and QUICKMAP traps as above. [inferred-static + verified-live 2026-09-16]"
   },
-  {
-   "hazard": "The game can take foreground focus on its own, intermittently",
-   "confidence": "verified-live",
-   "verified": "2026-09-16",
-   "notes": "One run: focus jumped to the game ~20 s in. The next 110 s run: never. n=1 each way, so treat EVERY launch as able to take focus. Matters if the user is working on the same machine - on 2026-09-16 the user was operating a physical engraver in another program. Log the foreground PROCESS NAME per sample (never window titles) to make this checkable."
-  },
-  {
-   "hazard": "Capture method: PrintWindow was used here and has not been validated for non-moving states",
-   "confidence": "reported",
-   "verified": "2026-09-16",
-   "notes": "PrintWindow(PW_RENDERFULLCONTENT) on the game's own window captured correct, changing frames during the intros and gameplay, and does not take focus. UNIVERSAL guidance warns PrintWindow can serve a STALE cached frame when a game stops presenting (paused, menus, loading). Not checked on this game for those states; prefer BitBlt from the screen DC where the window can be in front."
-  },
-  {
-   "hazard": "The graphics plugin can silently go stale on deploy",
-   "confidence": "verified-live",
-   "verified": "2026-09-16",
-   "notes": "The game build writes darknessrecomp.exe and rexruntime.dll to the game's out/build folder, but rexgpu-xenos.dll to the SHARED SDK output folder (E:/condemned-2-vr/src/rexglue-sdk/out/win-amd64/). A deploy step that only copied from the game folder left an older rexgpu-xenos.dll installed for most of 2026-09-16 - all of that day's first live results ran on it. Condemned 2 builds into the same shared folder, so building one project overwrites the other's plugin. Hash-check all three files before trusting a run."
-  },
-  {
-   "hazard": "Self-close is by process kill, not a graceful quit",
-   "confidence": "verified-live",
-   "verified": "2026-09-16",
-   "notes": "Every automated run so far ended with taskkill /F. No graceful in-game quit route has been mapped. Low risk on a dev build with no save of value, but the in-game quit route is still a missing capability."
-  },
-  {
-   "hazard": "Pad input silently ignored when the game window is not focused",
-   "confidence": "verified-live",
-   "verified": "2026-09-16",
-   "notes": "n=1 failing run, correlational. The failure looks exactly like 'the route is broken' or 'the new build broke input': no error, the menu simply never advances and the attract trailer starts. Log the foreground process per sample so the cause is visible. See input.api_notes for the SDK option that should remove the dependency."
-  },
-  {
-   "hazard": "QUICKMAP / QUICKMENU do not yet reach a level",
-   "confidence": "verified-live",
-   "verified": "2026-09-18",
-   "notes": "Both used to kill the process instantly on one of the game's own debug assertions (guest 0x820DFC60 -> DbgBreakPoint, exit 0x80000003, NOTHING in the log). Fixed in the shared SDK so a guest DbgBreakPoint logs and continues. Past it, the run stops on a missing font ('d:\\content\fonts\text.xfc' -> XamShowDirtyDiscErrorUI) and sits at ~455 MB with nothing drawing. Use the main menu's CHECKPOINTS level select instead until the font question is settled."
-  },
-  {
-   "hazard": "Focus stealing is intermittent, so a focus change proves nothing",
-   "confidence": "verified-live",
-   "verified": "2026-09-18",
-   "notes": "Across five runs the game took the foreground at launch in some and left it with the launching shell for entire runs in others (n=2 each way). The 2026-09-16 hazard below still stands for INPUT, but 'the foreground changed' must not be read as 'the game grabbed focus'. Record the foreground process name at every sample."
-  },
-  {
-   "hazard": "Boot time varies by tens of seconds, so a fixed-clock menu drive silently misses every press",
-   "confidence": "verified-live",
-   "verified": "2026-09-18",
-   "notes": "Time to the title screen moved between about 56 s and 100 s across runs on the same machine, apparently with shader/pipeline cache state. A schedule tuned on one run lands on the wrong screen on the next and the run produces nothing - which looks exactly like 'the pad route is broken'. Three runs were lost to this. Fix: poll window captures until the title art appears, then alternate START and A four times rather than following a clock. A on the title does nothing, START on the menu does nothing, and a spare A on the menu is CONTINUE."
-  }
- ],
- "notes": [
-  "Automation, scored against the five capabilities as of 2026-09-18: (1) self-launch PROVEN; (2) menu to gameplay PROVEN, timing-based, via the virtual pad - and the route now includes the save-notice dialogue (START, A, START); (3) commands MISSING - no console; the QUICKMAP/QUICKMENU ENV route is read but stops on a missing font, and the in-data DevMenu is gated by cheat(); (4) camera PROVEN via the right stick, character movement NOT TESTED; (5) self-close by process kill only, graceful quit NOT MAPPED.",
-  "The first real-time 3D in this build and the look-stick result are documented with screenshots in the-darkness-vr/dev-archive/milestone-captures/.",
-  "Untried and cheapest: the main menu's CHECKPOINTS entry is a retail level select, needing no ENV switch and no patch.",
-  "The fonts and models are packed inside Content/Xdf/*.XDF, not loose on the disc. The disc dump is byte-perfect (498 files, 0 missing, 0 size mismatches), so a missing-file error means 'not precached', never 'bad rip'."
- ],
- "disproved": [
-  {
-   "claim": "Setting SHOW_DEVELOPMENT=1 and SHOW_CONFIDENTIAL=1 in EnvironmentXbox.cfg opens the built-in DevMenu",
-   "result": "No. With both keys set, X (GUI_BUTTON2) twice and Space on the main menu changed nothing. The DevMenu, free camera (dbgcam_*), noclip and god-mode are all present in retail CubeWnd.xcr and in the executable, but every entrance is gated by cheat(...) and that gate did not open.",
-   "confidence": "verified-live",
-   "verified": "2026-09-18",
-   "n": 1
-  },
-  {
-   "claim": "EnvironmentXbox.cfg works when placed beside the host executable",
-   "result": "No. Host-side it is ignored entirely - a QUICKMAP run there was indistinguishable from no file. It must go in the GAME's disc root (the Assets junction, guest D:\\), i.e. E:\the-darkness\\game-files\\.",
-   "confidence": "verified-live",
-   "verified": "2026-09-18",
-   "n": 1
-  },
-  {
-   "claim": "QUICKMENU=DevMenu boots straight into the built-in developer menu",
-   "result": "No. It fails exactly like QUICKMAP: the same missing font (d:\\content\fonts\text.xfc) and the same XamShowDirtyDiscErrorUI, with nothing drawing. Every ENV quick-start route skips the front-end GUI precache, so none of them are usable shortcuts. Separately, cheat() - the gate on every dev-menu entrance - was found to be an empty stub that tests nothing, so no config line can open the menu at all; it needs a code hook on sub_8236F300.",
-   "confidence": "verified-live",
-   "verified": "2026-09-18",
-   "n": 1
-  }
- ]
+  "hazards": [
+    {
+      "hazard": "The idle attract trailer masquerades as gameplay",
+      "confidence": "verified-live",
+      "verified": "2026-09-16",
+      "notes": "A hands-off run left at the menu reaches a 'BUTCHER JOYCE' character card that looks in-engine. It is DarknessAttractionVideo.wmv. A session concluded 'probably real 3D' from it before a verbose log proved otherwise. Always confirm gameplay by a level file (NY1_*) opening, not by the look of a frame."
+    },
+    {
+      "hazard": "Whole-frame image comparison is pinned at zero by the fixed HUD prompt",
+      "confidence": "verified-live",
+      "verified": "2026-09-16",
+      "notes": "The 'Use to look around' prompt never moves, so whole-frame phase correlation reports no shift even while the camera turns. Measure a region that excludes the HUD (the lower half of the frame worked). The same flaw once made an automatic verdict print false on a run that had actually succeeded."
+    },
+    {
+      "hazard": "The game can take foreground focus on its own, intermittently",
+      "confidence": "verified-live",
+      "verified": "2026-09-16",
+      "notes": "One run: focus jumped to the game ~20 s in. The next 110 s run: never. n=1 each way, so treat EVERY launch as able to take focus. Matters if the user is working on the same machine - on 2026-09-16 the user was operating a physical engraver in another program. Log the foreground PROCESS NAME per sample (never window titles) to make this checkable."
+    },
+    {
+      "hazard": "Capture method: PrintWindow was used here and has not been validated for non-moving states",
+      "confidence": "reported",
+      "verified": "2026-09-16",
+      "notes": "PrintWindow(PW_RENDERFULLCONTENT) on the game's own window captured correct, changing frames during the intros and gameplay, and does not take focus. UNIVERSAL guidance warns PrintWindow can serve a STALE cached frame when a game stops presenting (paused, menus, loading). Not checked on this game for those states; prefer BitBlt from the screen DC where the window can be in front."
+    },
+    {
+      "hazard": "The graphics plugin can silently go stale on deploy",
+      "confidence": "verified-live",
+      "verified": "2026-09-16",
+      "notes": "The game build writes darknessrecomp.exe and rexruntime.dll to the game's out/build folder, but rexgpu-xenos.dll to the SHARED SDK output folder (E:/condemned-2-vr/src/rexglue-sdk/out/win-amd64/). A deploy step that only copied from the game folder left an older rexgpu-xenos.dll installed for most of 2026-09-16 - all of that day's first live results ran on it. Condemned 2 builds into the same shared folder, so building one project overwrites the other's plugin. Hash-check all three files before trusting a run."
+    },
+    {
+      "hazard": "Self-close is by process kill, not a graceful quit",
+      "confidence": "verified-live",
+      "verified": "2026-09-16",
+      "notes": "Every automated run so far ended with taskkill /F. No graceful in-game quit route has been mapped. Low risk on a dev build with no save of value, but the in-game quit route is still a missing capability."
+    },
+    {
+      "hazard": "Pad input silently ignored when the game window is not focused",
+      "confidence": "verified-live",
+      "verified": "2026-09-16",
+      "notes": "n=1 failing run, correlational. The failure looks exactly like 'the route is broken' or 'the new build broke input': no error, the menu simply never advances and the attract trailer starts. Log the foreground process per sample so the cause is visible. See input.api_notes for the SDK option that should remove the dependency."
+    },
+    {
+      "hazard": "QUICKMAP / QUICKMENU do not yet reach a level",
+      "confidence": "verified-live",
+      "verified": "2026-09-18",
+      "notes": "Both used to kill the process instantly on one of the game's own debug assertions (guest 0x820DFC60 -> DbgBreakPoint, exit 0x80000003, NOTHING in the log). Fixed in the shared SDK so a guest DbgBreakPoint logs and continues. Past it, the run stops on a missing font ('d:\\content\fonts\text.xfc' -> XamShowDirtyDiscErrorUI) and sits at ~455 MB with nothing drawing. Use the main menu's CHECKPOINTS level select instead until the font question is settled."
+    },
+    {
+      "hazard": "Focus stealing is intermittent, so a focus change proves nothing",
+      "confidence": "verified-live",
+      "verified": "2026-09-18",
+      "notes": "Across five runs the game took the foreground at launch in some and left it with the launching shell for entire runs in others (n=2 each way). The 2026-09-16 hazard below still stands for INPUT, but 'the foreground changed' must not be read as 'the game grabbed focus'. Record the foreground process name at every sample."
+    },
+    {
+      "hazard": "Boot time varies by tens of seconds, so a fixed-clock menu drive silently misses every press",
+      "confidence": "verified-live",
+      "verified": "2026-09-18",
+      "notes": "Time to the title screen moved between about 56 s and 100 s across runs on the same machine, apparently with shader/pipeline cache state. A schedule tuned on one run lands on the wrong screen on the next and the run produces nothing - which looks exactly like 'the pad route is broken'. Three runs were lost to this. Fix: poll window captures until the title art appears, then alternate START and A four times rather than following a clock. A on the title does nothing, START on the menu does nothing, and a spare A on the menu is CONTINUE."
+    },
+    {
+      "hazard": "Once a save exists the route changes: no 'No Gamer Profile' dialogue; at ~52 s after launch press START, then A (save-icon notice), then A on CONTINUE; the opening car scene is up 25-40 s later (ViGEm X360 pad, window foregrounded before each press). The car scene opens still and fading in: use it for static measurements only.",
+      "confidence": "verified-live",
+      "verified": "2026-09-28",
+      "notes": "n=4",
+      "folded": "2026-09-29 from inbox"
+    },
+    {
+      "hazard": "DANGER: with a save present, DOWN then A on the main menu reaches NEW GAME -> 'Starting a new game will delete all your saves. Are you sure?'. The cursor starts on NO, but DOWN then A there deletes the saves. The older START A DOWN A WAIT A route is disproved with a save present.",
+      "confidence": "verified-live",
+      "verified": "2026-09-28",
+      "notes": "n=2",
+      "folded": "2026-09-29 from inbox"
+    }
+  ],
+  "notes": [
+    "Automation, scored against the five capabilities as of 2026-09-18: (1) self-launch PROVEN; (2) menu to gameplay PROVEN, timing-based, via the virtual pad - and the route now includes the save-notice dialogue (START, A, START); (3) commands MISSING - no console; the QUICKMAP/QUICKMENU ENV route is read but stops on a missing font, and the in-data DevMenu is gated by cheat(); (4) camera PROVEN via the right stick, character movement NOT TESTED; (5) self-close by process kill only, graceful quit NOT MAPPED.",
+    "The first real-time 3D in this build and the look-stick result are documented with screenshots in the-darkness-vr/dev-archive/milestone-captures/.",
+    "Untried and cheapest: the main menu's CHECKPOINTS entry is a retail level select, needing no ENV switch and no patch.",
+    "The fonts and models are packed inside Content/Xdf/*.XDF, not loose on the disc. The disc dump is byte-perfect (498 files, 0 missing, 0 size mismatches), so a missing-file error means 'not precached', never 'bad rip'."
+  ],
+  "disproved": [
+    {
+      "claim": "Setting SHOW_DEVELOPMENT=1 and SHOW_CONFIDENTIAL=1 in EnvironmentXbox.cfg opens the built-in DevMenu",
+      "result": "No. With both keys set, X (GUI_BUTTON2) twice and Space on the main menu changed nothing. The DevMenu, free camera (dbgcam_*), noclip and god-mode are all present in retail CubeWnd.xcr and in the executable, but every entrance is gated by cheat(...) and that gate did not open.",
+      "confidence": "verified-live",
+      "verified": "2026-09-18",
+      "n": 1
+    },
+    {
+      "claim": "EnvironmentXbox.cfg works when placed beside the host executable",
+      "result": "No. Host-side it is ignored entirely - a QUICKMAP run there was indistinguishable from no file. It must go in the GAME's disc root (the Assets junction, guest D:\\), i.e. E:\the-darkness\\game-files\\.",
+      "confidence": "verified-live",
+      "verified": "2026-09-18",
+      "n": 1
+    },
+    {
+      "claim": "QUICKMENU=DevMenu boots straight into the built-in developer menu",
+      "result": "No. It fails exactly like QUICKMAP: the same missing font (d:\\content\fonts\text.xfc) and the same XamShowDirtyDiscErrorUI, with nothing drawing. Every ENV quick-start route skips the front-end GUI precache, so none of them are usable shortcuts. Separately, cheat() - the gate on every dev-menu entrance - was found to be an empty stub that tests nothing, so no config line can open the menu at all; it needs a code hook on sub_8236F300.",
+      "confidence": "verified-live",
+      "verified": "2026-09-18",
+      "n": 1
+    }
+  ]
 }
