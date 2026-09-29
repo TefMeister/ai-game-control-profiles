@@ -407,6 +407,34 @@
       "confidence": "verified-live",
       "verified": "2026-09-10",
       "notes": "The level-load screen says so outright. The numpad is completely free across all 11 bindsets - use KP_1 (scan 0x4F) / KP_2 (0x50) rather than F-keys. Avoid KP_ENTER and KP_SLASH: extended scancodes the harness sends without KEYEVENTF_EXTENDEDKEY."
+    },
+    {
+      "hazard": "Console-free command route: proxy 'cmdroute' then 'cmd <console text>' runs any console command with no typing or scancodes; 'viewpos' reads the camera (run it twice, the cache is one behind). Supersedes the scancode + dead-key typing dance for running commands (keep that only for reading the console buffer).",
+      "confidence": "verified-live",
+      "verified": "2026-09-12",
+      "notes": "n=1 launch; viewpos matched the 2026-09-10 value on the other machine",
+      "folded": "2026-09-29 from inbox"
+    },
+    {
+      "hazard": "'cmd r_fullscreen 0' at runtime WEDGES the game (window minimised at -32000, not responding, swapchain recreated in a loop). Set r_fullscreen in DOOMConfig.local with the game closed. r_mode -1 + r_customWidth/Height were ignored; MoveWindow from outside resizes reliably.",
+      "confidence": "verified-live",
+      "verified": "2026-09-12",
+      "notes": "n=1",
+      "folded": "2026-09-29 from inbox"
+    },
+    {
+      "hazard": "Movement: the proxy's default 'inproc-keystate' backend does nothing in gameplay; 'backend sendinput' moved the player along its facing (checked with viewpos). 'status' saying sendinput is unavailable is a FOREGROUND check, not a capability check.",
+      "confidence": "verified-live",
+      "verified": "2026-09-12",
+      "notes": "n=1 each",
+      "folded": "2026-09-29 from inbox"
+    },
+    {
+      "hazard": "The doom-2016-vr proxy's own arrow keys lack KEYEVENTF_EXTENDEDKEY: 'key 0x28' five times never moved the pause-menu highlight, while external SendInput scancode 0x50 + EXTENDED did at once. Re-test any past 'arrow key did nothing via the proxy' entry.",
+      "confidence": "verified-live",
+      "verified": "2026-09-12",
+      "notes": "n=1 each",
+      "folded": "2026-09-29 from inbox"
     }
   ],
   "last_updated": "2026-09-10"
