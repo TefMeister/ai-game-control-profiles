@@ -77,5 +77,7 @@
  ],
  "setup_notes": [
   "2026-09-29: from gameplay: Esc opens the GENTEK pause menu with LOGS highlighted; Down x5 reaches QUIT (greyed items are skipped); Enter; the QUIT page lists RESTORE CHECKPOINT / QUIT TO MAIN MENU / QUIT TO DESKTOP; Down x2, Enter; the warning highlights CANCEL; Down, Enter quits. Timed steps only, no checkpoints yet. RESTORE CHECKPOINT (Esc, Down x5, Enter, Enter) is the quick way back to the start spot for Move-o-matiC."
- ]
+ ],
+ "from": "gameplay",
+ "to": "closed"
 }
