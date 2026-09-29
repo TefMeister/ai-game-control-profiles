@@ -1,0 +1,18 @@
+{
+ "schema": "menu-o-matic/1",
+ "game": "Manhunt",
+ "window": "=MANHUNT",
+ "route": "quit_to_desktop",
+ "from": "gameplay",
+ "to": "closed",
+ "checkpoints": {},
+ "steps": [
+  {
+   "close": true,
+   "timeout": 30
+  }
+ ],
+ "setup_notes": [
+  "WM_CLOSE to the game window is the game's own clean exit (verified 7 times in September 2026, never a kill)."
+ ]
+}
