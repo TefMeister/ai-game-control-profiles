@@ -1,0 +1,24 @@
+{
+ "schema": "menu-o-matic/1",
+ "game": "Burnout Paradise Remastered",
+ "window": "Burnout(TM)",
+ "route": "city_start_to_road",
+ "steps": [],
+ "checkpoints": {},
+ "brief": {
+  "why": "Later VR test: the picture and the car's shadow must stay right while the car drives AND turns, because turning swings the camera.",
+  "start": "Car parked and standing still, normal chase view behind it, open road ahead with room to turn right. Any time of day.",
+  "move": [
+   "Hold W: drive straight about 3 seconds, steady speed, no boost.",
+   "Still holding W, one gentle right turn, about a quarter turn (hold D about 1 second).",
+   "Straighten up and drive about 2 more seconds.",
+   "Let go of W, hold S until the car stops."
+  ],
+  "screen": "The car and its shadow on the road the whole time, camera behind the car.",
+  "avoid": "Walls, other cars, boost, jumps, crashes; sitting still for long before starting (the game switches to a film-style camera with black bars).",
+  "end": "Stopped on the road facing along it; tap numpad minus there, then numpad star."
+ },
+ "setup_notes": [
+  "2026-09-29: first recording (a free drive, night) cleared: the replay started in daylight at a different spot, so it did not match. Re-record to the brief."
+ ]
+}
