@@ -1,0 +1,50 @@
+{
+  "game": "Metro Exodus Enhanced Edition",
+  "year": 2021,
+  "developer": "4A Games",
+  "engine": "4A Engine",
+  "renderer": "Direct3D 12 with hardware ray tracing (DXR 1.1 required)",
+  "binary": "MetroExodus.exe (64-bit, Steam DRM wrapper section .bind; code not encrypted on disk)",
+  "store": "Steam (appid 1449560)",
+  "profile_created": "2026-09-30",
+  "created_by": "metro-exodus-vr /lm session, dev PC",
+  "summary": "First unattended launch 2026-09-30 on a GTX 1660 SUPER: the game starts, a Win32 warning dialog must be dismissed with BM_CLICK on 'Run Anyway', the intros play, and a key press skips to the title screen. It then compiles shaders for about six minutes and crashes inside D3D12Core.dll. On a card without DXR 1.1 it never reaches the main menu, so nothing past the title screen has been tested.",
+  "input": {
+    "working": [
+      {
+        "route": "Win32 dialogs ('System specification requirements not met', the BugTrap crash box): find the child button by its text and PostMessage BM_CLICK. UI Automation's Invoke found the text label, not the button.",
+        "confidence": "verified-live",
+        "date": "2026-09-30",
+        "n": 1
+      },
+      {
+        "route": "SendInput with scancodes to the foreground game window: Space during the intro film ended it and moved on to the title screen.",
+        "confidence": "verified-live",
+        "date": "2026-09-30",
+        "n": 1,
+        "note": "One press, one observation. Whether it was Space or the film ending on its own is not separated."
+      }
+    ],
+    "disproved": []
+  },
+  "states": {
+    "warning_dialog": "Title 'System specification requirements not met'; buttons Open Link / Quit / Run Anyway. Appears on any card without DXR 1.1.",
+    "intro": "legal.webm then intro.webm, fullscreen 1920x1080 at 0,0 on first start.",
+    "title_loading": "Metro Exodus key art with a small spinner at the bottom left. On first start it compiles shaders here (about 6 CPU cores busy).",
+    "crash_dialog": "Title 'FATAL: MetroExodus', BugTrap. It writes a zip with a crash dump to Saved Games\\Metro Exodus\\ and sets the registry value HKCU\\Software\\4A-Games\\Metro Exodus\\BadQuit to 1."
+  },
+  "hazards": [
+    {
+      "claim": "After a crash, BadQuit=1 makes the next start ask whether to start in safe mode; Yes lowers every graphics setting. Reset the value to 0 before relaunching unattended.",
+      "confidence": "verified-live",
+      "date": "2026-09-30",
+      "n": 1,
+      "note": "The value was measured as 1 after the crash; the safe-mode prompt itself comes from a static read and was not seen."
+    }
+  ],
+  "config": {
+    "user_cfg": "Saved Games\\Metro Exodus\\<steamid>\\user.cfg is run as a console script at every start (static read). Windowing lines to try: r_fullscreen off, r_res_hor 1280, r_res_vert 720. There is no borderless setting and no command-line window switch. Untested live.",
+    "confidence": "inferred-static",
+    "date": "2026-09-30"
+  }
+}
