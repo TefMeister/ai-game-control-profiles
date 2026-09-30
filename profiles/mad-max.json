@@ -325,6 +325,18 @@
       "confidence": "verified-live",
       "verified": "2026-09-08",
       "notes": "Measured |col 0| = 0.2000 -> hfov ~157.4 deg, against an 80.48 deg gameplay default and a 116.91 deg Photo-Mode maximum. Two controllers are required and the game says so in its own UI twice; two ViGEm virtual pads (tools/hold-pads.py) satisfied it on a machine with zero physical pads, XInput slots [0,1]. NOT ESTABLISHED: that the pads were NECESSARY - no pads-removed control was run. Also unknown: how to end the session cleanly (Esc reaches the pause menu and RESUME GAME returns INTO the session)."
+    },
+    {
+      "from": "any",
+      "to": "process_exit (window close)",
+      "steps": [
+        "PostMessage WM_CLOSE to the game window (the same as clicking its X)",
+        "process gone in ~2 s"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-30",
+      "n": 5,
+      "notes": "Worked from live gameplay five times on 2026-09-30, no dialog. Much quicker than the menu route."
     }
   ],
   "entry_points": {
@@ -442,5 +454,13 @@
       "date": "2026-09-04"
     }
   ],
-  "last_updated": "2026-09-10"
+  "last_updated": "2026-09-10",
+  "config": {
+    "settings_ini": {
+      "where": "settings.ini in the game folder (beside MadMax.exe)",
+      "notes": "Music=0 mutes music (the standing rule); MotionBlur=0 removes the smear the stereo edit causes. Edit while the game is closed.",
+      "confidence": "verified-live",
+      "verified": "2026-09-30"
+    }
+  }
 }
