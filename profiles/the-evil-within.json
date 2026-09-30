@@ -103,6 +103,47 @@
       "confidence": "verified-live",
       "verified": "2026-09-08",
       "notes": "Replaces the keyboard route, which does not work at all - SendInput does not reach this game."
+    },
+    {
+      "from": "launch",
+      "to": "gameplay (Chapter 2 safe room, from a save)",
+      "steps": [
+        "one virtual XInput pad, settle ~5 s, throwaway DPAD_RIGHT (swallowed first input)",
+        "A past the photosensitivity warning, A past the attract screen (wait for the logos first, ~45 s after the window appears)",
+        "title menu opens on CONTINUE: DPAD_DOWN x2 to LOAD GAME - VERIFY (NEW GAME is passed)",
+        "A: the save list (AUTOSAVE, then Chapter 2 saves). DPAD_DOWN x1 to 'Ch.2 Remnants 0:31:32' - VERIFY by its thumbnail (the safe room)",
+        "A: 'Are you sure you want to load? ... autosave data will be overwritten' defaults to NO - DPAD_UP to YES, VERIFY, A",
+        "about 50 s to gameplay in the safe room"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-30",
+      "notes": "X on the save list is DELETE: never press it there. Loading overwrote the Chapter 1 autosave, so CONTINUE now lands in Chapter 2 on this PC. One DPAD press can be swallowed besides the first; capture after every move."
+    },
+    {
+      "from": "any",
+      "to": "process_exit (window close)",
+      "steps": [
+        "PostMessage WM_CLOSE to the game window (the same as clicking its X)",
+        "process gone in ~4 s"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-30",
+      "n": 2,
+      "notes": "Much quicker than the two-stage menu exit and worked from a cutscene pause and from gameplay. No save prompt appeared."
+    },
+    {
+      "from": "title menu",
+      "to": "music muted",
+      "steps": [
+        "DPAD_DOWN to OPTIONS - VERIFY, A",
+        "RIGHT_SHOULDER x3 to the AUDIO tab",
+        "DPAD_DOWN to Music Volume",
+        "DPAD_LEFT about 45 times (steps of ~3) to 0",
+        "B back to the title menu"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-09-30",
+      "notes": "Saved as s_volume_music \"-60\" in Saved Games/TangoGameworks/The Evil Within/base/the evil withinConfig.cfg and survives a relaunch. Adding s_playMusic \"0\" to that file does NOT survive: the game rewrites the file on exit."
     }
   ],
   "entry_points": {
