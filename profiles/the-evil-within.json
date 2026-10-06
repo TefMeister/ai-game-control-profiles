@@ -209,7 +209,32 @@
       "confidence": "verified-live",
       "verified": "2026-09-08",
       "notes": "Measured: five DPAD_DOWN presses moved the pause-menu highlight THREE rows; two more in a fresh pad session moved ZERO. Inside one pad lifetime each press moves exactly one row and the first after connect moves none. Following the keyboard route's 'Down x5 to TITLE MENU' and committing blind puts A on RESTART CHAPTER, which is destructive. WORKING PATTERN: do a whole navigation inside ONE pad lifetime, and open each session with a throwaway press that cannot move a vertical list (DPAD_RIGHT) to absorb the swallowed input. Always capture and verify the highlight before committing."
+    },
+    {
+      "id": "menu-arrows-need-extended-flag",
+      "description": "Keyboard arrow keys move menus only when sent as scancodes with the extended-key flag.",
+      "confidence": "verified-live",
+      "verified": "2026-10-06",
+      "n": 1
+    },
+    {
+      "id": "mouse-pointer-moves-menu-highlight",
+      "description": "A mouse pointer resting over the title/pause menu moves the highlight; Enter then picks that row. Park the pointer in a screen corner before navigating.",
+      "confidence": "verified-live",
+      "verified": "2026-10-06",
+      "n": 1
+    },
+    {
+      "id": "wm-close-does-not-quit",
+      "description": "WM_CLOSE did not quit in gameplay or at the title on 2026-10-06; use pause > TITLE MENU > YES, then EXIT > YES.",
+      "confidence": "verified-live",
+      "verified": "2026-10-06",
+      "n": 2
     }
   ],
-  "notes": []
+  "notes": [
+    "2026-10-06: the ViGEm virtual pad walks the character (left stick); the first input after connecting is swallowed.",
+    "2026-10-06: Escape pauses a cutscene; holding the right mouse button skips cutscenes (reported by Tefa).",
+    "2026-10-06: the Chapter 1 autosave resumes just before the opening drive cutscene (about 2.5 minutes)."
+  ]
 }
