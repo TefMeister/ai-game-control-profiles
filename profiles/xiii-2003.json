@@ -9,7 +9,6 @@
     "distribution": "Steam (\"XIII - Classic\")",
     "build_notes": "Verified against the Steam 'XIII - Classic' build on Windows 10, 2026-08-27. The engine build is ANSI, not Unicode — console commands pass as plain char*."
   },
-
   "input": {
     "api": "Unreal Engine 2 native input",
     "api_notes": [
@@ -20,32 +19,46 @@
     "bindings": [
       {
         "action": "open the in-game console",
-        "keys": [ { "name": "F2", "dik": "0x3C", "extended": false } ],
+        "keys": [
+          {
+            "name": "F2",
+            "dik": "0x3C",
+            "extended": false
+          }
+        ],
         "confidence": "reported",
         "verified": "2026-08-25",
-        "notes": "From a community wiki. The command set it exposes has since been verified directly (see `commands`), but the F2 binding itself was not exercised — commands were issued programmatically instead."
+        "notes": "From a community wiki. The command set it exposes has since been verified directly (see `commands`), but the F2 binding itself was not exercised — commands were issued programmatically instead. 2026-10-06: pressing F2 in gameplay opened a small input box at the bottom of the screen (verified live, n=1); 'exit' typed into it did nothing."
       }
     ]
   },
-
   "states": [
     {
       "id": "gameplay",
       "description": "Player has control.",
-      "detect": [ { "method": "telemetry", "cue": "the camera-view function is being called each frame; camera position updates" } ],
+      "detect": [
+        {
+          "method": "telemetry",
+          "cue": "the camera-view function is being called each frame; camera position updates"
+        }
+      ],
       "confidence": "verified-live",
       "verified": "2026-08-27"
     },
     {
       "id": "menu",
       "description": "Any menu, including the save menu.",
-      "detect": [ { "method": "telemetry", "cue": "the per-frame camera-view function STOPS being called — position telemetry goes silent" } ],
+      "detect": [
+        {
+          "method": "telemetry",
+          "cue": "the per-frame camera-view function STOPS being called — position telemetry goes silent"
+        }
+      ],
       "confidence": "verified-live",
       "verified": "2026-08-27",
       "notes": "Useful and slightly counter-intuitive: the absence of telemetry is itself the state signal. A queued command will sit unconsumed until gameplay resumes."
     }
   ],
-
   "commands": {
     "dispatch_notes": [
       "Commands resolve against DIFFERENT objects, and this is the single most useful fact in this profile. Sending a cheat to the wrong one silently returns 'unhandled'.",
@@ -54,26 +67,87 @@
       "IMPORTANT: dispatch must happen in the GAME-LOGIC phase. Executing a console command from a render-path hook caused an immediate general protection fault — see UNIVERSAL.md."
     ],
     "available": [
-      { "name": "God", "resolves_on": "UCheatManager", "effect": "invulnerability", "confidence": "verified-live", "verified": "2026-08-27" },
-      { "name": "Fly", "resolves_on": "UCheatManager", "effect": "free flight, gravity off, collision kept", "confidence": "verified-live", "verified": "2026-08-27" },
-      { "name": "Ghost", "resolves_on": "UCheatManager", "effect": "free flight, collision off", "confidence": "verified-live", "verified": "2026-08-27" },
-      { "name": "Walk", "resolves_on": "UCheatManager", "effect": "cancels Fly/Ghost", "confidence": "verified-live", "verified": "2026-08-27" },
-      { "name": "MaxAmmo", "resolves_on": "UCheatManager", "confidence": "verified-live", "verified": "2026-08-27" },
-      { "name": "HealMe <n>", "resolves_on": "UCheatManager", "effect": "sets health", "confidence": "verified-live", "verified": "2026-08-27", "notes": "Observed raising health 50 -> 100 in game — the end-to-end proof that external command injection worked." },
-      { "name": "PlayersOnly", "resolves_on": "UCheatManager", "effect": "freezes NPCs; toggles", "confidence": "verified-live", "verified": "2026-08-27" },
-      { "name": "Fov <n>", "resolves_on": "APlayerController", "effect": "field of view", "confidence": "verified-live", "verified": "2026-08-27" },
-      { "name": "BehindView <0|1>", "resolves_on": "APlayerController", "effect": "third/first person toggle", "confidence": "verified-live", "verified": "2026-08-27" }
+      {
+        "name": "God",
+        "resolves_on": "UCheatManager",
+        "effect": "invulnerability",
+        "confidence": "verified-live",
+        "verified": "2026-08-27"
+      },
+      {
+        "name": "Fly",
+        "resolves_on": "UCheatManager",
+        "effect": "free flight, gravity off, collision kept",
+        "confidence": "verified-live",
+        "verified": "2026-08-27"
+      },
+      {
+        "name": "Ghost",
+        "resolves_on": "UCheatManager",
+        "effect": "free flight, collision off",
+        "confidence": "verified-live",
+        "verified": "2026-08-27"
+      },
+      {
+        "name": "Walk",
+        "resolves_on": "UCheatManager",
+        "effect": "cancels Fly/Ghost",
+        "confidence": "verified-live",
+        "verified": "2026-08-27"
+      },
+      {
+        "name": "MaxAmmo",
+        "resolves_on": "UCheatManager",
+        "confidence": "verified-live",
+        "verified": "2026-08-27"
+      },
+      {
+        "name": "HealMe <n>",
+        "resolves_on": "UCheatManager",
+        "effect": "sets health",
+        "confidence": "verified-live",
+        "verified": "2026-08-27",
+        "notes": "Observed raising health 50 -> 100 in game — the end-to-end proof that external command injection worked."
+      },
+      {
+        "name": "PlayersOnly",
+        "resolves_on": "UCheatManager",
+        "effect": "freezes NPCs; toggles",
+        "confidence": "verified-live",
+        "verified": "2026-08-27"
+      },
+      {
+        "name": "Fov <n>",
+        "resolves_on": "APlayerController",
+        "effect": "field of view",
+        "confidence": "verified-live",
+        "verified": "2026-08-27"
+      },
+      {
+        "name": "BehindView <0|1>",
+        "resolves_on": "APlayerController",
+        "effect": "third/first person toggle",
+        "confidence": "verified-live",
+        "verified": "2026-08-27"
+      }
     ],
     "absent": [
       {
-        "names": [ "Teleport", "AllAmmo", "Loaded", "Invisible", "SetSpeed", "ChangeSize", "Slomo" ],
+        "names": [
+          "Teleport",
+          "AllAmmo",
+          "Loaded",
+          "Invisible",
+          "SetSpeed",
+          "ChangeSize",
+          "Slomo"
+        ],
         "confidence": "disproved",
         "verified": "2026-08-27",
         "notes": "All standard Unreal Engine 2 commands, all returning unhandled on both the controller and the cheat manager in this build. 'It is a standard UE2 command, therefore it is here' does NOT hold. Teleport's absence is the most limiting — there is no console-driven way to reposition the player."
       }
     ]
   },
-
   "entry_points": {
     "notes": "Level codes exist for this engine but were not catalogued for this game.",
     "routes": [
@@ -92,10 +166,34 @@
         "confidence": "verified-live",
         "verified": "2026-09-11",
         "notes": "On the profile screen Up wraps to 'Create new profile'; Escape backs out of it. The menu cursor does not follow Windows mouse clicks, so drive menus with the keyboard."
+      },
+      {
+        "id": "process_exit",
+        "how": "In gameplay: Escape opens the pause menu (cursor on 'Save game'); Down x5 to 'Main menu' (verify the highlight); Enter; Left to 'Yes' (verify); Enter. This lands on the profile screen. Escape there opens 'Quit game'; Left to 'Yes' (verify); Enter. The process exits within a few seconds.",
+        "lands_in": "process exit",
+        "confidence": "verified-live",
+        "verified": "2026-10-06",
+        "notes": "Both confirmation boxes open with 'No' highlighted, so a stray Enter is safe. 'Retry' sits one row above 'Main menu' in the pause menu."
+      }
+    ],
+    "disproved": [
+      {
+        "id": "wm-close",
+        "how": "Post WM_CLOSE to the 'XIIIUnrealWWindowsViewportWindow' window",
+        "result": "ignored, the game kept running",
+        "confidence": "disproved",
+        "verified": "2026-10-06"
+      },
+      {
+        "id": "console-exit",
+        "how": "F2 opens a small console box at the bottom of the screen; typed 'exit' + Enter",
+        "result": "the box closed, nothing in XIII.log, the game kept running",
+        "confidence": "disproved",
+        "verified": "2026-10-06",
+        "notes": "Whether the box accepts any command at all is unchecked."
       }
     ]
   },
-
   "hazards": [
     {
       "id": "engine-stops-ticking-when-unfocused",
@@ -127,6 +225,20 @@
       "impact": "Unclear whether fullscreen is genuinely unsafe — the crash was later traced to a different cause — but windowed is the only configuration with a track record here.",
       "confidence": "reported",
       "verified": "2026-08-27"
+    },
+    {
+      "id": "user-ini-deleted-on-exit",
+      "description": "On a menu quit the game deleted system\\User.ini, which was byte-identical to DefUser.ini.",
+      "impact": "Edits made to User.ini while the game is running are lost; edit it with the game closed and expect it to be regenerated.",
+      "confidence": "measured",
+      "verified": "2026-10-06"
+    },
+    {
+      "id": "music-setting",
+      "description": "Music volume lives in system\\XIII.ini [XBoxAudio.XBoxAudioSubsystem] MusicVolume (set to 0.0 on one PC, 2026-10-06) and in User.ini MusicSliderPos.",
+      "impact": "Whether the per-profile slider in Save\\XIII.pro overrides the ini is unchecked.",
+      "confidence": "measured",
+      "verified": "2026-10-06"
     }
   ]
 }
