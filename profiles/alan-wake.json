@@ -246,6 +246,14 @@
       "confidence": "verified-live",
       "verified": "2026-10-06",
       "n": 1
+    },
+    {
+      "id": "direct-exe-start-relaunches-through-steam",
+      "description": "Starting AlanWake.exe directly makes it restart through Steam; environment variables set for the first start are lost (the restarted process shows the arguments but not the variables).",
+      "mitigation": "Pass options with steam://run/108710//<options>; put anything else in the mod's own config.",
+      "confidence": "verified-live",
+      "verified": "2026-10-06",
+      "n": 1
     }
   ],
   "notes": [
