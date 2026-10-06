@@ -1,0 +1,68 @@
+{
+  "game": "Metro Exodus",
+  "year": 2019,
+  "developer": "4A Games",
+  "engine": "4A Engine",
+  "renderer": "Direct3D 11 or Direct3D 12 (ray tracing optional); Vulkan also present",
+  "binary": "MetroExodus.exe (64-bit, Steam build 6544595, Steam DRM wrapper section .bind; code not encrypted on disk)",
+  "store": "Steam (appid 412020)",
+  "profile_created": "2026-10-06",
+  "created_by": "metro-exodus-vr /lm session, dev PC",
+  "summary": "The original 2019 edition, which runs on a GTX 1660 SUPER (the Enhanced Edition, appid 1449560, does not; see metro-exodus-enhanced.json). Started unattended through Steam, intros skipped with Escape, main menu reached, menus driven by arrow keys and Enter, quit from the main menu with Escape then Enter. Plays in a 1280x720 window after an outside resize. Shares its Saved Games settings folder with the Enhanced Edition.",
+  "input": {
+    "working": [
+      {
+        "route": "Launch: steam://run/412020 (no launch-options prompt when no arguments are passed). Window title '4A Engine', class '_uengine_'.",
+        "confidence": "verified-live", "date": "2026-10-06", "n": 3
+      },
+      {
+        "route": "SendInput scancodes to the foreground window. Escape (0x01) skips each intro film ('PRESS ... TO SKIP'); arrows need the extended flag.",
+        "confidence": "verified-live", "date": "2026-10-06", "n": 3
+      },
+      {
+        "route": "Main menu: Left/Right arrows move between the panel buttons (NEW GAME, CHAPTERS, CONTINUE, LOAD, OPTIONS, DLC); the small screen above names the selected one. Enter opens it. Options list: Up/Down, Enter; Escape goes back.",
+        "confidence": "verified-live", "date": "2026-10-06", "n": 1
+      },
+      {
+        "route": "Quit: on the main menu press Escape -> 'QUIT GAME' dialog -> Enter (OK). The process exits cleanly.",
+        "confidence": "verified-live", "date": "2026-10-06", "n": 2
+      },
+      {
+        "route": "Window: user.cfg 'r_fullscreen off' gives a captioned window the size of the desktop (the game ignores r_res_hor/r_res_vert for the window); then SetWindowPos to a 1280x720 client area works and the picture fills it. The desktop stays 1920x1080.",
+        "confidence": "verified-live", "date": "2026-10-06", "n": 1
+      }
+    ],
+    "disproved": [
+      {
+        "route": "Absolute mouse positioning (SetCursorPos + click) on the main menu: the game's own pointer did not follow, and a click opened nothing.",
+        "confidence": "verified-live", "date": "2026-10-06", "n": 2
+      },
+      {
+        "route": "user.cfg 'r_api 2' to get Direct3D 11: the game kept the value but still created a Direct3D 12 device (D3D12Core.dll and NvHairWorksDx12 loaded).",
+        "confidence": "verified-live", "date": "2026-10-06", "n": 1
+      }
+    ]
+  },
+  "states": {
+    "intro": "Several films with letterbox bars; Escape skips each.",
+    "main_menu": "A train cab control panel with labelled buttons; a 'new downloadable content' notice may show top right.",
+    "difficulty": "NEW GAME opens a difficulty list (READER .. RANGER HARDCORE): Enter starts a new game, Escape goes back. Keep Enter away from the main menu until the selection is verified.",
+    "options_video": "RESOLUTION, ASPECT RATIO, QUALITY, VSYNC, GAMMA, MOTION BLUR; resolution shows 1920X1080 even when the window is 1280x720."
+  },
+  "hazards": [
+    {
+      "claim": "Enter on the main menu acts on whatever button is selected; on first start that is NEW GAME. Escape and Space while skipping intros reached the difficulty screen once.",
+      "confidence": "verified-live", "date": "2026-10-06", "n": 1
+    },
+    {
+      "claim": "The game rewrites user.cfg at start and on exit; r_res_hor/r_res_vert were put back to 1920x1080 by a Direct3D 12 windowed run.",
+      "confidence": "verified-live", "date": "2026-10-06", "n": 1
+    }
+  ],
+  "config": {
+    "user_cfg": "%USERPROFILE%\\Saved Games\\Metro Exodus\\<steamid>\\user.cfg (shared with the Enhanced Edition)",
+    "music": "s_music_volume 0.00 (kept by the game)",
+    "window": "r_fullscreen off, then resize the window from outside",
+    "renderer": "r_api: 3 = Direct3D 12 observed; the Direct3D 11 value is not yet confirmed"
+  }
+}
