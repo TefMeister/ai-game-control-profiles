@@ -54,7 +54,26 @@
    "The user config would live under Documents\\My Games\\Bulletstorm Full Clip Edition\\ (MyDocumentsSubDirName in DefaultEngine.ini); the shipped StormGame\\Config\\Steamworks\\SteamworksSystemSettings.ini forces FullScreen=true [inferred-static 2026-09-17]."
   ],
   "symbols": "StormGame-Win64-Shipping.pdb beside the exe [verified-live 2026-09-17]",
-  "proxy_dll": "dxgi.dll beside the exe; log shows CreateDXGIFactory, CompatValue, CreateDXGIFactory1 [verified-live 2026-09-17, n=1]."
+  "proxy_dll": "dxgi.dll beside the exe; log shows CreateDXGIFactory, CompatValue, CreateDXGIFactory1 [verified-live 2026-09-17, n=1].",
+  "window": "FullScreen=False, ResX=1280, ResY=720 in Documents\\My Games\\Bulletstorm Full Clip Edition\\StormGame\\Config\\StormSystemSettings.ini. The ResX/ResY command-line switches are ignored when that file says otherwise (came up 1850x1041 on a 1920x1080 screen); with the file set, client 1280x720 and the screen unchanged [measured 2026-10-06, n=1].",
+  "routes": [
+   {
+    "id": "to_gameplay",
+    "how": "Enter at the title, Space (autosave notice), Space (Campaign), Space (Continue), wait about 40 s, Space (chapter card).",
+    "lands_in": "the last checkpoint",
+    "confidence": "verified-live",
+    "verified": "2026-10-06",
+    "n": 1
+   },
+   {
+    "id": "process_exit",
+    "how": "Esc opens the pause menu; Down x5 to EXIT TO MAIN MENU (verify the highlight: after visiting Options the cursor does not restart at the top); Space; Space to confirm. At the main menu Up x1 wraps to QUIT; Space; Space to confirm.",
+    "lands_in": "process exit within about 10 s",
+    "confidence": "verified-live",
+    "verified": "2026-10-06",
+    "n": 2
+   }
+  ]
  },
  "hazards": [
   {
@@ -70,6 +89,26 @@
    "verified": "2026-09-17",
    "n": 1,
    "notes": "A Windows Defender Firewall 'allow access' dialog appeared on the first launch on this machine and took focus from the game. The main session pressed Cancel; answering it is left to the user. Losing focus can minimise a fullscreen game."
+  },
+  {
+   "hazard": "Music volume is stored only in the packed, Steam-Cloud-synced profile.bin, not in any ini",
+   "confidence": "inferred-static",
+   "verified": "2026-10-06",
+   "notes": "Set it in Options > Audio > Music Volume instead (Left x25 reaches zero) [verified-live 2026-10-06]."
+  },
+  {
+   "hazard": "The pause-menu cursor position is not reset after returning from Options; blind key counts land on Restart Chapter",
+   "confidence": "verified-live",
+   "verified": "2026-10-06",
+   "n": 1
   }
- ]
+ ],
+ "input": {
+  "api_notes": [
+   "SendInput with SCANCODES works; keybd_event with virtual-key codes does nothing [verified-live 2026-10-06].",
+   "Enter 0x1C, Space 0x39, Esc 0x01; arrows need the extended flag (Up E0 48, Down E0 50, Left E0 4B); numpad 4/5/6 = 0x4B/0x4C/0x4D."
+  ],
+  "confidence": "verified-live",
+  "verified": "2026-10-06"
+ }
 }
