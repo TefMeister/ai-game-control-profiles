@@ -82,6 +82,12 @@
         "confidence": "verified-live",
         "date": "2026-10-07",
         "n": 1
+      },
+      {
+        "route": "Recording: OBS Window Capture (Windows Graphics Capture) of the '4A Engine' window under Direct3D 11 records the game picture at 1280x720, 60 fps with NVENC; 7944 of 7960 frames written over 2 min 13 s. Only the intro-to-menu load is black (about 6 s), which is the game's own black screen.",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
       }
     ],
     "disproved": [
