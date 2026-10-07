@@ -88,6 +88,25 @@
         "confidence": "verified-live",
         "date": "2026-10-07",
         "n": 1
+      },
+      {
+        "route": "Loading-story screen ('MOSCOW' text, then HOLD E): holding E skips it (Tefa); holding E about 2.8 s once it says HOLD E enters the game.",
+        "confidence": "reported",
+        "date": "2026-10-07",
+        "n": 1,
+        "source": "Tefa"
+      },
+      {
+        "route": "Quit from gameplay: Escape -> pause menu (QUICK SAVE .. QUIT TO MAIN MENU, no QUIT GAME there) -> Down x7 -> Enter -> Enter (confirm) -> wait ~15 s -> main menu -> Escape -> 'QUIT GAME' -> Enter. Clean exit.",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 3
+      },
+      {
+        "route": "Intro films say 'PRESS E TO SKIP'; Escape does nothing there. One E per film. Careful: an E that lands after the last film presses CONTINUE on the main menu and loads the save, so screenshot between presses.",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 3
       }
     ],
     "disproved": [
@@ -136,6 +155,12 @@
       "date": "2026-10-07",
       "n": 1,
       "source": "Tefa, plus the death screen seen on the dev PC"
+    },
+    {
+      "claim": "Calling SetWindowPos on the game window while the game is frozen blocks the caller forever; check the process is responding first.",
+      "confidence": "verified-live",
+      "date": "2026-10-07",
+      "n": 1
     }
   ],
   "config": {
