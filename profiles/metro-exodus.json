@@ -129,6 +129,13 @@
       "confidence": "reported",
       "date": "2026-10-07",
       "n": 1
+    },
+    {
+      "claim": "Toxic-air zones: the gas-mask filter runs down there, and when it runs out the player suffocates (death screen: QUICK LOAD / LOAD / QUIT TO MAIN MENU / QUIT GAME). Do not stand in one or idle the game in one. The tunnel where the current save loads (Moscow chapter) is one: left idle about 10 minutes after a recording, the player died. While waiting, park the game on a menu, not in gameplay.",
+      "confidence": "verified-live",
+      "date": "2026-10-07",
+      "n": 1,
+      "source": "Tefa, plus the death screen seen on the dev PC"
     }
   ],
   "config": {
