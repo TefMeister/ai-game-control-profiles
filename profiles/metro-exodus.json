@@ -46,6 +46,42 @@
         "confidence": "verified-live",
         "date": "2026-10-07",
         "n": 1
+      },
+      {
+        "route": "E (scancode 0x12) skips films ('PRESS E TO SKIP') and also activates the selected main-menu button (CONTINUE once a save exists).",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 2
+      },
+      {
+        "route": "After a chapter loads, 'HOLD E' continues: hold E about 2.5 s (SendInput scancode down, wait, up).",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
+      },
+      {
+        "route": "Pause: Escape opens the pause menu (QUICK SAVE .. QUIT TO MAIN MENU); wait ~2 s before arrows register; QUIT TO MAIN MENU is 7 rows down, Enter, then Enter on the 'unsaved progress' confirmation.",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
+      },
+      {
+        "route": "Camera: relative mouse moves (mouse_event MOUSEEVENTF_MOVE) turn the view; 10 x 30 px turned it about 8 degrees.",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
+      },
+      {
+        "route": "Reading the camera: ReadProcessMemory of 16 floats at MetroExodus.exe+0x2111640 (view), +0x2111680 (projection), +0x21116c0 (view*projection), build 6544595.",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
+      },
+      {
+        "route": "Two-eye mod controls (our metro_eye.dll): numpad 5 toggles, numpad 8 cycles alternate / left only / right only.",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
       }
     ],
     "disproved": [
@@ -81,6 +117,12 @@
       "confidence": "verified-live",
       "date": "2026-10-06",
       "n": 1
+    },
+    {
+      "claim": "Changing graphics quality in Options makes the window screen-sized again; resize it again afterwards.",
+      "confidence": "reported",
+      "date": "2026-10-07",
+      "n": 1
     }
   ],
   "config": {
@@ -88,5 +130,9 @@
     "music": "s_music_volume 0.00 (kept by the game)",
     "window": "r_fullscreen off, then resize the window from outside",
     "renderer": "Direct3D 12 by default; '-force_rapi 2' (Steam launch options) gives Direct3D 11. user.cfg r_api cannot change it."
+  },
+  "window_confirmed_by_user": {
+    "date": "2026-10-07",
+    "route": "r_fullscreen off + outside resize to a 1280x720 client"
   }
 }
