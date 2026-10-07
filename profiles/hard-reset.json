@@ -1,0 +1,61 @@
+{
+  "schema_version": "1.0",
+  "game": "Hard Reset (Extended Edition)",
+  "engine": "Road Hog Engine",
+  "renderer": "Direct3D 9 (32-bit)",
+  "store": "Steam 98400",
+  "input": {
+    "api": "SendInput scancodes for keys; absolute mouse clicks work on the main menu",
+    "working": [
+      {
+        "route": "Launch: steam://run/98400. Window 'Hard Reset', class 'Hog Class', 1280x720 client (profile config).",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
+      },
+      {
+        "route": "Intro: Enter skips each logo film (Escape did not visibly); about 5 Enters reach the main menu. Enter at the menu screen brings up the menu panel.",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
+      },
+      {
+        "route": "Main menu: SetCursorPos + left click on a button works. 'Resume game' at client (636,288) in 1280x720.",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
+      },
+      {
+        "route": "After Resume: ~70 s of loading and comic panels, then 'Press any key to continue' (Space).",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
+      },
+      {
+        "route": "Console: Ctrl+~ (scancodes 0x1D + 0x29) opens it; type with SendInput KEYEVENTF_UNICODE, then Enter; Ctrl+~ closes. Commands typed are kept in s_console_commands_history in the profile config.",
+        "confidence": "verified-live",
+        "date": "2026-10-07",
+        "n": 1
+      }
+    ],
+    "disproved": []
+  },
+  "hazards": [
+    {
+      "claim": "r_stereo_enable 1 freezes the window on its last frame (the game keeps running); a blind r_stereo_enable 0 did not visibly land. End the game with taskkill: stereo is then not saved to the config.",
+      "confidence": "verified-live",
+      "date": "2026-10-07",
+      "n": 1
+    },
+    {
+      "claim": "Do not name a helper script con.py (or aux/prn/nul) on Windows: python opens an interactive prompt instead of running it.",
+      "confidence": "verified-live",
+      "date": "2026-10-07",
+      "n": 1
+    }
+  ],
+  "config": {
+    "profile": "%USERPROFILE%\\Documents\\Hard Reset Extended\\profiles\\<profile>\\config.cfg",
+    "shaders": "loose edited .hlsl in <game>\\data\\shaders\\ are compiled when r_shader_cache \"0\" is set (2026-10-07)"
+  }
+}
