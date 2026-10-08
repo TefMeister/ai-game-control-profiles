@@ -1,0 +1,17 @@
+{
+ "schema": "menu-o-matic/1",
+ "game": "Far Cry 3 Blood Dragon",
+ "window": "Far Cry",
+ "route": "launch_to_gameplay",
+ "steps": [],
+ "checkpoints": {},
+ "from": "closed",
+ "to": "gameplay",
+ "window_confirmed": {
+  "date": "2026-10-08",
+  "window": [
+   1286,
+   749
+  ]
+ }
+}
