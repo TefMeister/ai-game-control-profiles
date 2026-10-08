@@ -1,0 +1,94 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "Far Cry 3: Blood Dragon",
+    "year": 2013,
+    "developer": "Ubisoft Montreal",
+    "engine": "Dunia (the Far Cry 2 engine line)",
+    "renderer": "Direct3D 9 (bin/fc3_blooddragon.exe -> FC3.dll) or Direct3D 11 (bin/fc3_blooddragon_d3d11.exe -> FC3_d3d11.dll); which one starts is decided by UseD3D11 in GamerProfile.xml",
+    "distribution": "Steam (app 233270), started through Ubisoft Connect",
+    "build_notes": "First driven 2026-10-08 on Windows 10. Ubisoft Connect signed in by itself and started the game; no dialog needed an answer."
+  },
+  "input": {
+    "api": "Win32 SendInput with scancodes, via Menu-o-matiC 'press'",
+    "api_notes": [
+      "Menus take Enter, Escape, Space and the arrow keys. Verified on the main menu, the campaign menu, the save-slot list, the difficulty list, the pause menu and the quit confirmations (2026-10-08)."
+    ]
+  },
+  "states": [
+    {
+      "name": "online_service_error",
+      "detect": "Box titled ERROR: 'The Far Cry 3 Blood Dragon service is not available. Please try again later.' with OK.",
+      "notes": "Appears over the main menu after every launch, and over the pause menu after a 'connecting to servers' alert of about 20 s. Enter dismisses it; play is unaffected. Verified 2026-10-08, n=3."
+    },
+    {
+      "name": "story_clip",
+      "detect": "Letterboxed motion-comic picture with an 'ENTER PAUSE' prompt bottom right.",
+      "notes": "Two clips play before the first gameplay. Enter pauses; the pause screen offers ESC SKIP. Verified 2026-10-08, n=2 launches."
+    }
+  ],
+  "routes": [
+    {
+      "from": "closed",
+      "to": "gameplay",
+      "steps": [
+        "steam://rungameid/233270 (Steam -> FC3BDUpdaterSteam.exe -> Ubisoft Connect -> game), window appears after about 60-90 s",
+        "Space to hurry the logos; wait for the main menu",
+        "Enter (dismiss online_service_error)",
+        "Enter on CAMPAIGN",
+        "CONTINUE is highlighted when a save exists: Enter. (With no save: NEW GAME -> SAVE 1 empty slot -> MEDIUM.)",
+        "for each of two story clips: Enter (pause), then Escape (skip)",
+        "gameplay starts in the helicopter gun scene"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-10-08",
+      "notes": "Walked twice by hand-scripted presses, not yet recorded as a Menu-o-matiC route file."
+    },
+    {
+      "from": "gameplay",
+      "to": "process_exit",
+      "steps": [
+        "Escape (pause menu); wait for the 'connecting to servers' alert and its ERROR box, then Enter",
+        "Down x8 (extended)",
+        "VERIFY 'QUIT TO DESKTOP' is highlighted",
+        "Enter, then Enter on OK"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-10-08",
+      "notes": "Process gone within seconds. Keys pressed while the alert is up are ignored."
+    },
+    {
+      "from": "main_menu",
+      "to": "process_exit",
+      "steps": [
+        "Enter (dismiss online_service_error)",
+        "Down x2 (extended)",
+        "VERIFY 'EXIT GAME' is highlighted",
+        "Enter, then Enter on OK"
+      ],
+      "confidence": "verified-live",
+      "verified": "2026-10-08"
+    }
+  ],
+  "entry_points": {
+    "process_name": "fc3_blooddragon.exe (Direct3D 9) or fc3_blooddragon_d3d11.exe",
+    "window_title_substring": "Far Cry",
+    "notes": "The title has a registered-trademark sign; match on 'Far Cry'."
+  },
+  "commands": [],
+  "hazards": [
+    {
+      "hazard": "Steam Cloud puts GamerProfile.xml back when the game starts",
+      "confidence": "verified-live",
+      "verified": "2026-10-08",
+      "notes": "Settings edited in Documents/My Games/Far Cry 3 Blood Dragon/GamerProfile.xml while the game was closed were replaced within seconds of the next Steam launch (n=1). Making the file read-only after editing kept them (n=1). The game then cannot save option changes made in its own menus."
+    },
+    {
+      "hazard": "Window and music settings live in GamerProfile.xml",
+      "confidence": "verified-live",
+      "verified": "2026-10-08",
+      "notes": "<RenderProfile ResolutionX=\"1280\" ResolutionY=\"720\" Fullscreen=\"0\" UseD3D11=\"0\"> gives a 1280x720 client area (window 1286x749 at 0,0) with the desktop left at 1920x1080, and starts the Direct3D 9 exe. <SoundProfile MusicEnabled=\"0\"> is the only music switch (there is no music volume); whether it silences all music was not checked by ear."
+    }
+  ],
+  "disproved": []
+}
