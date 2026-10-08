@@ -36,6 +36,18 @@
         "confidence": "verified-live",
         "date": "2026-10-07",
         "n": 1
+      },
+      {
+        "route": "Close: open the console (Ctrl+~) and type 'quit', Enter. The game exits cleanly within a few seconds. Easier than the pause menu, which is drawn twice in side-by-side stereo.",
+        "confidence": "verified-live",
+        "date": "2026-10-08",
+        "n": 2
+      },
+      {
+        "route": "Movement: holding W/S via SendInput scancodes walks the player (about 7 game units = metres per second forward).",
+        "confidence": "verified-live",
+        "date": "2026-10-08",
+        "n": 3
       }
     ],
     "disproved": []
@@ -52,6 +64,24 @@
       "confidence": "verified-live",
       "date": "2026-10-07",
       "n": 1
+    },
+    {
+      "claim": "More than about 4 Enters at the intro reach NEW GAME -> New campaign; the next screen (difficulty) would start a new campaign. 'Back' is safe.",
+      "confidence": "verified-live",
+      "date": "2026-10-08",
+      "n": 1
+    },
+    {
+      "claim": "The game opens its pause menu when its window loses focus; Escape resumes.",
+      "confidence": "verified-live",
+      "date": "2026-10-08",
+      "n": 1
+    },
+    {
+      "claim": "r_stereo_enable is not saved between launches; type 'r_stereo_enable 1' in the console after each start.",
+      "confidence": "verified-live",
+      "date": "2026-10-08",
+      "n": 2
     }
   ],
   "config": {
