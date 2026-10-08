@@ -25,6 +25,11 @@
       "name": "story_clip",
       "detect": "Letterboxed motion-comic picture with an 'ENTER PAUSE' prompt bottom right.",
       "notes": "Two clips play before the first gameplay. Enter pauses; the pause screen offers ESC SKIP. Verified 2026-10-08, n=2 launches."
+    },
+    {
+      "name": "tutorial_gates",
+      "detect": "After the helicopter scene: a 'HOLD Q TO HEAL' prompt with the camera looking at the ground, then PSA/JUMP boxes with OK.",
+      "notes": "The camera ignores the mouse until Q is held (4-7 s worked; SendInput scancode 0x10 held). Each box takes Enter. During the scripted takedown tutorial Esc does not open the pause menu; wait about 10 s. Verified 2026-10-08, n=1."
     }
   ],
   "routes": [
@@ -42,7 +47,7 @@
       ],
       "confidence": "verified-live",
       "verified": "2026-10-08",
-      "notes": "Walked twice by hand-scripted presses, not yet recorded as a Menu-o-matiC route file."
+      "notes": "Walked twice by hand-scripted presses, not yet recorded as a Menu-o-matiC route file. 2026-10-08 (second /lm): after the helicopter gun scene a title clip plays (Enter, Esc), then the on-foot start with the tutorial_gates state."
     },
     {
       "from": "gameplay",
@@ -88,6 +93,18 @@
       "confidence": "verified-live",
       "verified": "2026-10-08",
       "notes": "<RenderProfile ResolutionX=\"1280\" ResolutionY=\"720\" Fullscreen=\"0\" UseD3D11=\"0\"> gives a 1280x720 client area (window 1286x749 at 0,0) with the desktop left at 1920x1080, and starts the Direct3D 9 exe. <SoundProfile MusicEnabled=\"0\"> is the only music switch (there is no music volume); whether it silences all music was not checked by ear."
+    },
+    {
+      "hazard": "The pause menu's 'connecting to servers' alert does not always appear",
+      "confidence": "verified-live",
+      "verified": "2026-10-08",
+      "notes": "Twice it came (about 25 s, then the ERROR box), once it did not. Look at the screen before pressing Enter, or Enter selects MAP."
+    },
+    {
+      "hazard": "Menu-o-matiC names the Escape key 'esc'",
+      "confidence": "verified-live",
+      "verified": "2026-10-08",
+      "notes": "'escape' is refused with an error and nothing is sent; hiding the tool's output hid the refusal and cost several skipped clips."
     }
   ],
   "disproved": []
