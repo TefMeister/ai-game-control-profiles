@@ -1,0 +1,65 @@
+{
+  "schema_version": "0.1",
+  "game": {
+    "title": "Resident Evil 3 (2020 remake)",
+    "year": 2020,
+    "developer": "Capcom",
+    "engine": "RE Engine",
+    "renderer": "Direct3D 12 (REFramework in front of it)",
+    "distribution": "Steam (app id 952060)",
+    "build_notes": "Verified 2026-10-10 on the Steam build with REFramework rev 76298bd plus the Visceral patch as dinput8.dll. With no headset connected REFramework logs 'Could not create openxr system: XR_ERROR_FORM_FACTOR_UNAVAILABLE' and the game runs flat, first-person, in the window. This REFramework build reads re2_fw_config.txt and writes re2_framework_log.txt even in RE3. Driver: visceral-re3-vr/dev-archive/tools/re3drive.py (a copy of re2drive.py with RE3's path, exe and window title)."
+  },
+  "input": {
+    "api": "Win32 keyboard via SendInput scancodes (same as RE2; see resident-evil-2-2019.json for the numpad and mouse notes, not yet re-checked here).",
+    "bindings": [
+      {"action": "close the REFramework overlay", "keys": [{"name": "INSERT", "dik": "0x52", "extended": true}], "context": "boot", "confidence": "verified-live", "verified": "2026-10-10"},
+      {"action": "pass title screen", "keys": [{"name": "ENTER", "dik": "0x1C", "extended": false}], "context": "title 'START GAME'", "confidence": "verified-live", "verified": "2026-10-10"},
+      {"action": "confirm", "keys": [{"name": "SPACE", "dik": "0x39", "extended": false}], "context": "main menu and Story submenu (footer: 'Space Confirm')", "confidence": "verified-live", "verified": "2026-10-10"}
+    ]
+  },
+  "states": [
+    {"id": "title", "description": "RESIDENT EVIL 3 logo on the left, 'START GAME' under it, Nemesis behind.", "confidence": "verified-live", "verified": "2026-10-10"},
+    {"id": "main-menu", "description": "MAIN MENU: Story / Bonuses / Options / Exit, Story highlighted.", "confidence": "verified-live", "verified": "2026-10-10"},
+    {"id": "story-menu", "description": "STORY: Continue / Load Game / New Game, Continue highlighted.", "confidence": "verified-live", "verified": "2026-10-10"},
+    {"id": "gameplay", "description": "First-person street; the Visceral plugin logs 'weapon: WP0000 G19' once the player is bound.", "confidence": "verified-live", "verified": "2026-10-10"}
+  ],
+  "routes": [
+    {
+      "id": "title-to-last-save",
+      "goal": "From boot to a loaded game via Continue (last save; never overwrites).",
+      "from_state": "boot",
+      "to_state": "gameplay",
+      "reliability": "one clean run (2026-10-10) with a capture check at each menu",
+      "steps": [
+        {"action": "command", "command": "python re3drive.py launch (the game folder as working directory)"},
+        {"action": "wait", "note": "until the log has 'Lua state initialized' (about 40 s)"},
+        {"action": "key", "key": "INSERT", "note": "close the REFramework overlay"},
+        {"action": "wait", "ms": 25000, "note": "logos to the title"},
+        {"action": "key", "key": "ENTER"},
+        {"action": "verify", "expect_state": "main-menu"},
+        {"action": "key", "key": "SPACE", "note": "Story"},
+        {"action": "verify", "expect_state": "story-menu"},
+        {"action": "key", "key": "SPACE", "note": "Continue"},
+        {"action": "wait", "note": "re3drive.py wait-log 'weapon:' 90"}
+      ]
+    },
+    {
+      "id": "process-exit",
+      "goal": "Close the game without killing it.",
+      "from_state": "any",
+      "to_state": "exited",
+      "reliability": "one run (2026-10-10), from gameplay",
+      "steps": [{"action": "command", "command": "python re3drive.py close (WM_CLOSE to the main window)"}]
+    }
+  ],
+  "entry_points": {
+    "saves": [
+      {"slot": "Continue (last save, Tefa's)", "lands": "a city street at night with a zombie close in front; Jill with the G19", "confidence": "verified-live", "verified": "2026-10-10"}
+    ]
+  },
+  "commands": [],
+  "hazards": [
+    {"hazard": "The Continue save lands with a zombie a few metres ahead; do not idle long in gameplay.", "confidence": "verified-live", "verified": "2026-10-10"},
+    {"hazard": "Without a headset the Visceral plugin's motion-name log stays silent (it only runs while FirstPerson drives a VR view), so the animation playing cannot be read from the log in flat runs.", "confidence": "verified-live", "verified": "2026-10-10"}
+  ]
+}
