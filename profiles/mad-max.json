@@ -434,6 +434,14 @@
       "verified": "2026-09-10",
       "n": 1,
       "notes": "The per-object camera edit currently fires on constant-buffer widths 192/128/96/64, and at least one of those carries UI draws, so the minimap and health cluster slide with the scene. Cosmetic and expected while that is being narrowed; it is not a crash and it reverts the moment stereo is switched off with numpad6."
+    },
+    {
+      "what": "The title screen can already be past when the first Enter is sent (~70 s after launch); the Enter then lands on the main menu. It hit the default RESUME GAME, but always screenshot before Enter: NEW GAME sits directly below.",
+      "verified": "2026-10-12"
+    },
+    {
+      "what": "Crashing the car can kill Max: the picture fades to grey, then GAME OVER with CONTINUE highlighted; Enter reloads the checkpoint.",
+      "verified": "2026-10-12"
     }
   ],
   "disproved": [
@@ -454,7 +462,7 @@
       "date": "2026-09-04"
     }
   ],
-  "last_updated": "2026-09-10",
+  "last_updated": "2026-10-12",
   "config": {
     "settings_ini": {
       "where": "settings.ini in the game folder (beside MadMax.exe)",
