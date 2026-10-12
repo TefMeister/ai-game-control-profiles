@@ -339,6 +339,14 @@
       "confidence": "verified-live",
       "date": "2026-09-10",
       "n": 2
+    },
+    {
+      "what": "The in-level pause menu (Esc) shows SETTINGS / QUIT / CONTINUE and did not respond to posted Up/Down arrow keys; no save option is visible there. The save point the current save starts at is already used (no prompt).",
+      "verified": "2026-10-12"
+    },
+    {
+      "what": "A black frame at level start makes Menu-o-matiC's in_level checkpoint report 'lost: frozen 116 s' while the game runs underneath; with our eye-unit build this meant the black-screen bug, not a hang.",
+      "verified": "2026-10-12"
     }
   ],
   "process_exit": {
@@ -348,6 +356,6 @@
     "n": 3,
     "notes": "Exits cleanly, no taskkill needed. Historically, once the SecuROM bug cluster has been hit in gameplay the process can become unresponsive and need a force-kill; that has not recurred since the DRM patches went in, but n is small."
   },
-  "last_updated": "2026-09-11",
+  "last_updated": "2026-10-12",
   "updated_by": "manhunt-2003-vr /lm session, dev PC (2026-09-11: keyboard by posted window messages)"
 }
