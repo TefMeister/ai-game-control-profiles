@@ -14,7 +14,8 @@ mouse path is described upstream as unfinished.
    continue"). The main menu shows with Single Player highlighted.
    On the very first run there was also a "not signed in, sign in now?" prompt (B = no) and a
    brightness screen (A); with a save present they did not appear.
-5. A on Single Player: the mission screen with **Continue game** highlighted. A loads the latest save
+5. A on Single Player: the mission screen with **Continue game** highlighted. **The first A on the main
+   menu was ignored in 3 of 4 launches**; screenshot, then press A again. A loads the latest save
    (it overwrites nothing). Replay Mission is the row below it.
 6. Loading takes about 1.5-4 minutes on a slow PC. Gameplay opens in the Rock Bottom alley.
 7. Tutorial boxes ("PLAYER RESPONSE", "SPECIAL MOVES") pause the view: **B dismisses them.**
