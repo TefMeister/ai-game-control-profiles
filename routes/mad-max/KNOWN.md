@@ -29,4 +29,5 @@ Read this before launching. Full detail with confidence tags: `profiles/mad-max.
 - Window is 784x561 client area, desktop untouched.
 - **Direct start** (for headset-link tests): run `MadMax.exe` from its folder with a `steam_appid.txt` holding
   `234140` beside it (Steam running). Started through Steam's launcher, the Steam overlay loops our headset link and
-  the game window goes black; started directly, it does not (2026-10-15).
+  the game window went black; started directly, it did not (2026-10-15). Fixed in our build the same day, so a
+  normal Steam start works again; the direct start stays useful as a control.
