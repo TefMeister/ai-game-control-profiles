@@ -8,10 +8,10 @@
   "engine": "Dawn Engine",
   "renderer": "Direct3D 11 (registry EnableDX12=0; DX12 is selectable) [inferred-static 2026-09-17]",
   "distribution": "Steam (app 337000)",
-  "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): version 1.19 build 801.0. Steam launch -> the launcher inside the exe -> Play -> main menu, windowed 1280x720 via the registry, quit with WM_CLOSE + Yes."
+  "build_notes": "Verified 2026-09-17 on the home PC (3440x1440 desktop): version 1.19 build 801.0. Steam launch -> the launcher inside the exe -> Play -> main menu, windowed 1280x720 via the registry, quit with WM_CLOSE + Yes. 2026-10-15 on the dev PC (1920x1080): -nolauncher straight to the menu, windowed 1280x720 by the registry, STORY -> CONTINUE -> Space into gameplay, quit with WM_CLOSE + Enter."
  },
  "input": {
-  "api": "mouse clicks for the launcher and the quit dialog; keyboard menu driving not established"
+  "api": "keyboard by scancode (SendInput, game window in front): arrows with the extended flag, Enter, Space, Escape drive every menu [verified-live 2026-10-15, n=2 runs]; mouse clicks for the launcher; the quit dialog answers Enter = Yes [verified-live 2026-10-15, n=2]"
  },
  "states": [
   {
@@ -34,6 +34,20 @@
    "confidence": "verified-live",
    "verified": "2026-09-17",
    "n": 1
+  },
+  {
+   "name": "story_card",
+   "detect": "After loading: a story card with 'Continue [SPACE]' at the bottom right; Space enters gameplay.",
+   "confidence": "verified-live",
+   "verified": "2026-10-15",
+   "n": 3
+  },
+  {
+   "name": "gameplay",
+   "detect": "HUD: portrait call box top left, minimap top right, ammo box bottom right.",
+   "confidence": "verified-live",
+   "verified": "2026-10-15",
+   "n": 3
   }
  ],
  "routes": [
@@ -43,12 +57,29 @@
    "steps": [
     "launch through Steam (steam://rungameid/337000)",
     "wait for the launcher window (class NxApp)",
-    "click Play at about (345*1.79, 40*1.79) px from the launcher's top-left (1.79 = the display scale on RTX)",
+    "click Play at about (345*1.79, 40*1.79) px from the launcher's top-left (1.79 = the display scale on the home PC)",
     "verify the main menu"
    ],
    "confidence": "verified-live",
    "verified": "2026-09-17",
    "n": 1
+  },
+  {
+   "from": "launch",
+   "to": "gameplay",
+   "steps": [
+    "launch steam://run/337000//-nolauncher/ (no launcher window)",
+    "window after about 45-50 s",
+    "wait until the main menu is fully drawn (screenshot), then Enter on STORY",
+    "Enter on CONTINUE",
+    "wait about 2.5 min (slow PC)",
+    "Space on the story card",
+    "gameplay after about 10 s"
+   ],
+   "confidence": "verified-live",
+   "verified": "2026-10-15",
+   "n": 3,
+   "notes": "Two Enter presses sent right after the window appeared were lost; check the screen before each press."
   },
   {
    "from": "any menu",
@@ -68,9 +99,10 @@
  "entry_points": {
   "process_name": "DXMD.exe",
   "working_directory": "<game>\\retail",
-  "launcher_skip_switch": "-nolauncher is in the exe's strings [inferred-static 2026-09-17]; not tried.",
+  "launcher_skip_switch": "-nolauncher skips the launcher [verified-live 2026-10-15, n=3].",
   "config_files": [
-   "Registry HKCU\\Software\\Eidos Montreal\\Deus Ex: MD\\Graphics (DWORDs): Fullscreen=0, WindowWidth=1280, UserWindowWidth=1280, WindowHeight=720, UserWindowHeight=720 gave a 1296x759 window [verified-live 2026-09-17, n=1]. A .reg backup was exported first."
+   "Registry HKCU\\Software\\Eidos Montreal\\Deus Ex: MD\\Graphics (DWORDs): Fullscreen=0, WindowWidth=1280, UserWindowWidth=1280, WindowHeight=720, UserWindowHeight=720 gave a 1296x759 window [verified-live 2026-09-17, n=1]. A .reg backup was exported first.",
+   "Registry same key: Fullscreen=1, ExclusiveFullscreen=1, Stereoscopic3DMode=1 = side-by-side 3D, two squeezed eye pictures with real per-eye parallax [verified-live 2026-10-15, n=1]. Ran at 1920x1080 despite FullscreenWidth/Height 1280x720; started minimised; mouse clicks miss in this mode, keyboard works. Put back to 0 after."
   ],
   "logs": "Documents\\Deus Ex -  Mankind Divided\\Deus Ex -  Mankind Divided.log (note the double space)",
   "proxy_dll": "dxgi.dll beside DXMD.exe: hit the AcGenral early call, then CreateDXGIFactory2, CompatValue, CreateDXGIFactory [verified-live 2026-09-17, n=1]."
@@ -96,6 +128,13 @@
    "verified": "2026-09-17",
    "n": 1,
    "notes": "The launcher's layout is scaled 1.79x on RTX; scale click offsets by the window's display scale on other machines."
+  },
+  {
+   "hazard": "Side-by-side 3D starts minimised and ignores mouse clicks in menus",
+   "confidence": "verified-live",
+   "verified": "2026-10-15",
+   "n": 1,
+   "notes": "Bring the window to the front; use the keyboard (Enter answers the quit dialog with Yes)."
   }
  ]
 }
