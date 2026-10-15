@@ -27,3 +27,6 @@ Read this before launching. Full detail with confidence tags: `profiles/mad-max.
 
 - The car is the save spot's starting state; nothing hostile nearby.
 - Window is 784x561 client area, desktop untouched.
+- **Direct start** (for headset-link tests): run `MadMax.exe` from its folder with a `steam_appid.txt` holding
+  `234140` beside it (Steam running). Started through Steam's launcher, the Steam overlay loops our headset link and
+  the game window goes black; started directly, it does not (2026-10-15).
