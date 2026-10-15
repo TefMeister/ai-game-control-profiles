@@ -107,6 +107,24 @@
         "confidence": "verified-live",
         "date": "2026-10-07",
         "n": 3
+      },
+      {
+        "route": "Main menu: E activates CONTINUE when a save exists (no navigation needed).",
+        "confidence": "verified-live",
+        "date": "2026-10-15",
+        "n": 2
+      },
+      {
+        "route": "Loading story 'HOLD E': 3 s worked once; another time it needed a second hold of 4.5 s. Look after each hold.",
+        "confidence": "verified-live",
+        "date": "2026-10-15",
+        "n": 2
+      },
+      {
+        "route": "Pause: the first Escape after a chapter starts was lost once; a second Escape opened the menu. Look before navigating.",
+        "confidence": "verified-live",
+        "date": "2026-10-15",
+        "n": 1
       }
     ],
     "disproved": [
@@ -160,6 +178,18 @@
       "claim": "Calling SetWindowPos on the game window while the game is frozen blocks the caller forever; check the process is responding first.",
       "confidence": "verified-live",
       "date": "2026-10-07",
+      "n": 1
+    },
+    {
+      "claim": "The game minimises itself and opens the pause menu as soon as it loses focus, even when resized to a 1280x720 window; while minimised it stops presenting (no new frames anywhere, a VR mirror included).",
+      "confidence": "verified-live",
+      "date": "2026-10-15",
+      "n": 2
+    },
+    {
+      "claim": "user.cfg had r_fullscreen back at 'on' (cause unknown), and one launch with 'off' still came up borderless at desktop size; the next launch came up captioned. Measure the window every launch.",
+      "confidence": "verified-live",
+      "date": "2026-10-15",
       "n": 1
     }
   ],
