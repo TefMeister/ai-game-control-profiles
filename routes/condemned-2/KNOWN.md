@@ -36,4 +36,5 @@ mouse path is described upstream as unfinished.
 
 - `autoexec.cfg` in the game's `Assets` folder takes console lines. `"MusicEnable" "0"` there sets the
   music volume to 0 before the mixer (seen in the log, 2026-10-15). The main menu still plays a steady
-  sound at about the same level with it, so whether that is menu music is not settled.
+  sound at about the same level with it; that is a static background sound, not music (heard and judged
+  2026-10-15), so music is fully off with this one line.
