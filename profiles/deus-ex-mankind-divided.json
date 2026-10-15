@@ -127,7 +127,7 @@
    "confidence": "verified-live",
    "verified": "2026-09-17",
    "n": 1,
-   "notes": "The launcher's layout is scaled 1.79x on RTX; scale click offsets by the window's display scale on other machines."
+   "notes": "The launcher's layout is scaled 1.79x on the home PC; scale click offsets by the window's display scale on other machines."
   },
   {
    "hazard": "Side-by-side 3D starts minimised and ignores mouse clicks in menus",
