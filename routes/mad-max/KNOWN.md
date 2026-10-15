@@ -14,9 +14,21 @@ Read this before launching. Full detail with confidence tags: `profiles/mad-max.
 
 - W/A/S/D move; V switches the car to the cockpit camera; R enters a vehicle.
 - Hold keys 250-300 ms; shorter taps can be missed.
+- **Driving with the OpenXR simulator running: use a virtual pad.** W/A/S/D also move the simulator's own head, and
+  the arrow keys do not drive the car. A virtual Xbox 360 pad (right trigger = throttle, left stick = steer) drives
+  it and leaves the head alone. Steering hard near cliffs can roll the car onto its roof; relaunching puts it back.
+- The menu's RESUME GAME can be checked without reading text: its row (y about 336 at 784x561) has orange pixels,
+  the NEW GAME row below it has none.
 - Numpad hotkeys need **NumLock on**, or they arrive as navigation keys.
 - Settings live in `settings.ini` beside the exe (read at start; edit with the game closed, back it up first).
   Music=0, MotionBlur=0 are set. HQDof=0 does NOT remove the cockpit near blur.
+
+## Widening the game's view (Video Mode)
+
+Pause (Esc) -> Down x7 to CAPTURE MODE (verify) -> Enter -> R (Video Mode) -> click the CAMERA SETTINGS tab (330,106)
+-> click FIELD OF VIEW (85,174) -> click the > arrow (272,189) about 45 times -> Enter (BEGIN SESSION) -> Enter
+(CONTINUE). Click points are client coordinates at 784x561. In 2026-10-15 this gave 116.9 degrees; in 2026-09-08 the
+same route gave about 157.
 
 ## Leaving
 
