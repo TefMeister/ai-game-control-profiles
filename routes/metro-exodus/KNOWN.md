@@ -35,3 +35,6 @@ Read this before launching. Full detail with confidence tags: `profiles/metro-ex
 - The current save starts in a toxic-air tunnel: the filter runs out and idling there kills the player. Park the
   game on a menu while waiting (losing focus also pauses it).
 - Music is muted in `user.cfg` (`s_music_volume 0.00`).
+- **With the OpenXR simulator running, holding E (or WASD) also moves the simulator's head** (E lifts it, about
+  2 m per second), even with the game in front. After the loading screen's HOLD E, put the head back to standing
+  height with the simulator's own head-pose command, and never walk with WASD during a head test.
