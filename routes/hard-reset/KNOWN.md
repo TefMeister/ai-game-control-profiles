@@ -11,6 +11,7 @@ Only game facts: no paths, machine names or people.
 - 2026-10-17: After "Resume game": about 90 s of loading with comic panels, then "Press any key to continue" at the bottom right; Space starts play.
 - 2026-10-17: Pause menu: Escape opens and closes it.
 - 2026-10-17: Quit: the console (Ctrl + ~), then `quit` and Enter. The console can catch a stray character from the ~ key ("quit?" is then unknown): Backspace a few times and type it again. Closing the window instead can leave the process running.
+- 2026-10-17: 2026-10-17: If the main menu is already up after three Enters, a fourth Enter opens New game, then the difficulty list (New campaign). Look after the third Enter. Back out with the Back item at the bottom of each list (Escape did not).
 
 ## Controls
 
@@ -33,11 +34,16 @@ Only game facts: no paths, machine names or people.
 - 2026-10-17: A mouse pointer left at the screen edge (outside the game window) can make the game minimise on the next key or button press during the comic "Press any key" pages; check the pointer is over the game picture.
 - 2026-10-17: In the OpenXR Simulator, the Space key also counts as the right controller's trigger, so a jump (Space) also fires. Not a game or mod fault; a real headset does not do this.
 
+- 2026-10-17: Keys typed for the console while the game had lost focus landed in the pause menu instead and opened the Load game panel, which has a Delete button. Escape backed out; nothing was deleted. Make sure the game is in front before typing, or use a mod that keeps it active.
+- 2026-10-17: Sending the window a close message (WM_CLOSE) removes the window but leaves the game running with no window, so only a force-close ends it. Quit through the console instead.
+
 ## What failed
 
 - 2026-10-17: Clicking "Resume game" while the controller aim was steering the mouse: no effect, many times.
+- 2026-10-17: Clicking "Resume game" right after the main menu appeared: no effect; the same click a few seconds later worked.
 
 ## Tool ideas
 
+- 2026-10-17: A check that reads the mod's log to see whether play has started must read only lines written since this launch: the log keeps old runs, so an old "in play" line looks like a new one.
 - 2026-10-17: VR Bench adds a new Controls line on every run, so this file fills with repeats; it should replace its own earlier line about the same thing.
 - 2026-10-17: Menu-o-matiC's `click` jumps the cursor without any movement; some menus may need a small movement first (not what was wrong here, but worth a switch).
