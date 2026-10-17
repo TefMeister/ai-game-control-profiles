@@ -28,6 +28,8 @@ Only game facts: no paths, machine names or people.
 
 - 2026-10-17: The game pauses whenever its window loses focus.
 - 2026-10-17: With a mod that steers the mouse (aiming by the controller) switched on, the menus cannot be clicked: the cursor is moved away 100+ times a second. Switch such aiming on only once in play. (Fixed later the same day in the Hard Reset VR mod: its aim goes quiet when the camera stops answering and puts the pointer back.)
+- 2026-10-17: When the window loses focus the game opens its pause menu (Escape closes it).
+- 2026-10-17: In the OpenXR Simulator with a mod that turns controller presses into keys, typing in the console picks up extra letters (`quit` came out as `quiwtf`): switch such a mod's controls off before typing console commands.
 - 2026-10-17: A mouse pointer left at the screen edge (outside the game window) can make the game minimise on the next key or button press during the comic "Press any key" pages; check the pointer is over the game picture.
 - 2026-10-17: In the OpenXR Simulator, the Space key also counts as the right controller's trigger, so a jump (Space) also fires. Not a game or mod fault; a real headset does not do this.
 
