@@ -2,8 +2,7 @@
 
 ## Get credited, or ask us to stop — read this first
 
-**If you should be credited here and are not, or are credited incorrectly, email
-**td3kxlvr@proton.me** and we will fix it as soon as possible, no argument and no
+**If you should be credited here and are not, or are credited incorrectly, open an issue on this repository and we will fix it as soon as possible, no argument and no
 questions asked.** That applies whether your work reached us as a tool, a technique, a
 forum post, a wiki edit, a video, or an idea we absorbed without noticing where it came
 from. We would rather be told than quietly get it wrong.
