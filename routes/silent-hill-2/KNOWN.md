@@ -24,3 +24,9 @@ Only game facts: no paths, machine names or people.
 ## What failed
 
 ## Tool ideas
+- The game can rewrite its own window setting to exclusive fullscreen 1920x1080 between launches (seen 2026-10-24,
+  after the previous run was closed with the console `quit` command). Fix with the game closed, in
+  `%LOCALAPPDATA%\SilentHill2\Saved\Config\Windows\GameUserSettings.ini`: `FullscreenMode=2`,
+  `LastConfirmedFullscreenMode=2`, `PreferredFullscreenMode=2`, `ResolutionSizeX/Y=1280/720` (and the
+  `LastUserConfirmed...` pair). Check the window measures 1280x720 before driving.
+- Turning the headset off while UEVR is attached closes the game (the VR session is lost): finish the test first.
