@@ -19,6 +19,7 @@ Only game facts: no paths, machine names or people.
 
 - 2026-10-24: A 'Compiling shaders' screen (about a minute) comes before the warning screen whenever the shader cache was invalidated (a VR inject or a changed pak); keys do nothing until it ends.
 - 2026-10-24: The Steam launch does nothing if the game is already running: it only focuses the old window, and a plugin file copied meanwhile stays locked and old. Close the game first.
+- 2026-10-24: Attach VR (the injector window) BEFORE the route reaches its key steps, or do it between steps: the injector window comes to the front and the route stops at 'the window is not in front'. Resume with run --from 4.
 
 ## What failed
 
