@@ -5,6 +5,7 @@ Only game facts: no paths, machine names or people.
 
 ## Menus
 
+- 2026-10-23: The console key is the one LEFT OF 1 (scan code 0x29; VK_OEM_8 on a UK keyboard layout, VK_OEM_3 on a US one), held with Ctrl. Posting Ctrl + VK_OEM_3 on a UK layout does nothing. Backspace twice after it opens, then the command, then Enter: `quit` closed the game within a second.
 - 2026-10-17: Start `hardreset.exe` from its own folder: the window appears in about 4 s, no launcher, no admin prompt (starting through Steam re-runs the DirectX installer, which asks for admin every time).
 - 2026-10-17: Intro films: Enter four times, about 3 s apart, reaches the main menu (Escape is not needed).
 - 2026-10-17: Main menu "Resume game": left click at 0.497, 0.322 of the window (1280x720 client). The first click after the menu appears can be ignored; click again. "Profile" sits at about y 0.40.
@@ -15,6 +16,7 @@ Only game facts: no paths, machine names or people.
 
 ## Controls
 
+- 2026-10-23: With the Hard Reset VR add-on's d3d9_bridge.txt on, the game answers MCP Game Bridge over a named pipe: keys, mouse, console lines, in-game pictures (both eyes) and its log, with another window in front (121 frames in 2 s behind Notepad, keys still taken).
 - 2026-10-17: Music volume: `s_sound_musicvolume "0"` in the profile's config.cfg (written while the game is closed). Sound effects: `s_sound_volume`.
 - 2026-10-17: Window: `r_fullscreen "0"`, `r_win_pos_x/y`, 1280x720 client, measured windowed.
 - 2026-10-17: VR (simulator, VR Bench, mod controls on): the picture follows the head (turns, tilt, lean); the left hand follows the controller left, right, up and down.
