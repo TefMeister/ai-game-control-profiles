@@ -26,6 +26,17 @@ this page is the short, growing list of what works, read before the game starts.
   `app.WwiseWeaponMotionSequence.weaponTrigger(GameObject, TreeLayer, tracks, UInt32)` from the upper-body motion. The
   tracks object (`app.WwiseWeaponTriggerTracks` and kin) carries the sound's own Wwise trigger: `get_TriggerId()`,
   `get_TriggerIdName()`. The UInt32 is 1 or 2 for every motion, so it is not the sound.
+- **Reloading Lua scripts with nobody at the PC (2026-10-24):** open the REFramework overlay (Insert), scroll its list with
+  the mouse wheel over it until "ScriptRunner" shows, click it open, and click "Reset scripts" (top row of that section).
+  Synthetic mouse clicks and wheel reach the overlay. The overlay keeps its scroll place between openings.
+- **Every weapon in the inventory without playing (2026-10-24, testing only):** an item's id is the RE Engine name hash
+  (murmur3_32, UTF-16LE, seed 0xFFFFFFFF) of its short name, e.g. `ri3046` (the LEMI); checked on all 7 guns a save owned.
+  Through the REFramework MCP: `app.InventoryManager.createItemCore(id, 1, 0, 0)`, then that item's `get_work()`, then
+  `activeInventory.addItem(work, false, false, false)`. `createAndAddItem(id, ...)` gives ammo but returns null for guns.
+  Back the save folder up first.
+- **Putting each gun in hand by script:** `app.PlayerWeaponChange.set_RequestedItem(ItemCore)`, the weapon change reached
+  through the player's `app.PlayerUpdaterFPS` (`get_playerWeaponChange`); `getComponent(PlayerWeaponChange)` on the player
+  finds nothing. Look the type up with `sdk.typeof(name)`.
 - Upper-body motion families: 20xx idle / walk, 21xx ready, 22xx aim, 23xx lowered, 24xx fire (the pump or bolt after a
   shot plays in it), 25xx reload, 3000 seen at a weapon swap.
 
@@ -38,6 +49,16 @@ this page is the short, growing list of what works, read before the game starts.
 - If someone opens the crafting screen while the pad is driving, a trigger press there crafts: look at the screen before
   sending fire / reload in a row. (2026-10-24: the screen was opened by the player at the PC, not by the game.)
 - A gun taken out empty reloads by itself.
+
+## Menus driven so far
+
+- Pause menu (pad Start): **Restart is highlighted first and it is destructive**; Down once = Options. Check the highlight
+  before pressing A.
+- Options: Controls, Camera, Game Settings, Display, Audio (4 down), ... A enters the right-hand list.
+- Changing a value: the **keyboard left / right arrows** step it; the pad's D-pad left does not. Values wrap (one past 0 is
+  10 again), so count presses from a known value.
+- **Music:** Options > Audio > BGM Volume, set to 0 on 2026-10-24. B twice backs out with no "keep changes?" prompt. It is
+  kept in the system save (`data00-1.bin`), not `config.ini`.
 
 ## Closing
 
