@@ -26,3 +26,16 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
 ## Hazards
 
 - The game runs on while another window is in front; nothing pauses it.
+
+## Learned 2026-10-24 (faster PC, driven from inside the engine)
+
+- On a fast PC the title screen comes up about 48-51 s after launch and stays until about 89 s, then the attract
+  trailer plays. The intro films are colourful, so "many colours on screen" is NOT a title test; comparing against
+  a saved title picture is.
+- Recognising the save notice and the main menu by picture is unreliable: their background drifts and glows.
+  What works unattended: START once on the title, then A every ~4.5 s. A is safe on every screen on the way (OK on
+  the save notice, CONTINUE on the main menu, nothing harmful in the films); stop pressing once the level is running.
+- CONTINUE from the main menu reaches the opening car scene about 25 s after the title.
+- In a build with the developer-menu unlock, X on the main menu opens the developer menu (Load Scriptlayer, Zones,
+  Soakmode, Unlock all, CUSTOMIZE CONTROLS, CCTest); B goes back. Y does nothing there. Unlock all opens EXTRA
+  CONTENT with everything available. Zones is an empty list.
