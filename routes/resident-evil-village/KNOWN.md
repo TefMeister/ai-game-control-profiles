@@ -35,8 +35,8 @@ this page is the short, growing list of what works, read before the game starts.
   reload. B = back out of a menu.
 - D-pad = the four quick slots (this save: up LEMI, right M1897, down F2 Rifle, left W870 TAC). A direction that is
   already in hand does nothing.
-- Reloading with no spare ammo but craftable parts opens the CRAFTING screen, and a trigger press there crafts: check the
-  ammo before sending reload / fire in a row.
+- If someone opens the crafting screen while the pad is driving, a trigger press there crafts: look at the screen before
+  sending fire / reload in a row. (2026-10-24: the screen was opened by the player at the PC, not by the game.)
 - A gun taken out empty reloads by itself.
 
 ## Closing
