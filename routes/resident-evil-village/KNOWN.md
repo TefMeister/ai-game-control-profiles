@@ -29,6 +29,12 @@ this page is the short, growing list of what works, read before the game starts.
 - **Reloading Lua scripts with nobody at the PC (2026-10-24):** open the REFramework overlay (Insert), scroll its list with
   the mouse wheel over it until "ScriptRunner" shows, click it open, and click "Reset scripts" (top row of that section).
   Synthetic mouse clicks and wheel reach the overlay. The overlay keeps its scroll place between openings.
+  After a game restart it opens at the top again; at a 1920-wide window the path that worked every time: wheel down 10
+  over the overlay, click ScriptRunner (about 120, 506), wheel down 10, wheel up 6, then "Reset scripts" is at about (178, 216).
+- **The game's quick-slot cross** is `app.GUIQuickEquip` (panel `c_layout`; slots `c_top/c_right/c_bottom/c_left`; key
+  texts `m_key_T/R/B/L`). A D-pad tap on the virtual pad shows it for a moment.
+- **Every gun fires and reloads by itself:** in flat, a gun taken out empty reloads by itself; RT then X gives one shot
+  and one reload, which is enough for the game to play all of that gun's handling sounds.
 - **Every weapon in the inventory without playing (2026-10-24, testing only):** an item's id is the RE Engine name hash
   (murmur3_32, UTF-16LE, seed 0xFFFFFFFF) of its short name, e.g. `ri3046` (the LEMI); checked on all 7 guns a save owned.
   Through the REFramework MCP: `app.InventoryManager.createItemCore(id, 1, 0, 0)`, then that item's `get_work()`, then
