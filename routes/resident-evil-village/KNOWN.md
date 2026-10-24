@@ -85,3 +85,8 @@ this page is the short, growing list of what works, read before the game starts.
   hold a trigger, aim-and-fire, wait) drove this game's guns on 2026-10-24; pad steps belong in the tool itself.
 - Screen cut-outs should match at any window size (scale to the window, or compare relative positions), so a game run
   at a new size does not fall back to blind key presses.
+
+## "Checking for additional content" (seen 2026-10-25)
+- A black screen with a tilted panel: "Checking for additional content. Please do not close the game or turn off the power."
+  can sit for 8+ minutes at launch (seen once, VR mode, REFramework overlay open, 02:43). The boot route has no template for
+  it; nothing drives past it. Closing the window (WM_CLOSE) works from it.
