@@ -51,3 +51,10 @@ this page is the short, growing list of what works, read before the game starts.
 
 - A launch script kept in the game folder disappeared with a clean reinstall, and starting a missing script fails
   silently: the driver now falls back to the Steam launch.
+
+## Tool ideas
+
+- Move-o-matiC has no game-pad steps yet. A small helper (a ViGEm pad kept alive, fed one step per line: tap a button,
+  hold a trigger, aim-and-fire, wait) drove this game's guns on 2026-10-24; pad steps belong in the tool itself.
+- Screen cut-outs should match at any window size (scale to the window, or compare relative positions), so a game run
+  at a new size does not fall back to blind key presses.
