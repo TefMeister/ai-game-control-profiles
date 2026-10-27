@@ -7,6 +7,10 @@ Not a mod, not a trainer, not an agent. This repository is **data**: which key d
 what, how the menus connect, how to tell "I'm in gameplay" from "I'm in a menu",
 which entry point drops you where, and which things are known not to work.
 
+## Download
+
+**[Download every profile and route as one zip](https://github.com/TefMeister/ai-game-control-profiles/archive/refs/heads/main.zip)** (always the newest copy; no account or Lanes needed). Unzip it anywhere. With the [Lanes](https://github.com/TefMeister/lanes-plugin) plugin for Claude Code you can get it from `/lanes:setup` instead, and it stays up to date by itself.
+
 ## Who this is for
 
 Anyone using an AI model to drive, test, or automate a PC game — for accessibility
