@@ -39,3 +39,21 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
 - In a build with the developer-menu unlock, X on the main menu opens the developer menu (Load Scriptlayer, Zones,
   Soakmode, Unlock all, CUSTOMIZE CONTROLS, CCTest); B goes back. Y does nothing there. Unlock all opens EXTRA
   CONTENT with everything available. Zones is an empty list.
+
+## Learned 2026-10-28 (the OpenXR Simulator, no headset)
+
+- Head poses: the simulator's own set_head_pose tool; one engine frame through the bridge per pose is enough in the
+  opening car scene, which stands still.
+- Controllers: the simulator has no tool for them, but it reads a command file `controller_pose_command.json` in its
+  exchange folder (beside `head_pose_command.json`): `{"hand": 0 or 1 (left, right), "posX", "posY", "posZ" in
+  metres, "yaw", "pitch" in radians, "trigger", "buttonA"}`. Write it to a temporary name, then rename it into place;
+  the simulator deletes it once read (within about 50 ms while a game runs). Write it only while a game runs, or it
+  waits and teleports the next session's controller.
+- ⚠️ posY is measured FROM HEAD HEIGHT, not from the floor: with the head at 1.70 m, posY 1.55 came back from the
+  runtime as 3.25. "15 cm below the eyes, 61 cm ahead, 20 cm right" is posX 0.20, posY -0.15, posZ -0.61.
+  posX and posZ were not separately checked against a moved head (the head stood at x 0, z 0).
+- Both controllers then report as tracked (orientation and position) with the khr/oculus/index/vive/motion bindings.
+
+### Tool ideas
+- 2026-10-28: give the simulator's MCP server a set_controller_pose tool that writes this file (same guard as its
+  head tool: refuse when no game runs), so no session has to hand-write it.
