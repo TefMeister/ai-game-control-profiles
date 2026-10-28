@@ -9,7 +9,7 @@
   "renderer": "Direct3D 11",
   "renderer_notes": "A d3d9.dll proxy saw only D3DPERF_BeginEvent/EndEvent while d3d11.dll and dxgi.dll are loaded in-process, so it draws with D3D11 [verified-live 2026-09-17, n=1]. The exe's static d3d9 import is misleading.",
   "distribution": "Steam (app 729040)",
-  "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): started BorderlandsGOTY.exe directly, windowed 1280x720 from the command line, closed with WM_CLOSE."
+  "build_notes": "Verified 2026-09-17 on the home PC (3440x1440 desktop): started BorderlandsGOTY.exe directly, windowed 1280x720 from the command line, closed with WM_CLOSE."
  },
  "input": {
   "api": "keyboard",

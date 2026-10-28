@@ -8,7 +8,7 @@
   "engine": "Unreal Engine 3",
   "renderer": "Direct3D 11 (the window title reads '(64-bit, DX11)')",
   "distribution": "Steam (app 501590)",
-  "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): started StormGame-Win64-Shipping.exe directly windowed; main menu background after ~45 s; closed with WM_CLOSE. The game ships StormGame-Win64-Shipping.pdb - full symbols."
+  "build_notes": "Verified 2026-09-17 on the home PC (3440x1440 desktop): started StormGame-Win64-Shipping.exe directly windowed; main menu background after ~45 s; closed with WM_CLOSE. The game ships StormGame-Win64-Shipping.pdb - full symbols."
  },
  "states": [
   {

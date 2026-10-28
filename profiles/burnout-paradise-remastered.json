@@ -8,7 +8,7 @@
     "engine": "Criterion in-house engine",
     "renderer": "Direct3D 11 (32-bit exe)",
     "distribution": "Steam (app 1238080), activated and started through the EA app; Denuvo Anti-Tamper",
-    "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): launch -> intro -> main menu -> quit, windowed via config.ini. Our full-export 32-bit d3d11.dll logging proxy LOADS UNDER DENUVO, the game reaches the main menu, and the log shows D3D11CreateDeviceAndSwapChain [verified-live 2026-09-17, n=2 launches]."
+    "build_notes": "Verified 2026-09-17 on the home PC (3440x1440 desktop): launch -> intro -> main menu -> quit, windowed via config.ini. Our full-export 32-bit d3d11.dll logging proxy LOADS UNDER DENUVO, the game reaches the main menu, and the log shows D3D11CreateDeviceAndSwapChain [verified-live 2026-09-17, n=2 launches]."
   },
   "input": {
     "api": "keyboard",

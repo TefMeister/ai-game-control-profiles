@@ -7,7 +7,7 @@
     "engine": "GZDoom (GZDoomVR 4.13.2.2 by hh79)",
     "renderer": "OpenGL",
     "distribution": "Free: https://www.moddb.com/mods/ashes-2063/downloads (this install came from a PCVR hub, at C:\\NonSteam\\Ashes 2063 VR)",
-    "build_notes": "Verified on the home PC (RTX), Windows 11, 2026-09-17, flat mode (+vr_mode 0) in a window."
+    "build_notes": "Verified on the home PC, Windows 11, 2026-09-17, flat mode (+vr_mode 0) in a window."
   },
   "input": {
     "api": "SDL/Win32 via GZDoom",

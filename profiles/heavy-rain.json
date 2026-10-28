@@ -8,7 +8,7 @@
     "engine": "Quantic Dream in-house engine (2019 PC port)",
     "renderer": "Direct3D 11",
     "distribution": "Steam (app 960910)",
-    "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): launched, reached the main menu and Options -> Graphics, set windowed 1280x720, closed. Our d3d11.dll logging proxy was present; its log shows D3D11CreateDevice [verified-live 2026-09-17, n=1]."
+    "build_notes": "Verified 2026-09-17 on the home PC (3440x1440 desktop): launched, reached the main menu and Options -> Graphics, set windowed 1280x720, closed. Our d3d11.dll logging proxy was present; its log shows D3D11CreateDevice [verified-live 2026-09-17, n=1]."
   },
   "input": {
     "api": "Win32 messages; the menus are MOUSE-driven (clicks at screen coordinates), Esc = back",

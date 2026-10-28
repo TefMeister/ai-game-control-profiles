@@ -8,7 +8,7 @@
   "engine": "CryEngine (Arkane fork)",
   "renderer": "Direct3D 11 - a dxgi.dll proxy loads in-process; the device calls were not recorded [inferred-static 2026-09-17]",
   "distribution": "Steam (app 480490)",
-  "build_notes": "Verified 2026-09-17 on RTX (home PC, 3440x1440 desktop): title -> main menu -> Options -> Video by keyboard, windowed 1280x720 via system.cfg, closed with WM_CLOSE. Exe Binaries\\Danielle\\x64\\Release\\Prey.exe; the renderer is in PreyDll.dll. The user has a 31 h campaign save (see hazards)."
+  "build_notes": "Verified 2026-09-17 on the home PC (3440x1440 desktop): title -> main menu -> Options -> Video by keyboard, windowed 1280x720 via system.cfg, closed with WM_CLOSE. Exe Binaries\\Danielle\\x64\\Release\\Prey.exe; the renderer is in PreyDll.dll. The user has a 31 h campaign save (see hazards)."
  },
  "input": {
   "api": "keyboard (synthetic key presses); mouse clicks on menu items do NOT register",
@@ -162,7 +162,7 @@
    "from": "game closed",
    "to": "windowed_1280x720",
    "steps": [
-    "with the game CLOSED, back up <game>\\system.cfg (system.cfg.bak-2026-09-17 on RTX)",
+    "with the game CLOSED, back up <game>\\system.cfg (system.cfg.bak-2026-09-17 on the home PC)",
     "append three lines: r_Fullscreen=0, r_Width=1280, r_Height=720",
     "launch"
    ],
@@ -189,7 +189,7 @@
   "working_directory": "<game>\\Binaries\\Danielle\\x64\\Release",
   "config_files": [
    "<game>\\system.cfg - CryEngine cvars read at start; the three r_ lines give a window [verified-live 2026-09-17, n=1]. r_Fullscreen 0 = window, 1 = fullscreen, 2 = fullscreen windowed, per the cvar help text in PreyDll.dll [inferred-static 2026-09-17].",
-   "Saved Games\\Arkane Studios\\Prey\\ - profiles and saves. The engine also names a %USER%/game.cfg, which does not exist on RTX [inferred-static 2026-09-17]."
+   "Saved Games\\Arkane Studios\\Prey\\ - profiles and saves. The engine also names a %USER%/game.cfg, which does not exist on the home PC [inferred-static 2026-09-17]."
   ],
   "logs": "<game>\\Game.log, rewritten each launch; it lists the r_Width / r_Height / r_Fullscreen values in effect.",
   "proxy_dll": "dxgi.dll beside Prey.exe (logging, full export). Needs early-call handling - see hazards."

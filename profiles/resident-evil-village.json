@@ -333,7 +333,7 @@
       "mitigation": "Do keyboard-driven work (movement, crouch, inventory, weapon switching) BEFORE the first `ads` of the session, or drive it through the same virtual pad the hook already owns. The real fix belongs in re8_scope_harness.lua's ads hook: restore the previous input mode on `ads 0`.",
       "confidence": "verified-live",
       "verified": "2026-09-18",
-      "notes": "Home PC (RTX), flat, n=several across two launches. This is the already-documented 'pad mode while held' behaviour, except that it does not come back. It silently blocked three separate test rows."
+      "notes": "Home PC, flat, n=several across two launches. This is the already-documented 'pad mode while held' behaviour, except that it does not come back. It silently blocked three separate test rows."
     },
     {
       "hazard": "With NO headset connected, REFramework does not enter VR (`XR_ERROR_FORM_FACTOR_UNAVAILABLE`) -- which makes the desktop window repaint normally, so BitBlt capture WORKS and screenshots are a usable oracle again.",
@@ -352,7 +352,7 @@
     {
       "issue": "REFramework's 30-second motion-controls inactivity timer silently stops the VR hands being updated at all",
       "effect": "VR_MotionControlsInactivityTimer (re2_fw_config.txt, default 30.000000) drives is_using_controllers(), and RE8VR.cpp's update_hand_ik() returns immediately when that is false. The timer is refreshed by BUTTON and STICK activity only -- moving the controllers through space does NOT refresh it. So a session where the controllers are held still, or parked while someone reads a log, can have the hands frozen with nothing logged and nothing erroring. Any hand-offset test run in that state is a false negative, and reads exactly like 'the offset does nothing'.",
-      "mitigation": "Set VR_MotionControlsInactivityTimer to a very large value (99999.000000 on RTX from 2026-09-19; back the config up first and edit it with the game CLOSED, because REFramework rewrites config on exit). Failing that, press any controller button immediately before a hand test. Same setting exists in every REFramework game's config.",
+      "mitigation": "Set VR_MotionControlsInactivityTimer to a very large value (99999.000000 on the home PC from 2026-09-19; back the config up first and edit it with the game CLOSED, because REFramework rewrites config on exit). Failing that, press any controller button immediately before a hand test. Same setting exists in every REFramework game's config.",
       "confidence": "inferred-static",
       "verified": "2026-09-19",
       "notes": "Read from RE8VR.cpp at our build commit by a static pass; the 99999 value has NOT yet been confirmed to survive a REFramework config rewrite, and the behaviour change has NOT been observed live. The handprobe harness word prints using_controllers once a second and is the check."

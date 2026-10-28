@@ -7,7 +7,7 @@
   "engine": "Unreal Engine 1 (OldUnreal patch v227k)",
   "renderer": "our own VRGoldDrv (D3D11) as GameRenderDevice; stock ships D3D9Drv / OpenGLDrv / ICBINDx11Drv",
   "distribution": "non-Steam standalone install",
-  "build_notes": "Verified on the home PC (RTX) 2026-09-09, Windows 11, x64 build at C:\\nonSteam\\UnrealGold\\System64\\Unreal.exe. The menu title bar reads 'Version 227k'. NOTE the dev PC's install is at D:\\nonSteam\\UnrealGold - the path differs per machine."
+  "build_notes": "Verified on the home PC 2026-09-09, Windows 11, x64 build at C:\\nonSteam\\UnrealGold\\System64\\Unreal.exe. The menu title bar reads 'Version 227k'. NOTE the dev PC's install is at D:\\nonSteam\\UnrealGold - the path differs per machine."
  },
  "input": {
   "api": "Win32 SendInput with SCANCODES against the game window",
