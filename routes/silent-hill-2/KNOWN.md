@@ -34,3 +34,25 @@ Only game facts: no paths, machine names or people.
   `LastConfirmedFullscreenMode=2`, `PreferredFullscreenMode=2`, `ResolutionSizeX/Y=1280/720` (and the
   `LastUserConfirmed...` pair). Check the window measures 1280x720 before driving.
 - Turning the headset off while UEVR is attached closes the game (the VR session is lost): finish the test first.
+
+## Learned 2026-10-29
+
+- Launch for a headset-less run: the exe with XR_RUNTIME_JSON = the OpenXR Simulator's json, SteamAppId and
+  SteamGameId 2124490, `-windowed -ResX=1280 -ResY=720`. Then inject UEVR through the UEVR MCP (uevr_setup_game with
+  the UEVR build's UEVRBackend.dll as backendDll, launchIfMissing false, skipPluginInstall true).
+- UEVR injected that way could not load openxr_loader.dll ("Could not load openxr_loader.dll", no VR, and then the
+  PRESS ANY BUTTON screens take no input). Fix: a copy of openxr_loader.dll from the UEVR build folder beside the
+  game's exe (SHProto/Binaries/Win64). With it, hmd_active true, runtime OpenXR.
+- The warning screen (PRESS ANY BUTTON TO CONTINUE) did not pass on Enter sent by PostMessage this time; the MCP's
+  simulated pad A (uevr_input_gamepad a, 0.3 s) passed it at once. Use the pad.
+- The main menu widget is created only once the warning has passed (search 'MainMenuWidget_BP_C /Engine/Transient').
+  ContinueGame(Movie=null, NonSkippableLen=0) on it loads the save in about a minute; the pawn appears first, the
+  PRESS ANY BUTTON TO PLAY screen then wants the pad A too.
+- The game's own pad table (vanilla; the rebinding save holds "None"): A interact, B dodge/cancel/skip, X reload,
+  Y healing, LB sprint, RB quick turn, LT aim, RT fire/melee, right stick click flashlight, BACK inventory, START
+  pause menu, d-pad up map, d-pad left/down/right pistol/shotgun/rifle, left stick click nothing. Read live from the
+  RebindableInput object's BindingList (objects of class /Script/InputRebinding.RebindableInput).
+- Menu-open signals: the gameplay menu widget (inventory, map, memos) answers HasAnyUserFocus() true while open;
+  the pause menu widget (InGameMenuWidget_BP_C) exists only while open.
+- With the game in a window the main window handle measured 1744x54 at 100,100 right after launch (an odd handle);
+  the backbuffer is 1920x1080 regardless. Not sorted out.
