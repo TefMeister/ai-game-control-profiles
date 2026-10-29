@@ -57,3 +57,11 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
 ### Tool ideas
 - 2026-10-28: give the simulator's MCP server a set_controller_pose tool that writes this file (same guard as its
   head tool: refuse when no game runs), so no session has to hand-write it.
+
+## Learned 2026-10-29
+
+- A save exists now: the route "START on the title, then A until a level camera" lands on CONTINUE and loads it,
+  in play at about 85 s (three runs). Gameplay, not the car scene, so the picture is never quite still (idle sway):
+  picture-difference tests need a hand big in view, or numbers instead of pictures.
+- The simulator's controller command takes a trigger value; a trigger of 1, then 0, reaches the game as a trigger pull
+  through the controller-pad path.
