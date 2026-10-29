@@ -56,3 +56,8 @@ Only game facts: no paths, machine names or people.
   the pause menu widget (InGameMenuWidget_BP_C) exists only while open.
 - With the game in a window the main window handle measured 1744x54 at 100,100 right after launch (an odd handle);
   the backbuffer is 1920x1080 regardless. Not sorted out.
+- 2026-10-29: the warning screen takes the pad A only while the game window is IN FRONT (bring it forward first);
+  the MCP's pad press did nothing with another window in front, twice. Weapons by function: the weapon manager
+  (Combat's SHWeaponManageCmbSubcomp) RequestEquipWeapon(row, Instant) with rows "Pistol", "Shotgun", "Rifle",
+  "IronPipe" (the melee rows follow GetLastUsedMeleeWeapon); RequestUnequipWeapon(Instant) empties the hands
+  (GetEquippedWeaponName then reads "None"). All proven live.
