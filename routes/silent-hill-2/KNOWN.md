@@ -61,3 +61,9 @@ Only game facts: no paths, machine names or people.
   (Combat's SHWeaponManageCmbSubcomp) RequestEquipWeapon(row, Instant) with rows "Pistol", "Shotgun", "Rifle",
   "IronPipe" (the melee rows follow GetLastUsedMeleeWeapon); RequestUnequipWeapon(Instant) empties the hands
   (GetEquippedWeaponName then reads "None"). All proven live.
+- 2026-10-29: the game polls the pad (and so a UEVR plugin's XInput callback runs) only after UEVR has "spoofed a
+  gamepad connection", which happens at the first VR CONTROLLER input (a simulated trigger pull does it); the MCP's
+  pad presses pass screens before that, but a plugin never sees a poll until then. Pull a trigger once after loading.
+- 2026-10-29: the map (d-pad up) is the MenuSectionMap_Widget_C widget: IsVisible() true only while the map is open;
+  the gameplay menu widget reports no focus for it. The focus script sh2_front.ps1 (recon/2026-10-29-buttons in the
+  game repo) needs AttachThreadInput to take the foreground reliably.
