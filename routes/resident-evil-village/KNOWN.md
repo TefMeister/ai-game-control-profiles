@@ -15,6 +15,14 @@ this page is the short, growing list of what works, read before the game starts.
 - Screens can be told apart by small cut-outs of the menu (a driver keeps them off GitHub); the log has no reliable
   "in gameplay" line.
 
+- **In headset mode (a headset streaming when the game starts), nothing from the PC reaches the menus (2026-10-30):** keys
+  by SendInput (virtual key or scancode) and a virtual Xbox pad (ViGEm) were all ignored at the main menu and at "Load most
+  recent saved data?". What works is the REFramework MCP: the main menu is `app.GUIManager` (singleton) field
+  `exclusiveTarget`; on `app.GUIMainMenu` call `onContinue()` then `onContinueDecide()`. The load question is then an
+  `app.GUIDialog` there, its `get_process()` an `app.GUIMisc.DialogTwoButton` (`selectedIndex` 0 = Yes, 1 = No;
+  `set_selectedIndex(0)` works) but nothing found yet confirms it without a press. The desktop window does not repaint.
+- **Insert** opens and closes the REFramework overlay (Menu-o-matiC knows the key since 2026-10-30).
+
 ## In gameplay
 
 - Keyboard scancodes reach the game. Synthetic mouse input does NOT reach the game, but it does reach the REFramework
