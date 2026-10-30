@@ -16,6 +16,8 @@ Only game facts: no paths, machine names or people.
 
 ## Hazards
 
+- 2026-10-30: Walking paths (paths/*.json): the shortest path over the level's own AI path graph, gates inserted as waypoints, walked with forward held and small steering turns. born_again_start_to_hdummy (93 m) stops near its end when the tutorial takes the camera to show the dummy hunter; wait for control, then go on. hdummy_to_hbackalley_b ran into a wall corner below gate Gen_E_L_MeshGLeft_(D)01, which sits a floor higher (2026-10-30).
+
 ## What failed
 
 ## Tool ideas
