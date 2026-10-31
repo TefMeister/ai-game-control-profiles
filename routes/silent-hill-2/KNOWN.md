@@ -83,3 +83,5 @@ Only game facts: no paths, machine names or people.
 - Window: the game rewrites ResolutionSizeX/Y and the GFXSettings Resolution back to 1920x1080 by itself (still
   Windowed); -ResX/-ResY on the command line do not hold either. The window measured 1936x1119 every launch.
 - With the 21 Sacraments stutter patch installed (an ASI loader beside the exe), F8 toggles that patch: do not send F8.
+- 2026-10-31: with UEVR (swap controllers off) the Quest 3 face buttons reach the game as: Quest A = pad A, Quest X =
+  pad B (the game's Cancel / back / dodge), Quest B = pad X (the game's reload), Quest Y = pad Y. Seen in the headset.
