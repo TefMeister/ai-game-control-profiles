@@ -67,3 +67,19 @@ Only game facts: no paths, machine names or people.
 - 2026-10-29: the map (d-pad up) is the MenuSectionMap_Widget_C widget: IsVisible() true only while the map is open;
   the gameplay menu widget reports no focus for it. The focus script sh2_front.ps1 (recon/2026-10-29-buttons in the
   game repo) needs AttachThreadInput to take the foreground reliably.
+
+## Learned 2026-10-31
+
+- The Continue save stands right at a save point: the pad A after the load (meant for PRESS ANY BUTTON TO PLAY) opens the
+  save menu, and a second A can write a save into an empty slot. After ContinueGame, pull a VR trigger instead; the play
+  prompt passes by itself. Never press A after the load.
+- Escape sent to the game window (PostMessage WM_KEYDOWN) closes the save menu when the pad's back does not reach it.
+- The UEVR MCP's simulated pad is applied to the game AFTER a UEVR plugin's XInput callback: a plugin's button rewrites
+  (X -> B in menus and so on) cannot be tested with it; its B goes straight to the game.
+- The weapon manager's RequestEquipWeapon fails (false) while the save menu is open.
+- The map (d-pad up) is a 3D item: pawn.Items.ItemExecutive is a Map_ItemInvestigationExe_BP_C, its ItemContext an
+  SHItemBase whose Mesh (a SkeletalMeshComponent) is what a VR script holds and moves.
+- The save point's menu widget (GameplaySaveMenu_Widget_C) answers IsVisible() false while closed, true while open.
+- Window: the game rewrites ResolutionSizeX/Y and the GFXSettings Resolution back to 1920x1080 by itself (still
+  Windowed); -ResX/-ResY on the command line do not hold either. The window measured 1936x1119 every launch.
+- With the 21 Sacraments stutter patch installed (an ASI loader beside the exe), F8 toggles that patch: do not send F8.
