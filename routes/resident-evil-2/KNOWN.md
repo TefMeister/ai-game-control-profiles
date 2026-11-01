@@ -22,3 +22,8 @@ Read before the game starts; add what is learned.
 - The test hand's left-hand dock on the Lightning Hawk's magazine: (0.24, 1.35, -0.42) with the right hand at
   (0.12, 1.45, -0.42, yaw 90, pitch 35).
 - Hold-pose limit: with a right-hand pose the GM 79 hangs muzzle-down; a side view of the gun needs another way (head turn).
+- Items by script (test only): `InventoryManager.addItemCount(Item.ID, n)`: 22 = Acid Rounds, 23 = Flame Rounds (the
+  GM 79's); 4-7 herbs; 20/21 and the sm71 group are unused ("#Rejected#") items. The inventory holds 20: after ~6 gifted
+  guns a gift returns nil (restart the game, it is memory only).
+- The simulator preview window can shrink to a strip (1760x440): MoveWindow it back to 1300x760 before screenshots.
+- The REFramework log is rewritten at each game start: copy it out before relaunching if a run's lines are needed.
