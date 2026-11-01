@@ -40,6 +40,13 @@ this page is the short, growing list of what works, read before the game starts.
   highlight, but no key confirms it (F, Enter, Space tried; `DialogTwoButton.set_timeLimit` did nothing): it wants the
   controller's A, which the simulator alone cannot press. Use the VR Bench layer for buttons.
 - The game's own window (class `via`) closes cleanly with WM_CLOSE while on the simulator.
+- **Full drive on the simulator, nobody at the PC (2026-11-01, worked):** switch the VR Bench layer on for re8.exe; launch; wait
+  about 30 s past "d3d12 textures have been setup"; A (title), A (Continue), LEFT STICK UP (keyboard Up only sometimes
+  works), A (Yes), wait about 28 s, A (chapter card). VR Bench writes the A button and the sticks.
+- **The game pauses whenever its window is not in front**: bring it forward before every press or screenshot.
+- **Number keys 1-4 take out the quick-slot guns** in VR too (this save: 1 W870, 2 LEMI, 3 M1897, 4 F2). The in-headset
+  quick-slot gesture (left thumb rest + right stick) cannot be done through VR Bench (no thumb-rest touch).
+- VR Bench hand poses: the gun follows the controller; a controller pitched about 35-60 degrees up holds a long gun level.
 - Tool idea (2026-11-01): a wait-chain reader (Windows Wait Chain Traversal) said nothing on this freeze, so it is not
   a thread-against-thread lock; the next freeze needs real thread stacks with symbols (x64dbg).
 
