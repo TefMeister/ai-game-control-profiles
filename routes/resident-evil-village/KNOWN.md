@@ -23,6 +23,19 @@ this page is the short, growing list of what works, read before the game starts.
   `set_selectedIndex(0)` works) but nothing found yet confirms it without a press. The desktop window does not repaint.
 - **Insert** opens and closes the REFramework overlay (Menu-o-matiC knows the key since 2026-10-30).
 
+## On the OpenXR Simulator (no headset)
+
+- **Works with REFramework's Single Frame Multipass (`VR_RenderingTechnique_V2=2`), freezes with Two Frame Sequential (`=1`)
+  (2026-11-01, 3 frozen runs on `=1`, 2 good runs on `=2`).** On `=1` the game stops on its very first VR frame (the log's
+  last line is "d3d12 textures have been setup"; the simulator's last call is a swapchain release; the window goes "Not
+  Responding"). Not the cause: the scope plugin, the REFramework.NET plugin, the Virtual Desktop / OBS mirror / xrFPS /
+  Hand Freeze / Window View layers (each tried off). On `=2` it runs at 90 fps, title screen in both eyes.
+- Start it by its exe with `XR_RUNTIME_JSON` pointed at the simulator's json and `SteamAppId=1196590`; the PC's own
+  runtime (the headset's) stays as it is.
+- The simulator remembers its preview window size; a saved height of 15 px gave strip-shaped screenshots. Set
+  `window_width` / `window_height` in its `settings.json` with no game running.
+- A hung run cannot be quit by the game's own close; ending the process is the only way out.
+
 ## In gameplay
 
 - Keyboard scancodes reach the game. Synthetic mouse input does NOT reach the game, but it does reach the REFramework
