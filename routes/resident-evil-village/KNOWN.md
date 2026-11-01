@@ -35,6 +35,13 @@ this page is the short, growing list of what works, read before the game starts.
 - The simulator remembers its preview window size; a saved height of 15 px gave strip-shaped screenshots. Set
   `window_width` / `window_height` in its `settings.json` with no game running.
 - A hung run cannot be quit by the game's own close; ending the process is the only way out.
+- On the simulator the title and main menu go by the REFramework connector: `app.GUITitle.onMainMenu()`, then on
+  `app.GUIMainMenu` `onContinue()` and `onContinueDecide()`. At "Load most recent saved data?" keyboard Up moves the
+  highlight, but no key confirms it (F, Enter, Space tried; `DialogTwoButton.set_timeLimit` did nothing): it wants the
+  controller's A, which the simulator alone cannot press. Use the VR Bench layer for buttons.
+- The game's own window (class `via`) closes cleanly with WM_CLOSE while on the simulator.
+- Tool idea (2026-11-01): a wait-chain reader (Windows Wait Chain Traversal) said nothing on this freeze, so it is not
+  a thread-against-thread lock; the next freeze needs real thread stacks with symbols (x64dbg).
 
 ## In gameplay
 
