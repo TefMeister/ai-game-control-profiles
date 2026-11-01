@@ -15,3 +15,10 @@ Read before the game starts; add what is learned.
   one in hand (this save: the minigun at the right shoulder).
 - The player: `app.ropeway.PlayerManager` (singleton) `get_CurrentPlayer()`. Finger joints: r_hand_index_0..2,
   r_hand_middle_0..2, r_hand_ring_0..3, r_hand_little_0..3, r_hand_thumb_0..2 (and l_hand_ the same).
+- Putting a gun in hand without menus (test script `zz_test_short2.lua` in visceral-re8-vr tools/sim): the player's
+  `app.ropeway.survivor.Inventory` component `equipSlot(System.Int32)` with the inventory slot number equips it at once
+  (slot 8 = Lightning Hawk in this save). A gun not owned: `InventoryManager.addAndEquipMainWeapon(WeaponType, count, 0)`,
+  WeaponType from the enum field named `WP4100` etc. (upper case); memory only, the game saves at typewriters.
+- The test hand's left-hand dock on the Lightning Hawk's magazine: (0.24, 1.35, -0.42) with the right hand at
+  (0.12, 1.45, -0.42, yaw 90, pitch 35).
+- Hold-pose limit: with a right-hand pose the GM 79 hangs muzzle-down; a side view of the gun needs another way (head turn).
