@@ -16,6 +16,11 @@ Read this before launching. Full detail with confidence tags: `profiles/metro-ex
   resize it to a 1280x720 client area with SetWindowPos (asynchronous: never block on a frozen game).
 - The game has been seen to come up borderless at full screen size even with `r_fullscreen off`, and the setting
   has been found back at `on` once. Measure the window every launch.
+- 2026-11-02, second PC (21:9 desktop): the first launch with `r_fullscreen off` came up BORDERLESS at desktop size
+  (window style 0x94000000, no caption). Resizing that one only CROPS the picture (the menu shows its top-left corner),
+  and the game snapped back to desktop size when the main menu loaded. Quit and relaunch: the second launch came up
+  captioned at 1920x1080, and resizing that to a 1280x720 client fits the whole picture. So: check the window style
+  first; if it has no caption, relaunch before resizing. The game also rewrote r_res to 1920x1080 on exit, as before.
 - **It minimises and pauses as soon as it loses focus**, even as a small window. Keep it in front; while minimised
   it draws nothing.
 
