@@ -20,6 +20,7 @@ Only game facts: no paths, machine names or people.
 
 ## What failed
 
+- 2026-11-02: On one launch the LOAD GAME / START A NEW GAME screen came up with START A NEW GAME highlighted and launch_to_gameplay_slot1 stopped there as 'frozen': press Up, then Enter, then Enter on the slot.
 ## Tool ideas
 
 - 2026-10-30: Try skipping the level's opening scene (Enter, Space or Esc while it plays): it is most of the ~2.5 min from launch to control (2026-10-30).

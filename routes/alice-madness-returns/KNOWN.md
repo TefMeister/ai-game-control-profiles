@@ -21,6 +21,7 @@ Only game facts: no paths, machine names or people.
 
 ## What failed
 
+- 2026-11-02: With someone using the PC (typing in another window), Windows refused to bring the game window to the front at all (SetForegroundWindow, even after an Alt tap): the route stops at step 1 with 'window is not in front' and press sends nothing. Needs the person to click the game once, or the PC left alone.
 - 2026-10-26: Closing: WM_CLOSE to the game window quits cleanly in about 2 s (used three times); no in-game quit route recorded yet.
 
 ## Tool ideas
