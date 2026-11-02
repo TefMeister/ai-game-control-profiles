@@ -101,6 +101,19 @@ this page is the short, growing list of what works, read before the game starts.
 - **Music:** Options > Audio > BGM Volume, set to 0 on 2026-10-24. B twice backs out with no "keep changes?" prompt. It is
   kept in the system save (`data00-1.bin`), not `config.ini`.
 
+## Flat boot and gun takes, nobody at the keys (2026-11-02, worked end to end)
+
+- Boot, flat, about 2 minutes: launch through Steam; about 20 s of logos; **Insert** (the overlay opens at every boot and
+  sits over the title), Enter (title), F (Continue), Up, F (Yes), about 35 s of loading, F (chapter card). Each screen was
+  checked by a picture before the next key; every key landed first time.
+- At a 3440-wide window the overlay's ScriptRunner header sat at about (0.041, 0.360) of the window and "Reset scripts" at
+  about (0.0515, 0.378) once it was open (fractions, so other window sizes need a fresh look).
+- Guns the quick slots do not hold can be put in hand through a mod script that calls the holster mod's own equip (the
+  D-pad path); a plain `set_RequestedItem` does not bring a gun out. One inventory weapon (not a gun, probably a
+  throwable) is refused by our equip guard, which is what the guard is for.
+- R reloads in flat; an emptied gun reloads fully (the shotguns and the revolver load round by round, about 8-13 s).
+- A normal close (the window's close message) stops the game drawing for about 12 s before the process leaves.
+
 ## Closing
 
 - WM_CLOSE to the main window: gone in about 2 s, process exits about 12 s later. Wait for the process to leave before
