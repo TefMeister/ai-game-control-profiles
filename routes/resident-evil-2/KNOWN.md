@@ -27,3 +27,15 @@ Read before the game starts; add what is learned.
   guns a gift returns nil (restart the game, it is memory only).
 - The simulator preview window can shrink to a strip (1760x440): MoveWindow it back to 1300x760 before screenshots.
 - The REFramework log is rewritten at each game start: copy it out before relaunching if a run's lines are needed.
+
+## Flat, nobody at the keys (2026-11-02)
+- Boot: about 20 s after the process, Insert (the overlay is open at every start), Enter (START GAME), Enter (Story), Space
+  (Continue): straight into the last save.
+- A gifted gun (`InventoryManager.addAndEquipMainWeapon`) has no ammo type on its inventory slot, so the game will not reload
+  it: `inventory.Slot.set_BulletID(<item id>)` first (handgun ammo 15, magnum 18, SMG 17, grenade rounds 22, fuel 25), then
+  `addItemCount`. About 6 gifted guns fill the inventory (memory only): restart the game for more.
+- Codes 1100, 1200, 1300, 1500, 7010, 7020, 7030 give nothing in this game.
+- ⚠️ Asking InventoryManager for ammo counts while a save is still loading froze the game at its "NOW 10%" loading text
+  (every pixel still, no disk reads, two cores busy, Windows still saying it answers). State-o-matiC now calls that frozen.
+- The game pauses when its window is not in front; a helper that cannot bring it forward (Windows refuses some requests)
+  reads as "the game stopped answering". Menu-o-matiC's focus() gets past that.

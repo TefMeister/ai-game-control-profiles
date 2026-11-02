@@ -14,3 +14,9 @@ Read before the game starts; add what is learned.
   4 = M3 Shotgun); a gun not owned: `offline.gamemastering.InventoryManager.addAndEquipMainWeapon(WeaponType, n, 0)`
   (the gun arrives FULLY loaded whatever n says; memory only).
 - Items by script: `offline.gamemastering.InventoryManager.addItemCount(Item.ID, n)`; the MGL takes one of ids 35-38.
+
+## Froze at start-up (2026-11-02)
+- Started flat with a mod's plugin taken out and REFramework's LooseFileLoader and FirstPerson switched off, the game hung
+  inside REFramework's start-up (the log ends with it suspending threads), Windows said it was not answering, and it used no
+  processor. Only ending the process got out. Which of the three changes did it is not known yet.
+- A screen capture of a window in that state waits forever: ask the window first (State-o-matiC does since 2026-11-02).
