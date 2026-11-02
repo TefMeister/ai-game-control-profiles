@@ -85,3 +85,11 @@ Only game facts: no paths, machine names or people.
 - With the 21 Sacraments stutter patch installed (an ASI loader beside the exe), F8 toggles that patch: do not send F8.
 - 2026-10-31: with UEVR (swap controllers off) the Quest 3 face buttons reach the game as: Quest A = pad A, Quest X =
   pad B (the game's Cancel / back / dodge), Quest B = pad X (the game's reload), Quest Y = pad Y. Seen in the headset.
+
+## Learned 2026-11-02
+- On the simulator with UEVR injected through the MCP: the warning's PRESS ANY BUTTON took a plain Enter key press (pad A
+  through the MCP did nothing this time, window in front); Enter on CONTINUE, about 90 s of loading, Enter at PRESS ANY
+  BUTTON TO PLAY. The prompt appears only some seconds after the warning text: a press before it is lost.
+- The window title is "Silent Hill 2" followed by two spaces.
+- The MCP's own Lua state finds objects (`uevr.api.find_uobject(full name)`, a dot not a colon) but cannot call their
+  functions; a per-frame job (reading bones) belongs in a real UEVR Lua script. The player's body mesh is CharacterMesh0.
