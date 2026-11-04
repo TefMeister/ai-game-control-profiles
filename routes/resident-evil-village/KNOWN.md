@@ -148,3 +148,10 @@ this page is the short, growing list of what works, read before the game starts.
   `reframework/autorun` driven by a small json file under `reframework/data` does the reading instead
   (`visceral_re8_shop_probe.lua`: names / manager / open / dump / close).
 - The always-on collector (Lanes) saw the launch 3 s in and filed it under visceral-re8-vr (`collect_prefer`).
+- **Reloading scripts without a restart works as a recorded route** (`reset-scripts.json`: Insert, wheel 10 down over the
+  overlay, click ScriptRunner at about (0.041, 0.360), wheel 10 down, 6 up, click "Reset scripts" at about (0.0515, 0.378),
+  Insert; replayed 6 times at a 3440-wide window). Menu-o-matiC got a `wheel` step for it.
+- The Duke's shop screens can be created by script (`app.GUIManager.createGUI(nameHash, true)`); the wall (ShopBg) shows in
+  gameplay with `set_drawSuspend(false)` + `onShow(true)` on its driver. ⛔ `onShow(true)` on a created ShopBuy with no data
+  CRASHES the game (REFramework writes reframework_crash.dmp beside the game).
+- The mouse cursor moved over the game window (for the overlay) turns the camera a little once the overlay is closed.
