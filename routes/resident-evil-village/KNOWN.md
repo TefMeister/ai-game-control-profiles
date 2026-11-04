@@ -138,3 +138,13 @@ this page is the short, growing list of what works, read before the game starts.
 - A black screen with a tilted panel: "Checking for additional content. Please do not close the game or turn off the power."
   can sit for 8+ minutes at launch (seen once, VR mode, REFramework overlay open, 02:43). The boot route has no template for
   it; nothing drives past it. Closing the window (WM_CLOSE) works from it.
+
+## Seen 2026-11-04 (flat, driven from the PC)
+
+- The boot route above worked again end to end: Insert, Enter, F, Up, F, about 40 s, F; gameplay about 4 minutes after launch.
+- State-o-matiC called the idle player in gameplay "frozen" (still picture, no disk, 3.8 cores, window answering); the
+  tool now says "still" for that and needs `--poke KEY` to call a freeze. A chapter card waiting for F looks the same.
+- The live-game connector (REFramework.NET) cannot run on this game's REFramework build (no .NET in it); a Lua probe in
+  `reframework/autorun` driven by a small json file under `reframework/data` does the reading instead
+  (`visceral_re8_shop_probe.lua`: names / manager / open / dump / close).
+- The always-on collector (Lanes) saw the launch 3 s in and filed it under visceral-re8-vr (`collect_prefer`).
