@@ -65,3 +65,15 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
   picture-difference tests need a hand big in view, or numbers instead of pictures.
 - The simulator's controller command takes a trigger value; a trigger of 1, then 0, reaches the game as a trigger pull
   through the controller-pad path.
+
+## Learned 2026-11-04 (the VR build on the OpenXR Simulator, home PC)
+
+- **The VR build (DK_XR=1) ignores a plain virtual XInput pad**: its bridge pad driver takes the buttons from the OpenXR
+  controllers instead. Drive it with the VR Bench layer: the **menu button held about 1.2 s = START** on the title, then
+  A every 4.5 s (CONTINUE, the save notice) reaches gameplay about 90 s after launch. The layer must be switched on for
+  the program before the launch (`vrbench.py start <full path to the exe>`; a bare name is refused).
+- A launch script for the simulator sits beside the headset ones in the build folder (`dk_vr_sim_hands.ps1`): the same
+  settings with the runtime pointed at the simulator; the headset scripts clear that setting.
+- The simulator reports 90 frames a second on the title and 74-90 in gameplay with the 1280 x 720 per-eye picture.
+- The game's log floods at about 1,200 lines a second in VR (failed draws, empty resolves, our own projection probe) and
+  rotates every 20-30 s: read the counters you need within a minute, or let the collector keep the files.
