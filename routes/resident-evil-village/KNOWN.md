@@ -159,3 +159,10 @@ this page is the short, growing list of what works, read before the game starts.
   `show(Parameter)`); it takes keyboard Left / Right; **Esc opens the pause menu on top of it**; `app.GUIManager.suicideGUIShop()`
   closes it cleanly. Never press F (OK) on it with no shop data behind: that opens the Buy screen and crashes the game.
 - Menu-o-matiC key names are lower case and short: `esc`, not `Escape` (the error lists every name).
+- **Script reload, corrected (2026-11-04 evening):** after a fresh boot ScriptRunner in the REFramework overlay is COLLAPSED:
+  Insert, click ScriptRunner at about (0.041, 0.360), click "Reset scripts" at about (0.0515, 0.379), Insert. Later in the
+  same boot it stays open: Insert, click Reset at (0.0515, 0.379), Insert. The recorded `reset-scripts` route (with wheel
+  turns) only fits one scroll state; use the clicks above until the route checks the overlay first. (3440-wide window.)
+- **The Duke with the pad:** at save 3 (next to him) the right stick turns, look up a little, "Open the shop." shows, A
+  talks. A virtual Xbox pad (ViGEm) kept alive by a small helper takes taps, sticks and triggers from a command file.
+- Keyboard Insert opens REFramework's menu; scripts cannot open it themselves (our plugin presses the key for them).
