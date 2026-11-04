@@ -1,0 +1,50 @@
+{
+ "schema": "menu-o-matic/1",
+ "game": "Resident Evil Village",
+ "window": "Village",
+ "route": "reset-scripts",
+ "steps": [
+  {
+   "key": "insert"
+  },
+  {
+   "wheel": -10,
+   "at": [
+    0.05,
+    0.45
+   ]
+  },
+  {
+   "click": [
+    0.041,
+    0.36
+   ]
+  },
+  {
+   "wheel": -10,
+   "at": [
+    0.05,
+    0.45
+   ]
+  },
+  {
+   "wheel": 6,
+   "at": [
+    0.05,
+    0.45
+   ]
+  },
+  {
+   "click": [
+    0.0515,
+    0.378
+   ]
+  },
+  {
+   "key": "insert"
+  }
+ ],
+ "checkpoints": {},
+ "from": "gameplay",
+ "to": "gameplay"
+}
