@@ -166,3 +166,18 @@ this page is the short, growing list of what works, read before the game starts.
 - **The Duke with the pad:** at save 3 (next to him) the right stick turns, look up a little, "Open the shop." shows, A
   talks. A virtual Xbox pad (ViGEm) kept alive by a small helper takes taps, sticks and triggers from a command file.
 - Keyboard Insert opens REFramework's menu; scripts cannot open it themselves (our plugin presses the key for them).
+
+## Learned 2026-11-04 night (the OpenXR Simulator, the sniper scope)
+
+- The simulator's preview window must be big for pictures: `settings.json` `window_width 2560`, `window_height 1400`,
+  `full_render true` (a 1152x201 preview gives 1152x221 pictures). Change it with no game running.
+- ⚠️ A click that lands on the simulator's preview starts its mouse-look; Village then feeds it motion and the head spins
+  (yaw by thousands of degrees, pitch pinned at 86). ESC by message does nothing; a real ESC into the focused preview stops
+  the spin but not the capture; a game restart was the only clean way back. Never click on any window while the preview is
+  up: keys to the focused game window, VR Bench buttons and the command files only.
+- VR Bench rifle poses: **controller pitch 90 = the rifle level** (0 points it about 45 up; 50 and 70 still up; more than 90
+  points it down). Right hand (-0.07, 1.48, -0.10) m, left (-0.07, 1.55, -0.45), both pitch 90, head level at 1.70 m: the
+  scope glass sits at (380, 610) with radius 56 px in the left eye of a 1920x1033 picture, showing the magnified world.
+  Keys 1-4 take the quick-slot guns out (4 = the rifle on this save).
+- The glass shows the bore's view 4x magnified, not what is behind the glass on screen: a colour comparison needs a uniform
+  surface filling both (a wall up close, snow at the feet, the overcast sky).
