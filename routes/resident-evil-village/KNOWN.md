@@ -155,3 +155,7 @@ this page is the short, growing list of what works, read before the game starts.
   gameplay with `set_drawSuspend(false)` + `onShow(true)` on its driver. ⛔ `onShow(true)` on a created ShopBuy with no data
   CRASHES the game (REFramework writes reframework_crash.dmp beside the game).
 - The mouse cursor moved over the game window (for the overlay) turns the camera a little once the overlay is closed.
+- **The Duke's three-card shop screen can be shown by script in gameplay** (`createGUI(hash("ShopMenu"))` + the driver's
+  `show(Parameter)`); it takes keyboard Left / Right; **Esc opens the pause menu on top of it**; `app.GUIManager.suicideGUIShop()`
+  closes it cleanly. Never press F (OK) on it with no shop data behind: that opens the Buy screen and crashes the game.
+- Menu-o-matiC key names are lower case and short: `esc`, not `Escape` (the error lists every name).
