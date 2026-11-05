@@ -93,3 +93,9 @@ Only game facts: no paths, machine names or people.
 - The window title is "Silent Hill 2" followed by two spaces.
 - The MCP's own Lua state finds objects (`uevr.api.find_uobject(full name)`, a dot not a colon) but cannot call their
   functions; a per-frame job (reading bones) belongs in a real UEVR Lua script. The player's body mesh is CharacterMesh0.
+
+## Learned 2026-11-05
+
+- The mod's own launcher starts a headset-less run in one step: `SH2VR.exe play --sim` (Steam must be running) installs, starts the game with the OpenXR Simulator and the Steam ids, and loads UEVR 8 s after the window shows; no UEVR MCP setup call is needed (its plugin is already in the profile).
+- After a reinstall the first start compiles shaders: the screen stays black for about a minute and presses are lost. Then Enter passes the warning, and the main menu's ContinueGame loads the save.
+- The game plays with no InputRebinding.sav and does not write a new one.

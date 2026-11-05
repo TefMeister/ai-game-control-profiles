@@ -77,3 +77,8 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
 - The simulator reports 90 frames a second on the title and 74-90 in gameplay with the 1280 x 720 per-eye picture.
 - The game's log floods at about 1,200 lines a second in VR (failed draws, empty resolves, our own projection probe) and
   rotates every 20-30 s: read the counters you need within a minute, or let the collector keep the files.
+
+## Learned 2026-11-05
+
+- The VR build (DK_XR=1) on the simulator takes about 10 s to close on the window's close message (the flat build about 1 s): wait before calling it stuck.
+- dk_sim_drive.py (the game repo's build-scripts) reaches gameplay with VR Bench switched on for the exe first (`vrbench.py start <full exe path>`), then `vrbench.py stop` afterwards.
