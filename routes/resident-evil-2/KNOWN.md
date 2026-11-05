@@ -42,3 +42,10 @@ Read before the game starts; add what is learned.
 - A pick-up screen can be opened by script, no loose item needed (2026-11-05): make a StockItem (`sdk.create_instance`,
   `setStock(<item id>, 0, 0, 1)`; 4 = Blue Herb) and call `GUIMaster.openInventoryGetItemMode(stock, nil)`. Space = Next
   (the item goes to the inventory), then `esc` closes the inventory. The driver's key is spelled `esc`, not `escape`.
+- A camera-taking action (a "jack") by script on the simulator (2026-11-05): the RPD hall's east shutter lever
+  (`sm42_162_ShutterLever01A_gimmick`, a GimmickToggleSwitch). Find its control (the GimmickControl whose
+  `get_MyGimmickBodyObject` is the lever), call `tryOccupy`, `startGimmick`, `requestStartSoloGimmick`, then on the lever
+  `requestTurnToggle(not get_IsToggle())`: Leon is carried to the lever and pulls it; the toggle flips, so it repeats.
+  Walking there and pressing A never found the prompt. The simulator's head yaw (`set_head_pose`) is what the mod reads as
+  the head's turn. The goddess statue's A opens a use-item screen that neither B nor Esc closed on the simulator;
+  `NewInventoryBehavior.close()` does.
