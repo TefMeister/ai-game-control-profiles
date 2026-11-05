@@ -39,3 +39,6 @@ Read before the game starts; add what is learned.
   (every pixel still, no disk reads, two cores busy, Windows still saying it answers). State-o-matiC now calls that frozen.
 - The game pauses when its window is not in front; a helper that cannot bring it forward (Windows refuses some requests)
   reads as "the game stopped answering". Menu-o-matiC's focus() gets past that.
+- A pick-up screen can be opened by script, no loose item needed (2026-11-05): make a StockItem (`sdk.create_instance`,
+  `setStock(<item id>, 0, 0, 1)`; 4 = Blue Herb) and call `GUIMaster.openInventoryGetItemMode(stock, nil)`. Space = Next
+  (the item goes to the inventory), then `esc` closes the inventory. The driver's key is spelled `esc`, not `escape`.
