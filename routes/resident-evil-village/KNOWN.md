@@ -182,3 +182,10 @@ this page is the short, growing list of what works, read before the game starts.
 - The glass shows the bore's view 4x magnified, not what is behind the glass on screen: a colour comparison needs a uniform
   surface filling both (a wall up close, snow at the feet, the overcast sky).
 - VR Bench (the virtual controller) must be switched ON before the game is launched; a close-out switches it off, and a launch without it sits at the title screen because the virtual buttons reach nothing (2026-11-04 22:2x). The simulator boot script now switches it on itself.
+
+## 2026-11-05: reloading scripts on the OpenXR Simulator
+- The `reset-scripts` route replays without errors with the simulator running (game window 3440x1421, the size the route
+  was recorded at), but the scripts were NOT reloaded: the log showed no new "Running script" lines. Restarting the game
+  (close by its window, boot again) took about 3 minutes and always worked. Not yet known why the route missed.
+- The route needs a Menu-o-matiC that knows the Insert key: older copies stop with `KeyError: 'insert'`.
+- Looking at something on the floor right at the character's feet does not work with a still camera: the body covers it.
