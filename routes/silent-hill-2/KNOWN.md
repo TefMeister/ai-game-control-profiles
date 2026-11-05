@@ -99,3 +99,7 @@ Only game facts: no paths, machine names or people.
 - The mod's own launcher starts a headset-less run in one step: `SH2VR.exe play --sim` (Steam must be running) installs, starts the game with the OpenXR Simulator and the Steam ids, and loads UEVR 8 s after the window shows; no UEVR MCP setup call is needed (its plugin is already in the profile).
 - After a reinstall the first start compiles shaders: the screen stays black for about a minute and presses are lost. Then Enter passes the warning, and the main menu's ContinueGame loads the save.
 - The game plays with no InputRebinding.sav and does not write a new one.
+- Each long gun's mesh has a `Holder_L` socket: the game's own left-hand spot (on the shotgun it sits on the pump, bone_forearm); the game's IK puts the body's left hand exactly there.
+- The weapon manager's RequestEquipWeapon takes positional arguments through the MCP (`["Shotgun", true]`); named ones return false. It also returns false when that gun is already in hand.
+- The MCP's held left trigger does not make the game aim while the mod runs (IsInRangedAim stays false), and SHDebug_Character_Combat_ForceRangedAim does nothing in this build.
+- For a dev run with a freshly built plugin, start the exe directly (XR_RUNTIME_JSON + the Steam ids) and then `SH2VR.exe attach`: `play` would put the package's own plugin back first.
