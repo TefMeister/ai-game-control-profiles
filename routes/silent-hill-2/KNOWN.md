@@ -103,3 +103,19 @@ Only game facts: no paths, machine names or people.
 - The weapon manager's RequestEquipWeapon takes positional arguments through the MCP (`["Shotgun", true]`); named ones return false. It also returns false when that gun is already in hand.
 - The MCP's held left trigger does not make the game aim while the mod runs (IsInRangedAim stays false), and SHDebug_Character_Combat_ForceRangedAim does nothing in this build.
 - For a dev run with a freshly built plugin, start the exe directly (XR_RUNTIME_JSON + the Steam ids) and then `SH2VR.exe attach`: `play` would put the package's own plugin back first.
+
+## Learned 2026-11-05 (evening)
+
+- The UEVR MCP connector plugin (uevr_mcp.dll 1.0.0) in the profile's plugins folder costs about 7 ms per frame (it
+  rewrites a crash-breadcrumb file several times a frame). Keep it out of the profile; copy it in only for a run that
+  needs it, and out again. Measured on the simulator: 19 ms with it, 12-13 ms without, A/B/A.
+- UEVR's VR_SynchronizationMode is where in the frame it waits for the headset (0 Early / 1 Late / 2 Very Late), not
+  on/off. Early measured 1.8 ms faster than Very Late here (n=2 each) and is the setting in the profile now.
+- Driving without the connector, by keys: find the game window from the process (FindWindow by the title returned
+  nothing), post Enter at the warning, Enter on CONTINUE (first item), wait about 95 s, Enter at PRESS ANY BUTTON TO
+  PLAY. Done four times today. The mod's launcher `play --sim --no-install` starts the game with the installed plugin.
+- Never attach the ghidrust debugger connector to the live game: its debug attach froze every thread and its detach
+  left them frozen; only stopping the connector's own process freed the game (it survived). Sample waits with the game
+  repo's waitstacks.py instead (suspends one thread for well under a millisecond).
+- The graphics card's load (nvidia-smi) and the plugin's `alive:` heartbeat line are enough to judge a frame-time
+  change; the simulator's status file reports a constant 11.1 ms, not a measurement.
