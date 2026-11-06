@@ -82,3 +82,13 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
 
 - The VR build (DK_XR=1) on the simulator takes about 10 s to close on the window's close message (the flat build about 1 s): wait before calling it stuck.
 - dk_sim_drive.py (the game repo's build-scripts) reaches gameplay with VR Bench switched on for the exe first (`vrbench.py start <full exe path>`), then `vrbench.py stop` afterwards.
+
+## Learned 2026-11-06
+
+- The game's auto exposure overshoots in this port: with it on (engine+656 bit 0 = 1, the game's own value) the picture
+  blows out to about 83 % white and pumps; off it sits at about 31 %, steady. VR builds from b014 switch it with the
+  bridge var `fx.exposure` (DK_VR_EXPOSURE at launch, 0 = off).
+- `dk_sim_drive.py` takes the build folder as its first argument; pass it whenever the build to test is not the
+  installed one (a hand-edited path once launched the installed build instead).
+- A run writes its log to the `logs/` folder of the build folder it was started from.
+- Tool idea (2026-11-06): the drive script could read the bridge until a level camera exists instead of fixed waits.
