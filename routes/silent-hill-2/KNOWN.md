@@ -27,6 +27,11 @@ Only game facts: no paths, machine names or people.
 
 ## What failed
 
+- 2026-11-06: UEVR attached about a minute after the Steam launch with the headset connected but not worn: UEVR's log stopped
+  right after 'Hooked DirectX 12' (its VR side never came up, no OpenXR line), the game died within a few minutes with no crash
+  folder written, and the session only noticed when it tried to close it. Next time: a State-o-matiC verdict right after the
+  attach, and attach only once the warning screen is up.
+
 ## Tool ideas
 - The game can rewrite its own window setting to exclusive fullscreen 1920x1080 between launches (seen 2026-10-24,
   after the previous run was closed with the console `quit` command). Fix with the game closed, in
