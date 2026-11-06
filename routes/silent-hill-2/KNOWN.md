@@ -17,6 +17,10 @@ Only game facts: no paths, machine names or people.
 - 2026-10-24: Only one save, 'Continue' loads it: the prison armory with every weapon (a heavy spot, good for frame-rate tests).
 
 ## Hazards
+- 2026-11-06 (headset runtime, nobody wearing it): attach UEVR only once the warning screen is up (attached during the
+  splash it hung and the game died). Ten 'Failed to initialize Framework' lines are normal before it comes up. Enter by
+  PostMessage passes the warning and the 'press any button' in VR; the main menu's ContinueGame loads the save; 1 takes the
+  pistol out; F toggles the torch. State-o-matiC says 'frozen' while the plugin's frame counter runs on: a false alarm in VR.
 
 - 2026-10-24: A 'Compiling shaders' screen (about a minute) comes before the warning screen whenever the shader cache was invalidated (a VR inject or a changed pak); keys do nothing until it ends.
 - 2026-10-24: The Steam launch does nothing if the game is already running: it only focuses the old window, and a plugin file copied meanwhile stays locked and old. Close the game first.
@@ -33,6 +37,7 @@ Only game facts: no paths, machine names or people.
   attach, and attach only once the warning screen is up.
 
 ## Tool ideas
+- 2026-11-06: State-o-matiC should treat a UEVR plugin heartbeat in the profile log as 'alive' and not call the window frozen.
 - The game can rewrite its own window setting to exclusive fullscreen 1920x1080 between launches (seen 2026-10-24,
   after the previous run was closed with the console `quit` command). Fix with the game closed, in
   `%LOCALAPPDATA%\SilentHill2\Saved\Config\Windows\GameUserSettings.ini`: `FullscreenMode=2`,
