@@ -2,6 +2,12 @@
 
 Read this before launching. Profile: `profiles/ashes-2063.json`.
 
+⚠️ **Which engine and which files (2026-11-06, Gold Digger).** The command line below starts whichever GZDoomVR it is
+given and loads only the game. A test of OUR guns needs our engine build (its version line ends in `-m`, e.g.
+`gvr4.13.2.2-6-gf3815e7-m`) and the test pk3s as `-file` arguments; the stock engine logs a plain `gvr4.13.2.2`. Check
+the log's version line and its "adding ..." lines before believing a mod result: the 2026-11-06 test-day launches ran
+the stock engine with none of our files (fine for testing the tools, useless for testing the mod).
+
 ## Getting to gameplay (flat, 2026-10-18)
 
 1. Skip every menu from the command line: `-skill 3 +map MAP01`, plus `+give pumpaction +give shotgunammo 40
