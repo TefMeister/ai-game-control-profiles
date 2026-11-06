@@ -44,6 +44,8 @@ this page is the short, growing list of what works, read before the game starts.
   about 30 s past "d3d12 textures have been setup"; A (title), A (Continue), LEFT STICK UP (keyboard Up only sometimes
   works), A (Yes), wait about 28 s, A (chapter card). VR Bench writes the A button and the sticks.
 - **The game pauses whenever its window is not in front**: bring it forward before every press or screenshot.
+- Numpad keys reach the game and its plugins by scancode WITHOUT the extended flag (0x4E = numpad +, 0x48 = numpad 8; with the
+  flag the same codes are the arrows). Checked 2026-11-06: numpad + froze a scope frame on the simulator.
 - **Number keys 1-4 take out the quick-slot guns** in VR too (this save: 1 W870, 2 LEMI, 3 M1897, 4 F2). The in-headset
   quick-slot gesture (left thumb rest + right stick) cannot be done through VR Bench (no thumb-rest touch).
 - VR Bench hand poses: the gun follows the controller; a controller pitched about 35-60 degrees up holds a long gun level.
