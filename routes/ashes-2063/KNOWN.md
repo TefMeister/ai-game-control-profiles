@@ -36,3 +36,13 @@ Read this before launching. Profile: `profiles/ashes-2063.json`.
 - A tiny event-handler pk3 can push the player (`pmo.Vel.XY = Actor.AngleToVector(pmo.angle, speed)` in `WorldTick`,
   started by `Level.maptime`) and print a marker line to the console; read the marker from the log. The start of
   MAP01 faces a wall: turn first toward the longest of 16 `LineTrace`s (about 400 units open behind the start).
+
+## State-o-matiC (2026-11-06)
+
+- Standing still in a level, the picture does not move, so `watch` alone says "menu or loading screen"; a `--poke`
+  with an arrow key got no answer (the key did not reach the game). Fixed by teaching the gameplay screen: the HUD's
+  health and radiation bar, bottom left, region `0,0.78,0.25,0.17` of the 1280 x 720 window, stored in
+  `states.json` here. Pass `--states routes/ashes-2063/states.json` to `watch`; it is not found by itself.
+- A minimised game window makes `watch` stop with an error ("no client area") instead of a verdict.
+- A frozen game (process suspended) makes `watch` wait until the game runs again, then report what it sees after.
+- Closing the window (WM_CLOSE) quits flat GZDoom cleanly; the collector files it as "closed".
