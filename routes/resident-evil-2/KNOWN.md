@@ -57,3 +57,13 @@ Read before the game starts; add what is learned.
   15 s (the game's own quit path, no force).
 - Steam's verify of the whole game took 40 s when nothing needed replacing.
 - `state_o_matic.py` must be run from its own folder (it imports its neighbours by name).
+- ⚠️ A start-up can hang inside REFramework's own hook install (the log ends with a run of "[Thread.cpp:42] Suspending" lines
+  2 s after the start, before any plugin starts; State-o-matiC says frozen, the window does not answer). Seen once in six
+  launches on 2026-11-07. The game's own close does nothing then; the process has to be ended, and the next start was fine.
+- Holding a long gun forward on the simulator: the right hand at (0.15, 1.30, 0.05), yaw 29.6, pitch 77.8 points the W-870's
+  barrel straight ahead (0, 0, -1). With yaw 0 / pitch 0 it hangs muzzle-down; with the right hand at z -0.35 the fore-end is
+  out of the left arm's reach (the drawn wrist stops ~0.35 m short).
+- Visceral RE2's tools build (`cmake -DVN_TOOLS=ON`, folder `build-tools`) logs `magreport`, `rackreport`, `shellreport`
+  twice a second: the room-space move that puts the left hand on the magwell / slide / port. A drive reads it and moves the
+  hand by exactly that (usually 1-2 steps). Never in a player build.
+- A gifted gun comes with a nearly empty magazine (W-870: 1 shell, Lightning Hawk: 1 then 7 after a top-up).
