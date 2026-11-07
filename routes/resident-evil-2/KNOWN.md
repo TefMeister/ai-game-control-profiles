@@ -49,3 +49,11 @@ Read before the game starts; add what is learned.
   Walking there and pressing A never found the prompt. The simulator's head yaw (`set_head_pose`) is what the mod reads as
   the head's turn. The goddess statue's A opens a use-item screen that neither B nor Esc closed on the simulator;
   `NewInventoryBehavior.close()` does.
+
+## The clean rebuild's first runs (2026-11-07)
+- State-o-matiC knows the title screen now (`states.json`, taught on the plain game: the logo over the rainy city, START
+  GAME below; it looks the same with the mod in). `watch "RESIDENT EVIL 2" --game resident-evil-2` says `title_screen`.
+- The plain game (no REFramework) reached the title about 45 s after the exe started; `CloseMainWindow` closed it in under
+  15 s (the game's own quit path, no force).
+- Steam's verify of the whole game took 40 s when nothing needed replacing.
+- `state_o_matic.py` must be run from its own folder (it imports its neighbours by name).
