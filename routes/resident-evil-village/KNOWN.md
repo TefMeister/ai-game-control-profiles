@@ -207,3 +207,7 @@ this page is the short, growing list of what works, read before the game starts.
   (melee weapons 2006). It is the action step `Gun.GetWeapon`; forcing that step (`setCurrentNode`) or
   `PlayerMovement.requestUseGetWeapon(item)` did not play it.
 - Layer motion names read as `ch01_0000_<Weapon>_<nnn>_<Name>` from `get_HighestWeightMotionNode():get_MotionName()`.
+- **The gun plays its own half of the new-gun move:** the weapon's GameObject has its own `via.motion.Motion` (one layer)
+  and `via.motion.MotionFsm2`; its `GetWeapon` step plays motion 0 (Wolfsbane), 2 (SYG-12) or 3 (the other guns). Start it
+  on the gun's layer 0 in the same frame as the arms' 2007, or the gun parts stand still.
+- Animation & Timing's script floods the log when its window is closed (fixed 2026-11-08: it looks for its command file first).
