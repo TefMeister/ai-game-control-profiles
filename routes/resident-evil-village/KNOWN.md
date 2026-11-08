@@ -191,3 +191,19 @@ this page is the short, growing list of what works, read before the game starts.
   (close by its window, boot again) took about 3 minutes and always worked. Not yet known why the route missed.
 - The route needs a Menu-o-matiC that knows the Insert key: older copies stop with `KeyError: 'insert'`.
 - Looking at something on the floor right at the character's feet does not work with a still camera: the body covers it.
+
+## 2026-11-08: flat on purpose, a Lua prompt by files, the new-gun animation
+- **Flat even with a headset streaming:** start `re8.exe` from its folder with `SteamAppId=1196590` and `XR_RUNTIME_JSON`
+  pointed at a file that does not exist; REFramework's VR start fails (`-51`) and the game runs flat. The boot route above
+  then works (Insert, Enter, F, Up, F, about 30 s, F).
+- One start hung in REFramework's hook install (the log's last lines "Suspending <thread>", no "Resuming", window not
+  responding, CPU still): only ending the process got out; the next start was fine.
+- REFramework's Lua in this build has **no `os.remove` and no `sdk.get_tdb`**. A file-driven prompt (a chunk in
+  `reframework/data/<dir>/in.lua` run once per new `--seq N` first line) works; give each chunk a NEW number (a reused
+  number is silently skipped). Type names can be found by searching `re8.exe`'s text, then `sdk.find_type_definition`.
+- The player's movement component is not found by `getComponent(app.PlayerMovement)`; use
+  `app.PlayerUpdaterFPS.get_playerMovement()`. `app.PlayerUpdater` throws on `getComponent`; `app.PlayerUpdaterFPS` works.
+- **The new-gun animation on demand:** the player's `via.motion.Motion` layers 1, 2, 9, 10, `changeMotion(0, 2007, 0, 0, 2, 0)`
+  (melee weapons 2006). It is the action step `Gun.GetWeapon`; forcing that step (`setCurrentNode`) or
+  `PlayerMovement.requestUseGetWeapon(item)` did not play it.
+- Layer motion names read as `ch01_0000_<Weapon>_<nnn>_<Name>` from `get_HighestWeightMotionNode():get_MotionName()`.
