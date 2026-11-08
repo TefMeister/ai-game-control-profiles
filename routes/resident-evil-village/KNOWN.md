@@ -44,6 +44,12 @@ this page is the short, growing list of what works, read before the game starts.
   about 30 s past "d3d12 textures have been setup"; A (title), A (Continue), LEFT STICK UP (keyboard Up only sometimes
   works), A (Yes), wait about 28 s, A (chapter card). VR Bench writes the A button and the sticks.
 - **The game pauses whenever its window is not in front**: bring it forward before every press or screenshot.
+- **REFramework's overlay on the simulator acts where the REAL mouse pointer is** (2026-11-08): clicks sent by message to a spot
+  in the window toggled whatever row the pointer happened to sit on, and the `reset-scripts` route reloaded nothing. The desktop
+  picture of the overlay can also lag behind. A new autorun script is loaded by restarting the game instead (about 2 minutes
+  with `drive.sh`), or by a click with the real pointer.
+- The VR Bench presser is now `vb.py <window title> press <button>` (`vb.py Village press a`); `drive.sh` uses it and drives from
+  launch into play by itself (2026-11-08, once).
 - Numpad keys reach the game and its plugins by scancode WITHOUT the extended flag (0x4E = numpad +, 0x48 = numpad 8; with the
   flag the same codes are the arrows). Checked 2026-11-06: numpad + froze a scope frame on the simulator.
 - **Number keys 1-4 take out the quick-slot guns** in VR too (this save: 1 W870, 2 LEMI, 3 M1897, 4 F2). The in-headset
