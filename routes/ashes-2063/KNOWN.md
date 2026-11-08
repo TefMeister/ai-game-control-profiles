@@ -29,6 +29,10 @@ the stock engine with none of our files (fine for testing the tools, useless for
   OpenComposite's `openvr_api.dll` in place of the shipped one. **Works (2026-10-29, n=4 runs):** a copy of the
   engine folder with OpenComposite's dll, `XR_RUNTIME_JSON` pointing at the simulator, `+vr_mode 10`; VR Bench plays
   the hands, the simulator's head command and screenshot give two-eye pictures with nobody in front.
+- OpenComposite only accepts an engine built on **OpenVR 1.16.8** headers (it asks for IVRSystem_022). A GZDoomVR built on
+  newer OpenVR headers asks for IVRSystem_026 and OpenComposite stops it at start with a "Missing interface" box
+  ("unsupported interface IVRSystem_026" in its own log). Build a second copy against the 1.16.8 headers for simulator
+  runs; the real headset copy can stay as it is (2026-11-08, n=1).
 - Under that route the game **crashes on close** (access violation, exit 0xC0000005), whatever mods are loaded. Close it
   with a window close (no typing needed) and expect that exit code; the log is complete up to the close.
 - On a slow PC the simulator's screenshots repeat the same frame for a second or more: take several, a second apart.
