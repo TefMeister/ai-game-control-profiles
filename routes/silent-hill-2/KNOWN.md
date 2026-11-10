@@ -141,4 +141,9 @@ Only game facts: no paths, machine names or people.
   them by itself: compare with a backup when the frame rate is suddenly worse.
 - Live values without the connector: the plugin (b004+) applies `name value` lines from `sh2vr_devcvars.txt` in the profile
   and logs each value before and after; `cvar_ab.py` in the mod's repo does A/B/A with it.
+- UEVR's AFW build (2026-11-10): the frame warp runs only with `VR_RenderingMethod=3` in the profile's config.txt (0 Native
+  Stereo, 1 Synchronized, 2 Alternating, 3 Alternate Framewarp) AND the game's DLSS on. With 3 the simulator's "left eye"
+  screenshot is one eye (with 0 it is both eyes squeezed into one crop). F toggles the torch (by PostMessage to the window).
+- Switching rendering steps off one after another (`waterfall.py` in the mod's repo) gives a per-step cost without a trace
+  tool; Nsight's GPU trace cannot attach to a game it did not start.
 
