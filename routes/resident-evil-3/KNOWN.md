@@ -30,3 +30,16 @@ Read before the game starts; add what is learned.
 - Gifted guns by script: the G19 arrives with 13 and takes item 31; the M3 arrives with 2 shells and takes item 32; the CQBR
   arrives with 1 round and its ammo item reads 0 (not found by `ammo`).
 - RE3's REFramework log is still `re2_framework_log.txt`.
+
+## Guns and rounds by script, and the live question line (2026-11-10)
+- A file-in, file-out question line runs in the game (`zz_visceral_eval.lua` in autorun; the Village tool `rv.py` with
+  `RV_GAME_DIR` set to the RE3 folder): Lua on the game thread, answers in under a second. The game must be in front.
+- The inventory is full at 16 slots in the usual save: a gifted gun silently does not arrive. `Inventory.removeSlot(n)` first.
+- The MGL: `InventoryManager.addAndEquipMainWeapon(42, 6, 37)` (weapon type 42, six rounds, the round's item). Round items:
+  36 Mine, 37 Explosive, 38 Acid, 39 Flame (35 is not ammo). `addItemCount(item, n)` adds a stack.
+- A gun's loaded kind of round is the main slot's `set_BulletID(item)`: the count stays, the next shot is that kind.
+- `Inventory.equipSlot(4)` puts the M3 in hand. The right trigger through VR Bench fires; a shot needs about 2 s before the next.
+- Hip spots for the robot hands, head at (0, 1.7, 0): left hip (-0.20, 1.08, -0.02), right hip (0.20, 1.08, -0.02); the left
+  grip is `squeeze`. Bringing a hand to a spot on the gun: ask the game for the miss in the head's axes and step the hand by
+  it (`visceral-re3-vr` `dev-archive/tools/sim-mgl/`), three or four steps to within 6 cm.
+
