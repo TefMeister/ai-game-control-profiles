@@ -42,4 +42,9 @@ Read before the game starts; add what is learned.
 - Hip spots for the robot hands, head at (0, 1.7, 0): left hip (-0.20, 1.08, -0.02), right hip (0.20, 1.08, -0.02); the left
   grip is `squeeze`. Bringing a hand to a spot on the gun: ask the game for the miss in the head's axes and step the hand by
   it (`visceral-re3-vr` `dev-archive/tools/sim-mgl/`), three or four steps to within 6 cm.
+- For the robot's right hand (2026-11-10): a gun points level at pitch 78 (pitch 0 points it at the floor), muzzle-up at
+  pitch 125. A trigger press of 0.4 s is sometimes missed; 0.8 s is not. The left arm reaches the launcher's drum only
+  with the gun held close: right hand (0.08, 1.40, -0.16).
+- Which joints carry a mesh: move one joint 1.5 m away each frame and read the gun mesh's `get_WorldAABB`: the box grows
+  when the joint carries geometry. Quicker and surer than a screenshot.
 
