@@ -47,4 +47,11 @@ Read before the game starts; add what is learned.
   with the gun held close: right hand (0.08, 1.40, -0.16).
 - Which joints carry a mesh: move one joint 1.5 m away each frame and read the gun mesh's `get_WorldAABB`: the box grows
   when the joint carries geometry. Quicker and surer than a screenshot.
+- The game's ammo HUD (2026-11-10): the object `GUI_RemainingBullet`, component `offline.gui.EsRemainingBulletBehavior`
+  (RE2's is named without the "Es"). `set_TriggerSwitchBullet(true)` + `set_RequestDraw(true)` shows the game's list of the
+  gun's kinds of round with icons and counts for about 2 s; `get_IsDraw` says whether it is up. A screenshot asked for
+  through the simulator arrives 2 to 3 s later: too late to catch it; read `get_IsDraw` instead.
+- Finding an on-screen element: list the scene's `via.gui.GUI` components and their GameObject names (83 of them).
+- A gun mesh's materials and their values: `Mesh.get_MaterialNum`, `getMaterialName(i)`, `getMaterialVariableName(i, v)`,
+  `setMaterialFloat4(i, v, colour)`. The MGL: material 1 is every round's, value 0 its BaseColor.
 
