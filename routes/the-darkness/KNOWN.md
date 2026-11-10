@@ -121,3 +121,9 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
 
 ### Tool ideas
 - 2026-11-10: a "wait until the level camera is live" check from the game's log would replace the fixed 115 s wait.
+
+## Learned 2026-11-10 (closing on the OpenXR Simulator)
+
+- Under the simulator the game's process shows TWO windows: the simulator's preview ("OpenXR Simulator - ...") first, the game's own ("darknessrecomp [...]") second. A close message to the preview only removes the preview; the game plays on. Ask the game's OWN window: it closes in under 1 s, in a level too (b025, three runs).
+- `dk_close.py` (the game repo's build-scripts) does that and waits until no copy of the game is left; exit 0 = closed. Use it between runs instead of asking "the process's window".
+- VR Bench's picture command returns both eyes in a level with simulator 1.7.1 (3 of 3, about 0.5 s each).
