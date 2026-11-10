@@ -129,3 +129,16 @@ Only game facts: no paths, machine names or people.
   repo's waitstacks.py instead (suspends one thread for well under a millisecond).
 - The graphics card's load (nvidia-smi) and the plugin's `alive:` heartbeat line are enough to judge a frame-time
   change; the simulator's status file reports a constant 11.1 ms, not a measurement.
+
+## Learned 2026-11-10 (measuring performance with nobody in the headset)
+- The Quest 3 through Virtual Desktop asks this game for 2688 x 2880 per eye. The OpenXR Simulator cannot go wider than
+  4096 in total: at that size VR silently does not start and the game runs flat (the plugin's heartbeat says
+  `headset off`). Use 2048 x 2194 per eye and raise `r.ScreenPercentage` to 131 to load the card as the headset does.
+- After CONTINUE the "press any button to play" screen can still be up when the script thinks it is in gameplay (the world
+  is drawn behind it, so frame times react to settings): press Enter a second time ~12 s later, and look once.
+- The game's graphics choices live in GameUserSettings.ini, in the `GFXSettings` line: `Adv_Supersampling` (0 off, 4 DLSS),
+  `Adv_DLSSQuality` (3 = Quality, the engine then runs r.ScreenPercentage 66.7), `AdvQualityIsCustom`. The game can reset
+  them by itself: compare with a backup when the frame rate is suddenly worse.
+- Live values without the connector: the plugin (b004+) applies `name value` lines from `sh2vr_devcvars.txt` in the profile
+  and logs each value before and after; `cvar_ab.py` in the mod's repo does A/B/A with it.
+
