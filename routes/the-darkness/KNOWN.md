@@ -92,3 +92,14 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
   installed one (a hand-edited path once launched the installed build instead).
 - A run writes its log to the `logs/` folder of the build folder it was started from.
 - Tool idea (2026-11-06): the drive script could read the bridge until a level camera exists instead of fixed waits.
+
+## Learned 2026-11-10 (measuring the frame rate with nobody in a headset)
+
+- In a level, under the pretend headset, the game does not answer a polite close (the window's close message or a
+  plain taskkill): after ~24 s only ending the process works. The menus close cleanly. Before starting another copy,
+  check that no copy is left: twice a second one was started beside the first and both readings were spoiled.
+- Seven presses of A, 4.5 s apart, after START reach the alley (the level after CONTINUE) on the pretend headset; the
+  frame rate there settles within 30 s.
+- The game's log says how it is drawing: "Resolve region is empty" and "Failed in backend" lines mean the picture is
+  being drawn in strips (the console's anti-aliasing is on); none at all means one pass a frame.
+
