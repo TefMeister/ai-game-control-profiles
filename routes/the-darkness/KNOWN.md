@@ -102,4 +102,10 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
   frame rate there settles within 30 s.
 - The game's log says how it is drawing: "Resolve region is empty" and "Failed in backend" lines mean the picture is
   being drawn in strips (the console's anti-aliasing is on); none at all means one pass a frame.
+- Finding what the port's threads do without a debugger (2026-11-10): `dk_threads.py` in the mod's repo samples the
+  busiest threads; with the linker's map of the same build it names the game function. A thread at 100 % of a core can
+  be almost all waiting: here the drawing thread was 80 % inside the console library's "wait for the graphics chip" loop.
+- Nsight's GPU trace can start the port itself (it is a plain program; settings go in as `env_pairs`), but it needs the
+  NVIDIA Control Panel's "GPU performance counters for all users" switched on, and its output folder to exist already.
+- The same build reads 72 to 76 game frames a second in the alley from run to run: differences under ~5 mean nothing.
 
