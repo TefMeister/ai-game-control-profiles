@@ -109,3 +109,15 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
   NVIDIA Control Panel's "GPU performance counters for all users" switched on, and its output folder to exist already.
 - The same build reads 72 to 76 game frames a second in the alley from run to run: differences under ~5 mean nothing.
 
+## Learned 2026-11-10 (tracing the graphics card with nobody at the PC)
+
+- A graphics-card trace tool (NVIDIA Nsight GPU Trace) can start the game itself with the VR settings and take its
+  trace 115 s after launch; the usual presses (menu held = START, then A every 4.5 s, seven times) sent at the same
+  moment from a second script land in the alley at about 95 s. The trace tool ends the game when it has written its file.
+- The trace tool needs "allow access to the GPU performance counters" in the NVIDIA Control Panel (Developer settings),
+  and its output folder must exist before the start.
+- Closing by the window's close message still ends the game cleanly within a second (six unattended runs).
+- Run-to-run spread in the alley stayed within about 1 game frame a second over an hour (72.7, 73.1, 73.0).
+
+### Tool ideas
+- 2026-11-10: a "wait until the level camera is live" check from the game's log would replace the fixed 115 s wait.
