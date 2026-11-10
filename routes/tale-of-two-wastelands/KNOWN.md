@@ -14,6 +14,7 @@ Only game facts: no paths, machine names or people.
 ## Hazards
 
 - 2026-11-10: 2026-11-10: never name this game's window to a tool by the word 'Fallout' alone: a chat program open on a thread titled 'Fallout 3/NV VR ...' matched first, a picture of IT was taken and the quit keys were nearly typed into it (nothing was sent). The game's window belongs to FalloutNV.exe; check the program behind a window before using it. While an add-on has a box up, the game's main window is that box (title 'New Vegas Tick Fix', 'Stewie Tweaks', 'Fatal Error: Missing NVSE Plugin').
+- 2026-11-10: 2026-11-10 (later): from Lanes 0.106.2 every Menu-o-matiC / Move-o-matiC / State-o-matiC command takes --exe FalloutNV.exe (and a route file may carry "exe"); with it a window of another program is refused. Every route recorded for this game must carry it; until this PC has 0.106.2, no keys or clicks to this game through those tools.
 
 ## What failed
 
