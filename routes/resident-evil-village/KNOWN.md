@@ -235,3 +235,20 @@ this page is the short, growing list of what works, read before the game starts.
 - An object made with `via.GameObject.create` plus a `via.render.Mesh` component given a gun's mesh has that mesh's joints
   (`getJointByName` works on its transform) and they can be written.
 - Tool idea: the part search above as a small command (joint name, colour, crop) instead of one-off scripts.
+
+## 2026-11-11 (later): pictures, the overlay, the simulator's hands
+
+- REFramework's overlay is sometimes open and sometimes closed after the boot's Insert (seen both ways in one morning).
+  `reframework:is_drawing_ui()` answers which; press Insert only when it says true, and ask again afterwards (one press
+  did not always land). The mod's `tools/sim/shot.py` does this before every picture.
+- The game window is not always the full screen width (2380x1344 on a 3440 screen that day): take pictures from the
+  window's own rectangle (class `via`), not from fixed screen coordinates.
+- On the OpenXR Simulator the game's desktop window is black except for the overlay: pictures come from the simulator
+  (its capture), not from the window.
+- On the simulator, with the right controller at (0.15, 1.35, -0.30) pitched 35, the handgun's magazine sits near
+  (0.16, 0.97, -0.04) in room numbers: about 0.4 m below and 0.3 m behind the controller. The drawn left hand is likewise
+  far from its controller, so the hands are out of the headset's view at chest-height poses.
+- The game pauses when its window is not in front, and VR Bench poses written meanwhile do nothing: bring the window
+  forward before every pose.
+- A LEMI's suppressor is a mesh part that does not hang under the `Body` joint: moving `Body` away leaves it.
+- Tool idea: `walk.py` could bring the window forward itself and say when the game is paused.
