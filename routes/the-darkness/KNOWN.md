@@ -127,3 +127,25 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
 - Under the simulator the game's process shows TWO windows: the simulator's preview ("OpenXR Simulator - ...") first, the game's own ("darknessrecomp [...]") second. A close message to the preview only removes the preview; the game plays on. Ask the game's OWN window: it closes in under 1 s, in a level too (b025, three runs).
 - `dk_close.py` (the game repo's build-scripts) does that and waits until no copy of the game is left; exit 0 = closed. Use it between runs instead of asking "the process's window".
 - VR Bench's picture command returns both eyes in a level with simulator 1.7.1 (3 of 3, about 0.5 s each).
+
+## Learned 2026-11-11 (jumping straight to other levels on the pretend headset)
+
+- **A level jump works unattended.** Start the VR build with `DK_DEVMENU=1` and `DK_DEVMENU_MAP=<map>`; on the main
+  menu the game's X (the Quest's B, right hand, through VR Bench) loads that map. Seen: `NY1_Chinatown` (the subway
+  stairs), `NY1_Pier19`, `NY1_Cemetery`, `OW1_Cannon` (the otherworld), `NY1_Tunnel` (the opening car ride; it starts
+  black). The log shows a `[DEVMENU] cheat #1` line when the doorway was taken.
+- **Press order that is safe:** START, then the doorway button, then A, the doorway button again, and so on. The
+  doorway button does nothing on the save notice; A there is OK; so A is never pressed on the main menu (where it is
+  CONTINUE) unless the doorway failed there. One A straight after START is often lost while the notice fades in.
+- **A level is up when the log shows a `[VIEW] ... (widened)` line** after the jump, 15 to 60 s later; the time differs
+  from run to run, so pictures at fixed times after the jump are often the black loading screen.
+- **Three maps do not load from this copy of the game:** `NY1_Orphanage`, `NY2_Turkish`, `NY2_Church` stop on a black
+  screen with "XamShowDirtyDiscErrorUI" in the log: they ask for `content\textures\alltextures.000.xtc`, and the copy
+  has only the `.xtc.xt0` / `.xtc.xt1` parts. The game then runs at about 500 frames a second showing nothing.
+- A picture of the simulator's preview window comes back all black about one time in three, on either drawing method,
+  while the game is drawing normally: take two or three and use the lit ones. Menus and films (the screen held in the
+  room) do not show in the preview at all.
+- `dk_place.py` (the game repo's build-scripts) does all of the above for a test copy of a build.
+
+### Tool ideas
+- 2026-11-11: read the picture from VR Bench's own picture command instead of the preview window, to lose the black grabs.
