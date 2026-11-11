@@ -139,9 +139,10 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
   CONTINUE) unless the doorway failed there. One A straight after START is often lost while the notice fades in.
 - **A level is up when the log shows a `[VIEW] ... (widened)` line** after the jump, 15 to 60 s later; the time differs
   from run to run, so pictures at fixed times after the jump are often the black loading screen.
-- **Three maps do not load from this copy of the game:** `NY1_Orphanage`, `NY2_Turkish`, `NY2_Church` stop on a black
-  screen with "XamShowDirtyDiscErrorUI" in the log: they ask for `content\textures\alltextures.000.xtc`, and the copy
-  has only the `.xtc.xt0` / `.xtc.xt1` parts. The game then runs at about 500 frames a second showing nothing.
+- **The jump only reaches maps that have a `<map>_00001010_Load.XDF`** (the start-of-story state): Tunnel, Chinatown,
+  Pier19, Cemetery, Grinder, OW1_Cannon load; `NY1_Orphanage`, `NY2_Turkish`, `NY2_Church`, `NY2_CityHall` stop on a
+  black screen with "XamShowDirtyDiscErrorUI" in the log and about 500 frames a second showing nothing (7 of 7 and
+  4 of 4, 2026-11-11). Look in the game copy's `Content/Xdf` before choosing a map. Nothing is missing from the disc.
 - A picture of the simulator's preview window comes back all black about one time in two, on either drawing method,
   while the game is drawing normally: proved by the game's own per-eye brightness log (`DK_XR_EYE_LIGHT=1`), which
   stayed dead steady over 40 s while 12 of 20 grabs were black. Take three and use the lit ones. Menus and films
