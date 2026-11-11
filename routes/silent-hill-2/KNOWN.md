@@ -153,3 +153,8 @@ Only game facts: no paths, machine names or people.
 - The plugin looked for the crosshair class once a second at the main menu, where it is not loaded: about 20 ms a second (a hitch). It now looks only in play. A class that is not loaded costs a full object search each time it is asked for.
 - `SH2VR.exe play --sim` from a freshly packed release folder is a quick smoke test of a package: the heartbeat line in the profile log must say "headset on".
 - `run-sim.ps1 <label>` (the game repo, dev-archive/tools/optimiser) still works end to end: about 4 minutes, leaves the game running; close it by its window.
+
+## Learned 2026-11-12
+
+- Real headset (Quest 3, Virtual Desktop): with UEVR's `VR_RenderingMethod=3` (alternate-eye warp) the game crashed about 10 s after the injection (`AFR swapchains not created` over and over in the UEVR log, then an access violation); with 0 it started normally. n=1 each. The simulator ran 3 without it.
+- `SH2VR.exe play --no-install` from the package folder starts the game through Steam and injects by itself for a real-headset run too; it returns once UEVR is loaded.
