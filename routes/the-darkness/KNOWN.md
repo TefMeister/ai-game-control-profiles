@@ -142,9 +142,10 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
 - **Three maps do not load from this copy of the game:** `NY1_Orphanage`, `NY2_Turkish`, `NY2_Church` stop on a black
   screen with "XamShowDirtyDiscErrorUI" in the log: they ask for `content\textures\alltextures.000.xtc`, and the copy
   has only the `.xtc.xt0` / `.xtc.xt1` parts. The game then runs at about 500 frames a second showing nothing.
-- A picture of the simulator's preview window comes back all black about one time in three, on either drawing method,
-  while the game is drawing normally: take two or three and use the lit ones. Menus and films (the screen held in the
-  room) do not show in the preview at all.
+- A picture of the simulator's preview window comes back all black about one time in two, on either drawing method,
+  while the game is drawing normally: proved by the game's own per-eye brightness log (`DK_XR_EYE_LIGHT=1`), which
+  stayed dead steady over 40 s while 12 of 20 grabs were black. Take three and use the lit ones. Menus and films
+  (the screen held in the room) do not show in the preview at all.
 - `dk_place.py` (the game repo's build-scripts) does all of the above for a test copy of a build.
 
 ### Tool ideas
