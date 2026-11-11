@@ -252,3 +252,6 @@ this page is the short, growing list of what works, read before the game starts.
   forward before every pose.
 - A LEMI's suppressor is a mesh part that does not hang under the `Body` joint: moving `Body` away leaves it.
 - Tool idea: `walk.py` could bring the window forward itself and say when the game is paused.
+- **How fast the player moves** (`app.PlayerMovement`, reached through `app.PlayerUpdaterFPS.get_playerMovement()`; fields read live 2026-11-11): `WalkMotionMoveSpeed` 1.66 m/s, `JogMotionMoveSpeed` 3.43 (the run), hurt 1.40 / 2.30, crouched 1.20; `get_isSprint`, `get_isWalk`, `get_isMove` say which.
+- The LEMI's own bullet scatter in VR, standing still, measured on 12 shots: 1.1 to 3.4 degrees off the aim.
+- On the simulator the save's start spot is boxed in: the stick moves the player about 0.6 m back and nothing forward, so speeds cannot be measured by walking there.
