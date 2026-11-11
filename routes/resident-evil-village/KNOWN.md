@@ -217,3 +217,21 @@ this page is the short, growing list of what works, read before the game starts.
   and `via.motion.MotionFsm2`; its `GetWeapon` step plays motion 0 (Wolfsbane), 2 (SYG-12) or 3 (the other guns). Start it
   on the gun's layer 0 in the same frame as the arms' 2007, or the gun parts stand still.
 - Animation & Timing's script floods the log when its window is closed (fixed 2026-11-08: it looks for its command file first).
+
+## 2026-11-11: flat run, gun model parts, shells
+
+- The flat boot route worked twice more as one script (the mod's `tools/sim/flat_boot.sh`): launch flat, 45 s, Insert, Enter,
+  F, Up, F, 40 s, F. Gameplay about 2 minutes after launch.
+- `app.GUIManager.exclusiveTarget` still says `app.GUIDialog` once in play: it does not tell "in play". The player's
+  transform answering (`re8vr.player:call("get_Transform")`) does.
+- On the flat screen the held gun's object comes from `re8vr.weapon:get_field("Mesh"):call("get_GameObject")`;
+  `re8vr.weapon:call("get_GameObject")` gives nothing.
+- A gun mesh reports 256 parts (`getPartsEnableCount`); only a few are real. W870: part 0 = the whole gun, part 50 = the
+  loose shell alone (the LEMI's rounds are part 50 too). M1897: the loose shell is in part 0 with the gun.
+- Finding which part holds a small piece: move the gun's `Body` joint 100 m down at LateUpdateBehavior, write the piece's
+  joint 0.35 m in front of the primary camera, switch one part on at a time (`setPartsEnable`) and count pixels of its
+  colour in a screen crop; a halving search over 0-255 takes 8 pictures.
+- Joint writes on the held gun from a script show at LateUpdateBehavior, PrepareRendering, UpdateMotion and before LockScene.
+- An object made with `via.GameObject.create` plus a `via.render.Mesh` component given a gun's mesh has that mesh's joints
+  (`getJointByName` works on its transform) and they can be written.
+- Tool idea: the part search above as a small command (joint name, colour, crop) instead of one-off scripts.
