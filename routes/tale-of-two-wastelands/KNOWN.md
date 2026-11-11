@@ -24,6 +24,8 @@ Only game facts: no paths, machine names or people.
 - 2026-11-09: 2026-11-09, main menu (Begin Again debug profile, OneTweak borderless 3440x1440): a Menu-o-matiC click does not move the game's own cursor; Down (SendInput) moves the highlight; Enter and E (SendInput) do NOT select. Untried: key_input post/both, a held key, the mouse moved over the item then clicked.
 - 2026-11-10: 2026-11-10: the main menu ignores a WM_CLOSE to its window. A polite 'taskkill /IM FalloutNV.exe' (no /F) closes it.
 - 2026-11-10: 2026-11-10: in the OpenXR Simulator the VR mod (TTWVR 1.0.0) shows its menus but never refreshes the 3D world: after a save loads the picture stays on the save's frame or black, and head, sticks and hands change nothing. Upscaler off, smaller eye size, game window in front, Continue by hand: no change. The headset run's log has a '[camtrack] ... the body is solved from the headset and the controllers' line that never appears in the simulator.
+- 2026-11-11: a polite 'taskkill /IM FalloutNV.exe' also sends the close message to the OpenXR Simulator's preview window (it lives in the game's process): the simulator stops the session, the VR mod logs 'the headset's session is gone' and connects again, and the game can take 40 s more to close. Measure everything before asking the game to close.
+- 2026-11-11: in the simulator the VR mod's pictures follow the head but are black in the world. Suspect: Virtual Desktop's body memory (VirtualDesktop.BodyState) exists, empty, whenever the Virtual Desktop Streamer runs, and the mod then skips its own body solver. Not yet tested with the Streamer quit.
 
 ## Tool ideas
 
