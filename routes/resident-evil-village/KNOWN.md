@@ -255,3 +255,11 @@ this page is the short, growing list of what works, read before the game starts.
 - **How fast the player moves** (`app.PlayerMovement`, reached through `app.PlayerUpdaterFPS.get_playerMovement()`; fields read live 2026-11-11): `WalkMotionMoveSpeed` 1.66 m/s, `JogMotionMoveSpeed` 3.43 (the run), hurt 1.40 / 2.30, crouched 1.20; `get_isSprint`, `get_isWalk`, `get_isMove` say which.
 - The LEMI's own bullet scatter in VR, standing still, measured on 12 shots: 1.1 to 3.4 degrees off the aim.
 - On the simulator the save's start spot is boxed in: the stick moves the player about 0.6 m back and nothing forward, so speeds cannot be measured by walking there.
+
+## Learned 2026-11-11 (the options Emporium by sticks, the new-gun move)
+
+- The Duke-shop card row answers the left STICK only (its sideways half held about 5 frames); one-frame D-pad taps do nothing on it, though they move the selection inside the Supplies, Gunsmithy and Purse screens.
+- The cards are in two lists (three cards, or four with the Kitchen); the unused one keeps a cursor showing on its first card. Ask the screen which card is lit with `rv.py -f q_shopcards.lua`.
+- The Emporium can be driven from the desk: `emporium_cmd.json` takes `stick r up|down|left|right`, `stick l left|right` and `where` (the log line says the screen and the lit setting).
+- The flat window is black on a simulator run and REFramework menus cover it: for a picture use the simulator's own capture.
+- The new-gun move can be played on demand: `newgun_cmd.json` `{"cmd": "play"}`, `state`, `forget`.

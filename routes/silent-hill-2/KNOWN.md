@@ -147,3 +147,9 @@ Only game facts: no paths, machine names or people.
 - Switching rendering steps off one after another (`waterfall.py` in the mod's repo) gives a per-step cost without a trace
   tool; Nsight's GPU trace cannot attach to a game it did not start.
 
+
+## Learned 2026-11-11
+
+- The plugin looked for the crosshair class once a second at the main menu, where it is not loaded: about 20 ms a second (a hitch). It now looks only in play. A class that is not loaded costs a full object search each time it is asked for.
+- `SH2VR.exe play --sim` from a freshly packed release folder is a quick smoke test of a package: the heartbeat line in the profile log must say "headset on".
+- `run-sim.ps1 <label>` (the game repo, dev-archive/tools/optimiser) still works end to end: about 4 minutes, leaves the game running; close it by its window.
