@@ -24,7 +24,7 @@ Read before the game starts; add what is learned.
 ## The clean rebuild's first runs (2026-11-07)
 - State-o-matiC knows the title (`states.json`, taught on the plain game: the logo on the left over Nemesis).
 - The plain game reached the title ~50 s after the exe started; `CloseMainWindow` closed it within 15 s. Steam's verify: 41 s.
-- 2026-11-12: `CloseMainWindow` from GAMEPLAY (modded, on the simulator) also closed it within 15 s, no quit route needed (unlike RE2, whose window close does nothing in play). Esc in play showed no pause menu in the simulator's view.
+- 2026-11-12: `CloseMainWindow` from GAMEPLAY (modded, on the simulator) also closes it within 15 s, no quit route needed (unlike RE2, whose window close does nothing in play), BUT ONLY WITH THE WINDOW IN FRONT (mom_window.focus first): twice it was ignored while the window was behind (the game pauses when not in front). Esc in play showed no pause menu in the simulator's view.
 - `sim_boot.py` (Visceral's shared tools, `game.conf`: 4 A presses, 4 s apart) reached gameplay every time today (5 boots).
 - Long guns pointing forward on the simulator: right hand (0.15, 1.30, 0.05), yaw 29.6, pitch 77.8 (as RE2). A handgun held
   for the left hand to reach its magwell: right hand (0.12, 1.40, -0.25), yaw 90, pitch 35 (at z -0.42 the arm falls short).
