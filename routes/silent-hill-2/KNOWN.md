@@ -158,3 +158,16 @@ Only game facts: no paths, machine names or people.
 
 - Real headset (Quest 3, Virtual Desktop): with UEVR's `VR_RenderingMethod=3` (alternate-eye warp) the game crashed about 10 s after the injection (`AFR swapchains not created` over and over in the UEVR log, then an access violation); with 0 it started normally. n=1 each. The simulator ran 3 without it.
 - `SH2VR.exe play --no-install` from the package folder starts the game through Steam and injects by itself for a real-headset run too; it returns once UEVR is loaded.
+
+## Learned 2026-11-12 (evening)
+
+- New Game from the main menu by keys: Down + Enter (New Game), Down four times + Enter (Start Game), about 30 s of
+  loading, Enter at PRESS ANY BUTTON TO PLAY; the opening cutscene (3 min 46 s) starts at once. New Game did not
+  replace the Continue save; copy the save folder away first anyway and put it back after.
+- The game's own "in a cutscene" answer: SHCharacterStatics.IsCharacterInCutscene(pawn) (true for the whole opening
+  cutscene, false in play).
+- UEVR's VR_2DScreenMode must not be set from the engine tick (the game thread): the game died at once. Set from
+  another thread it switches both ways without trouble.
+- After a crash the Unreal crash window (CrashReportClient) keeps the plugin file locked until it is closed.
+- The OpenXR Simulator records flicker incidents by itself (its flicker_incidents folder, one folder per session,
+  incident.json says why): read those after a run before asking anyone what they saw.
