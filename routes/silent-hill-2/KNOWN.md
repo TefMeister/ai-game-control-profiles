@@ -177,3 +177,17 @@ Only game facts: no paths, machine names or people.
 - A blind key route (Enter, Down, Enter ...) can lose its first Enter on the warning screen: every later key then lands one step off and the main menu opens CREDITS instead of NEW GAME. Check the picture before each key: the warning has a white code square at the lower middle; the marked menu line has a red bar (CONTINUE first); the New Game settings page has a red START GAME bar. With the VR injector the window draws the menu in its upper two thirds, plain it fills the window.
 - New Game from the main menu: Down, Enter, then Down x4 to START GAME, Enter, about 32 s of loading, Enter at PRESS ANY BUTTON TO PLAY: the opening cutscene starts at once and runs about 3 min 40 s (first picture about 11 s in). New Game does not replace the Continue save.
 - The plain game (no injector) starts straight from its exe with SteamAppId and SteamGameId 2124490 in the environment and -windowed.
+
+## Learned 2026-11-13
+
+- James's body (CharacterMesh0): 388 bones; `head_bn` 15, `eye_r` 17, `eye_l` 22, `eye_Rt` 52, `eye_Lt` 53. Material
+  slot 10 is the eyeballs (`CH_James_Eyes`). At a cutscene's start the game builds `<that slot's material>_Animated`
+  for it natively (no Blueprint call): whatever sits in the slot then is what the cutscene's eyes are made from.
+- The cutscene signals the game sends: `CutscenePlayer.OnLevelSequencePlay`, `PlayerController.ClientSetCinematicMode`,
+  the sequence's Director BP entry point (opening: `C001_MS_Parking_Toilet`).
+- jbusfield's profile switch `fix_no_raytracing_visual_glitches` toggles ray tracing on/off every
+  `fix_visual_glitch_seconds` (10): the picture dips darker that often. Ray tracing on removes the need for it.
+- The UEVR connector's Lua cannot call functions; `uevr_batch` with `call_method` + `args` can (e.g. `GetBoneName`
+  with `BoneIndex`, `HideBoneByName`).
+- A screen-area recording (ffmpeg gdigrab with a window title) films whatever overlaps the window; record the
+  window itself (OBS window capture, or PrintWindow).
