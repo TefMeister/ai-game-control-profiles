@@ -38,3 +38,15 @@ mouse path is described upstream as unfinished.
   music volume to 0 before the mixer (seen in the log, 2026-10-15). The main menu still plays a steady
   sound at about the same level with it; that is a static background sound, not music (heard and judged
   2026-10-15), so music is fully off with this one line.
+
+## Added 2026-11-12
+
+- **The pad only reaches the game while its window is the focused one.** Presses sent to an unfocused window are
+  lost without any sign (the opening film just keeps playing). Bring the window to the front first, then press.
+- **A on any main-menu line builds every page's texts at once** (seen in the text lookups), so a text lookup alone
+  does not say which line was chosen; the last `*_TOOLTIP` text looked up is the highlighted line's hint.
+- The flashlight is pad **B**; pad X is reload.
+- From launch with a save present: START six times (about 5 s apart) reaches the main menu, A = Single Player page
+  (Continue game highlighted), A = load; about 35 s to Rock Bottom on the fast PC.
+- A normal window screenshot from outside (PrintWindow, full content) works on the game's own window and shows both
+  eyes side by side.
