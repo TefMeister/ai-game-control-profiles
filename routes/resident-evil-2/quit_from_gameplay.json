@@ -1,0 +1,51 @@
+{
+ "schema": "menu-o-matic/1",
+ "game": "resident-evil-2",
+ "window": "RESIDENT EVIL 2",
+ "route": "quit_from_gameplay",
+ "steps": [
+  {
+   "key": "insert"
+  },
+  {
+   "sleep": 1
+  },
+  {
+   "key": "esc"
+  },
+  {
+   "sleep": 2
+  },
+  {
+   "key": "down"
+  },
+  {
+   "key": "down"
+  },
+  {
+   "key": "down"
+  },
+  {
+   "key": "down"
+  },
+  {
+   "key": "enter"
+  },
+  {
+   "sleep": 2
+  },
+  {
+   "key": "up"
+  },
+  {
+   "key": "enter"
+  },
+  {
+   "sleep": 12
+  }
+ ],
+ "checkpoints": {},
+ "from": "gameplay",
+ "to": "closed",
+ "note": "2026-11-12 (Developer PC, Visceral b204 on the OpenXR Simulator): the game ignores a plain window close in play. REFramework's menu may be open at the start (Insert hides it). Esc = PAUSE (Return to Game / Load Game / Records / Options / Quit); Quit's confirm box sits partly outside the window: Enter alone = No, Up then Enter = Yes, back at the title in about 10 s; then the window close works (closed in 6 s)."
+}

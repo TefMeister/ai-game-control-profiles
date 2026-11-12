@@ -67,3 +67,14 @@ Read before the game starts; add what is learned.
   twice a second: the room-space move that puts the left hand on the magwell / slide / port. A drive reads it and moves the
   hand by exactly that (usually 1-2 steps). Never in a player build.
 - A gifted gun comes with a nearly empty magazine (W-870: 1 shell, Lightning Hawk: 1 then 7 after a top-up).
+
+
+## Menus
+
+- 2026-11-12: Gameplay to closed (2026-11-12): route quit_from_gameplay.json. A plain window close does nothing in play; Esc pause > Quit > Up + Enter (Enter alone = No; the confirm box is partly outside the window) returns to the title in ~10 s, then the window close ends the game in ~6 s. REFramework's menu may already be open at the start: Insert hides it.
+
+
+## Tool ideas
+
+- 2026-11-12: REFramework's menu is taller than the simulator-sized window and does not scroll there, so Reset scripts cannot be clicked; a small always-loaded script that reloads test scripts on a command file would save a full restart.
+- 2026-11-12: REFramework's menu is taller than the simulator-sized window and does not scroll there, so Reset scripts cannot be clicked; a small always-loaded script that reloads test scripts on a command file would save a full restart.
