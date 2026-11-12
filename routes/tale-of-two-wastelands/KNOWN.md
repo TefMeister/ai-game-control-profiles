@@ -10,14 +10,18 @@ Only game facts: no paths, machine names or people.
 ## Controls
 
 - 2026-11-10: 2026-11-10: in VR with the pretend hands (VR Bench layer, 32-bit): Y opens the pause menu, B closes it; on the main menu A presses the highlighted Continue. With Stewie's Tweaks setting bAutoContinueGame = 1 (our own override file in a desk-test mod) the newest save loads from the start menu with no press at all.
+- 2026-11-12: in VR with the pretend hands: Activate (a door, an item) is the A button on the hand that points at it, and it has to be HELD about one second; a short tap only shows the prompt. The walk stick (left, forward) and the turn stick (right) work as on a real controller.
 
 ## Save spot
+
+- 2026-11-12: the rung-1 test save stands inside Springvale Elementary School beside its double door, which is on the left (90 degrees). Pointing the right hand at it and holding A for a second loads the Capital Wasteland outside in about 10 s. The game writes an autosave on the way: put the save folder back after a run (the desk check does it by itself with --outside).
 
 ## Hazards
 
 - 2026-11-10: 2026-11-10: never name this game's window to a tool by the word 'Fallout' alone: a chat program open on a thread titled 'Fallout 3/NV VR ...' matched first, a picture of IT was taken and the quit keys were nearly typed into it (nothing was sent). The game's window belongs to FalloutNV.exe; check the program behind a window before using it. While an add-on has a box up, the game's main window is that box (title 'New Vegas Tick Fix', 'Stewie Tweaks', 'Fatal Error: Missing NVSE Plugin').
 - 2026-11-10: 2026-11-10 (later): from Lanes 0.106.2 every Menu-o-matiC / Move-o-matiC / State-o-matiC command takes --exe FalloutNV.exe (and a route file may carry "exe"); with it a window of another program is refused. Every route recorded for this game must carry it. The home PC has 0.106.2 since 2026-11-10 (after a restart of the session); not yet run against the real game.
 - 2026-11-10: 2026-11-10: the game opens its pause menu when its window is not in front (the OpenXR Simulator's window takes the front); bNoAltTabPause = 1 and bNoPipboyOnAltTab = 1 in Stewie's Tweaks stop that. Never start the next run before the last FalloutNV.exe has gone: two copies ran once and neither answered a polite close for over a minute.
+- 2026-11-12: after a polite close the game can take over a minute to go; wait until no FalloutNV.exe and no Mod Organizer is left before the next start. One start in nine today crashed 5 s in (rung 5, an error in the C runtime) and passed on the next try.
 
 ## What failed
 
@@ -26,6 +30,7 @@ Only game facts: no paths, machine names or people.
 - 2026-11-10: 2026-11-10: in the OpenXR Simulator the VR mod (TTWVR 1.0.0) shows its menus but never refreshes the 3D world: after a save loads the picture stays on the save's frame or black, and head, sticks and hands change nothing. Upscaler off, smaller eye size, game window in front, Continue by hand: no change. The headset run's log has a '[camtrack] ... the body is solved from the headset and the controllers' line that never appears in the simulator.
 - 2026-11-11: a polite 'taskkill /IM FalloutNV.exe' also sends the close message to the OpenXR Simulator's preview window (it lives in the game's process): the simulator stops the session, the VR mod logs 'the headset's session is gone' and connects again, and the game can take 40 s more to close. Measure everything before asking the game to close.
 - 2026-11-11: in the simulator the VR mod's pictures follow the head but are black in the world. Suspect: Virtual Desktop's body memory (VirtualDesktop.BodyState) exists, empty, whenever the Virtual Desktop Streamer runs, and the mod then skips its own body solver. Not yet tested with the Streamer quit.
+- 2026-11-12: the frozen 3D world of 2026-11-10 / 11 in the OpenXR Simulator is explained and stepped around. With DLSS on, the VR mod has its helper program draw each eye straight into the headset runtime's own pictures through an old-style shared handle; the simulator's pictures are plain, so the mod silently repeated the previous picture. Our own desk-test add-on makes those pictures shareable (old kind, flag 0x2; the newer kind 0x802 does not work) and also answers "no Virtual Desktop body memory", so the Virtual Desktop Streamer may keep running. With it the eye is live at 90 a second.
 
 ## Tool ideas
 
