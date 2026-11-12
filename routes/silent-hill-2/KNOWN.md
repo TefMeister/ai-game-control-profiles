@@ -171,3 +171,9 @@ Only game facts: no paths, machine names or people.
 - After a crash the Unreal crash window (CrashReportClient) keeps the plugin file locked until it is closed.
 - The OpenXR Simulator records flicker incidents by itself (its flicker_incidents folder, one folder per session,
   incident.json says why): read those after a run before asking anyone what they saw.
+
+## Learned 2026-11-12
+
+- A blind key route (Enter, Down, Enter ...) can lose its first Enter on the warning screen: every later key then lands one step off and the main menu opens CREDITS instead of NEW GAME. Check the picture before each key: the warning has a white code square at the lower middle; the marked menu line has a red bar (CONTINUE first); the New Game settings page has a red START GAME bar. With the VR injector the window draws the menu in its upper two thirds, plain it fills the window.
+- New Game from the main menu: Down, Enter, then Down x4 to START GAME, Enter, about 32 s of loading, Enter at PRESS ANY BUTTON TO PLAY: the opening cutscene starts at once and runs about 3 min 40 s (first picture about 11 s in). New Game does not replace the Continue save.
+- The plain game (no injector) starts straight from its exe with SteamAppId and SteamGameId 2124490 in the environment and -windowed.
