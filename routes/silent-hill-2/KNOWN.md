@@ -191,3 +191,19 @@ Only game facts: no paths, machine names or people.
   with `BoneIndex`, `HideBoneByName`).
 - A screen-area recording (ffmpeg gdigrab with a window title) films whatever overlaps the window; record the
   window itself (OBS window capture, or PrintWindow).
+
+## Learned 2026-11-13 (the frame warp on the real headset)
+
+- UEVR's alternate-eye frame warp (`VR_RenderingMethod` 3) must be switched on AFTER the start: started with 3 it crashes
+  on Virtual Desktop; set to 3 once the picture is up (the connector's set_vr_setting with key/value, or the mod's own
+  step from build b015) it runs. Keep 0 in config.txt.
+- Virtual Desktop writes its own OpenXR log in its ProgramData folder (`OpenXR.log`): every refused call is a line
+  `xr<Call> failed with XR_ERROR_...`. It is rewritten at every start: copy it right after a run that went wrong.
+- The connector's `uevr_exec_command quit` closes the game cleanly in about 10 s; the injector window stays and must be
+  closed too (two were found running after two runs).
+- From the Steam launch the warning screen is up after about 75 s; Enter (connector key tap) passes the warning, Enter on
+  CONTINUE, about 45 s of loading, Enter at PRESS ANY BUTTON TO PLAY. Done three times in a row with a look before each.
+- With nobody wearing the headset (lying connected through Virtual Desktop) the game keeps drawing: frame times can be
+  measured on the real headset's size without a person.
+- The plugin's heartbeat (`alive: frame N, X ms avg`) every 5 s is enough for A/B work: skip the first reading after a
+  change. Ray tracing's cost sits mostly in the reflections (`r.Lumen.Reflections.HardwareRayTracing`).
