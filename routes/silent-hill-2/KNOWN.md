@@ -207,3 +207,8 @@ Only game facts: no paths, machine names or people.
   measured on the real headset's size without a person.
 - The plugin's heartbeat (`alive: frame N, X ms avg`) every 5 s is enough for A/B work: skip the first reading after a
   change. Ray tracing's cost sits mostly in the reflections (`r.Lumen.Reflections.HardwareRayTracing`).
+- 2026-11-13: the warp's debug view (green = what it treats as moving) is the UEVR menu's "Debug Framewarp" tick or
+  Numpad 6 as a real key press (GetAsyncKeyState); beta 6 has no setting by that name to set from outside, and the
+  tint shows only in the headset, never in the desktop window.
+- 2026-11-13: the warp's moving-object settings (`VR_AFW_FixObjectMotionRange`, `...FixObjectMotionVector`) changed
+  nothing visible in this game, live or after a restart.
