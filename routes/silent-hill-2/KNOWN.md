@@ -212,3 +212,7 @@ Only game facts: no paths, machine names or people.
   tint shows only in the headset, never in the desktop window.
 - 2026-11-13: the warp's moving-object settings (`VR_AFW_FixObjectMotionRange`, `...FixObjectMotionVector`) changed
   nothing visible in this game, live or after a restart.
+- 2026-11-13 (Tefa): cutscenes are skipped by HOLDING the pad's B (Quest controller: X, which the VR layer passes to the
+  game as pad B).
+- 2026-11-13: the plugin's heartbeat says `headset off` when the Quest is asleep or Virtual Desktop is not streaming;
+  the game then runs flat and its menus take no input: wake and connect the headset before the launch.
