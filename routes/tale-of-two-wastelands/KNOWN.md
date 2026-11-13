@@ -11,10 +11,12 @@ Only game facts: no paths, machine names or people.
 
 - 2026-11-10: 2026-11-10: in VR with the pretend hands (VR Bench layer, 32-bit): Y opens the pause menu, B closes it; on the main menu A presses the highlighted Continue. With Stewie's Tweaks setting bAutoContinueGame = 1 (our own override file in a desk-test mod) the newest save loads from the start menu with no press at all.
 - 2026-11-12: in VR with the pretend hands: Activate (a door, an item) is the A button on the hand that points at it, and it has to be HELD about one second; a short tap only shows the prompt. The walk stick (left, forward) and the turn stick (right) work as on a real controller.
+- 2026-11-13: 2026-11-13: the console opens with the grave/tilde key (scancode 0x29) once a save has loaded; typed with SendInput scancodes at ~0.1 s per key it works (faster drops keys). player.moveto SpringvaleElementaryMapMarker puts the player outside Springvale school. Windows may refuse to bring the game to the front: an Alt tap first, then SetForegroundWindow (tools/console_type.py in the bridge repo).
 
 ## Save spot
 
 - 2026-11-12: the rung-1 test save stands inside Springvale Elementary School beside its double door, which is on the left (90 degrees). Pointing the right hand at it and holding A for a second loads the Capital Wasteland outside in about 10 s. The game writes an autosave on the way: put the save folder back after a run (the desk check does it by itself with --outside).
+- 2026-11-13: 2026-11-13: the auto-load (Stewie's bAutoContinueGame) takes the NEWEST save; a person's own later save then wins. Desk runs must make the test save newest for the run and put its date back (rung_simcheck --save).
 
 ## Hazards
 
@@ -22,6 +24,8 @@ Only game facts: no paths, machine names or people.
 - 2026-11-10: 2026-11-10 (later): from Lanes 0.106.2 every Menu-o-matiC / Move-o-matiC / State-o-matiC command takes --exe FalloutNV.exe (and a route file may carry "exe"); with it a window of another program is refused. Every route recorded for this game must carry it. The home PC has 0.106.2 since 2026-11-10 (after a restart of the session); not yet run against the real game.
 - 2026-11-10: 2026-11-10: the game opens its pause menu when its window is not in front (the OpenXR Simulator's window takes the front); bNoAltTabPause = 1 and bNoPipboyOnAltTab = 1 in Stewie's Tweaks stop that. Never start the next run before the last FalloutNV.exe has gone: two copies ran once and neither answered a polite close for over a minute.
 - 2026-11-12: after a polite close the game can take over a minute to go; wait until no FalloutNV.exe and no Mod Organizer is left before the next start. One start in nine today crashed 5 s in (rung 5, an error in the C runtime) and passed on the next try.
+- 2026-11-13: 2026-11-13: in an OpenXR Simulator run the simulator reads W/A/S/D/Q/E/I/J/K/L (and its own view keys) off the keyboard while the game's window is in front (input_polling 'app'): typing into the game's console moved the pretend head and changed the preview. Set input_polling to 'preview' in the simulator's settings.json (game closed) for a run that types, and back after. The simulator's preview window is in the game's own program: check the WINDOW, not only the program, before typing.
+- 2026-11-13: 2026-11-13: after a crashed start Steam's overlay starter (x64launcher.exe) can stay up with no window; Mod Organizer then never closes and the next run never starts. Only /F ends it (harmless once the game is gone).
 
 ## What failed
 
@@ -31,6 +35,7 @@ Only game facts: no paths, machine names or people.
 - 2026-11-11: a polite 'taskkill /IM FalloutNV.exe' also sends the close message to the OpenXR Simulator's preview window (it lives in the game's process): the simulator stops the session, the VR mod logs 'the headset's session is gone' and connects again, and the game can take 40 s more to close. Measure everything before asking the game to close.
 - 2026-11-11: in the simulator the VR mod's pictures follow the head but are black in the world. Suspect: Virtual Desktop's body memory (VirtualDesktop.BodyState) exists, empty, whenever the Virtual Desktop Streamer runs, and the mod then skips its own body solver. Not yet tested with the Streamer quit.
 - 2026-11-12: the frozen 3D world of 2026-11-10 / 11 in the OpenXR Simulator is explained and stepped around. With DLSS on, the VR mod has its helper program draw each eye straight into the headset runtime's own pictures through an old-style shared handle; the simulator's pictures are plain, so the mod silently repeated the previous picture. Our own desk-test add-on makes those pictures shareable (old kind, flag 0x2; the newer kind 0x802 does not work) and also answers "no Virtual Desktop body memory", so the Virtual Desktop Streamer may keep running. With it the eye is live at 90 a second.
+- 2026-11-13: 2026-11-13: TTWVR 1.0.0's command file NVVR-cmd.txt beside TTWVR.log (direct write and rename) was never taken by the running game in the simulator, n=2, though the DLL has the code.
 
 ## Tool ideas
 
