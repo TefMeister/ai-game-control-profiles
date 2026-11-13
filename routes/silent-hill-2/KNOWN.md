@@ -216,3 +216,9 @@ Only game facts: no paths, machine names or people.
   game as pad B).
 - 2026-11-13: the plugin's heartbeat says `headset off` when the Quest is asleep or Virtual Desktop is not streaming;
   the game then runs flat and its menus take no input: wake and connect the headset before the launch.
+- 2026-11-13: with the warp's debug tint on, only the frames the warp MAKES UP are tinted; a recording then shows
+  drawn and made-up frames alternating, and a run of tinted frames is the game stalling (no new frame drawn).
+- 2026-11-13: who steers James, readable with the connector: `IsCharacterInCutscene` (cutscenes, and the window vault),
+  the controller's `IsMoveInputIgnored` (load-in), the pawn's `bIsLocalViewTarget` false (memory spots, squeezes; the
+  camera on `SHCameraAnimationExecutive`), `CharacterMovement.MovementMode` 6 custom + `Traversal.CurrentlyPlayingTraversal`
+  (squeezes). `IsPlayingRootMotion` reads true while simply walking.
