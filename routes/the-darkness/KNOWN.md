@@ -154,3 +154,15 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
 
 ### Tool ideas
 - 2026-11-11: read the picture from VR Bench's own picture command instead of the preview window, to lose the black grabs.
+
+## Learned 2026-11-14 (the Quest layout, b030 on)
+
+- **B skips cutscenes** (Tefa). In the Quest layout a B tap reaches the game as the pad's B on release.
+- From b030 the VR build's menus are the plain pad: the Quest's X is the pad's X (the developer-menu doorway is the
+  LEFT hand's X, not the right B any more); in a level the Quest layout applies (see the game repo's design note).
+- **Power picks need the Darkness out and more than one power:** D-pad up / down with the Darkness out changes the
+  power icon (top left) and the heads' glow colour; early in the story there is one power and nothing changes.
+- The pause menu: START opens RESUME / CHECKPOINT RESTART / OPTIONS / ACHIEVEMENTS / QUIT TO MENU; CHECKPOINT
+  RESTART asks "Are you sure?" with NO highlighted, YES below it.
+- The journal (BACK) has INVENTORY / MAP / DARKNESS pages; the Darkness page shows the selected power.
+- The game's window grab during a VR run is the simulator's black preview; the bridge's own `shot` is the real frame.
