@@ -77,4 +77,3 @@ Read before the game starts; add what is learned.
 ## Tool ideas
 
 - 2026-11-12: REFramework's menu is taller than the simulator-sized window and does not scroll there, so Reset scripts cannot be clicked; a small always-loaded script that reloads test scripts on a command file would save a full restart.
-- 2026-11-12: REFramework's menu is taller than the simulator-sized window and does not scroll there, so Reset scripts cannot be clicked; a small always-loaded script that reloads test scripts on a command file would save a full restart.
