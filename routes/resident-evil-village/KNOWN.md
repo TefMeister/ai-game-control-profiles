@@ -263,3 +263,19 @@ this page is the short, growing list of what works, read before the game starts.
 - The Emporium can be driven from the desk: `emporium_cmd.json` takes `stick r up|down|left|right`, `stick l left|right` and `where` (the log line says the screen and the lit setting).
 - The flat window is black on a simulator run and REFramework menus cover it: for a picture use the simulator's own capture.
 - The new-gun move can be played on demand: `newgun_cmd.json` `{"cmd": "play"}`, `state`, `forget`.
+
+## 2026-11-14: Animation & Timing's first run on the simulator (the Wolfsbane)
+
+- The mod's `tools/sim/drive.sh` drove from launch into play first time (about 3 minutes, VR Bench switched on by itself).
+- **Any gun in hand by name:** write `equip ri3008` (one line) into `reframework/data/finger_rec/command.txt` (NOT under
+  `visceral_re8/`); the log says `weapon: ri3008_Inventory (M1851 Wolfsbane)`. ri3008 = the Wolfsbane.
+- The Wolfsbane's joints: `root Body Trigger Hammer Cylinder Five_Bullet00-04 Seven_Bullet00-06 Lid vfx_muzzle vfx_muzzle2`;
+  the drum is `Cylinder`. The player's left hand: `L_Hand`, `L_Palm`, `L_MiddleF1..3` on `re8vr.player`'s transform.
+- The Animation & Timing window is driven with no real mouse: buttons by `test/click.py` (BM_CLICK), its drawn sliders by
+  posting WM_LBUTTONDOWN / UP at a spot along the slider, the clip list by CB_SETCURSEL plus a CBN_SELCHANGE to its parent.
+- The whole-hand move and the drum's frame-by-frame turn show only while the left hand is docked on the OPEN drum. On the
+  simulator the drawn hands sit 40-50 cm from the pretend controllers (`gunreport: target->hand 46 cm`), and the grip
+  zones listed `drum` with no distance, so the robot could not dock there yet.
+- One right-trigger pull through VR Bench with the gun 46 cm off its controller fired nothing (no log line).
+- Tool idea: a "dock the left hand on <zone>" helper that aims the controller at the DRAWN part (read its world position,
+  turn it into room numbers), since the controller and the drawn hand are this far apart on the simulator.
