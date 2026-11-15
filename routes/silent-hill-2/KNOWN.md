@@ -231,3 +231,4 @@ Only game facts: no paths, machine names or people.
   of both eyes plus where the flat screen floats: use that one for looking.
 - The connector's `quit` console command closed the game cleanly in 9 s; no injector window was left this time.
 - New Game, START GAME and the opening cutscene did not change the save folder (checked by comparing every file).
+- 2026-11-15 (later): correction to the line above: the 0.1.1 and 0.1.2 folders inject byte-identical UEVR; the start crash is an occasional one (4 times since 11-12, 22-25 s after the start). Either folder is fine; start again after it.
