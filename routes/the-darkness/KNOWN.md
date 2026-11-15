@@ -166,3 +166,15 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
   RESTART asks "Are you sure?" with NO highlighted, YES below it.
 - The journal (BACK) has INVENTORY / MAP / DARKNESS pages; the Darkness page shows the selected power.
 - The game's window grab during a VR run is the simulator's black preview; the bridge's own `shot` is the real frame.
+
+## Learned 2026-11-15 (posing the fingers on the pretend headset)
+
+- **Bringing the hands into view:** VR Bench's input file can hold both pretend controllers anywhere in the room
+  (`vb_input.Input().mode(poses="set").hand(side, grip=pose, aim=pose)`, positions in metres with the head at 1.7 m).
+  12 cm below the eyes and 38 cm ahead puts both hands in view in a level; 6 cm below and 26 cm ahead fills the view
+  with one hand. Write the "pass" mode again before closing, so the next run starts with free controllers.
+- **The hand on the RIGHT controller is the body's bone 16** (fingers 38-52); the left controller's is bone 21 (53-67).
+- The bridge's own picture (`shot`) shows the hands; a still hand in Chinatown's subway stairs makes a clean before /
+  after pair (only ~0.5 % of the pixels around a hand change between two pictures with nothing changed).
+- A finger turn is easiest to see as all four knuckles at once: one finger at the size of a small hand in view did not
+  show clearly.
