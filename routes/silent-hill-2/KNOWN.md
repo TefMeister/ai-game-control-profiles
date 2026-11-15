@@ -222,3 +222,12 @@ Only game facts: no paths, machine names or people.
   the controller's `IsMoveInputIgnored` (load-in), the pawn's `bIsLocalViewTarget` false (memory spots, squeezes; the
   camera on `SHCameraAnimationExecutive`), `CharacterMovement.MovementMode` 6 custom + `Traversal.CurrentlyPlayingTraversal`
   (squeezes). `IsPlayingRootMotion` reads true while simply walking.
+
+## Learned 2026-11-15 (simulator, the mod's launcher)
+
+- A start from the 0.1.2 launcher folder crashed right after the injection (access violation, stack in the game and the
+  injector only); the 0.1.1 folder's start ran. Use the 0.1.1 folder until that is explained.
+- The UEVR connector's screenshot answers as text (base64); the OpenXR Simulator's own capture tool returns a picture
+  of both eyes plus where the flat screen floats: use that one for looking.
+- The connector's `quit` console command closed the game cleanly in 9 s; no injector window was left this time.
+- New Game, START GAME and the opening cutscene did not change the save folder (checked by comparing every file).
