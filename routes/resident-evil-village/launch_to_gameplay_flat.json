@@ -1,0 +1,51 @@
+{
+  "schema": "menu-o-matic/1",
+  "game": "Resident Evil Village",
+  "window": "re8.exe",
+  "route": "launch to gameplay (flat, last save)",
+  "steps": [
+    {
+      "launch": "steam://rungameid/1196590"
+    },
+    {
+      "sleep": 30.0
+    },
+    {
+      "key": "insert"
+    },
+    {
+      "key": "enter"
+    },
+    {
+      "sleep": 3.0
+    },
+    {
+      "key": "f"
+    },
+    {
+      "sleep": 2.0
+    },
+    {
+      "key": "up"
+    },
+    {
+      "sleep": 1.0
+    },
+    {
+      "key": "f"
+    },
+    {
+      "sleep": 40.0
+    },
+    {
+      "key": "f"
+    },
+    {
+      "sleep": 5.0
+    }
+  ],
+  "checkpoints": {},
+  "from": "closed",
+  "to": "gameplay",
+  "note": "Flat (no headset streaming). The window comes about 40 s after launch, then ~20 s of logos; the REFramework overlay opens at every boot (Insert closes it). Continue asks 'Load most recent saved data?' with No lit: Up, then F. Recorded 2026-11-15 on PC1."
+}

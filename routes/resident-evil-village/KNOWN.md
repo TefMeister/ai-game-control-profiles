@@ -141,6 +141,9 @@ this page is the short, growing list of what works, read before the game starts.
   hold a trigger, aim-and-fire, wait) drove this game's guns on 2026-10-24; pad steps belong in the tool itself.
 - Screen cut-outs should match at any window size (scale to the window, or compare relative positions), so a game run
   at a new size does not fall back to blind key presses.
+- (2026-11-15) Menu-o-matiC's `look` grabs the screen where the window sits, so a window on top (the Claude window)
+  is what it saves; a PrintWindow grab of the game's own window would see the game. Pad steps in routes (B / A / stick
+  flick) would let a route back out of the shop screens, where the keyboard's Cancel is the right mouse button.
 
 ## "Checking for additional content" (seen 2026-10-25)
 - A black screen with a tilted panel: "Checking for additional content. Please do not close the game or turn off the power."
@@ -279,3 +282,19 @@ this page is the short, growing list of what works, read before the game starts.
 - One right-trigger pull through VR Bench with the gun 46 cm off its controller fired nothing (no log line).
 - Tool idea: a "dock the left hand on <zone>" helper that aims the controller at the DRAWN part (read its world position,
   turn it into room numbers), since the controller and the drawn hand are this far apart on the simulator.
+
+## 2026-11-15: flat, the options shop as three Gunsmithy tabs (PC1)
+
+- **Route `launch_to_gameplay_flat.json`** (closed -> gameplay, last save, no headset streaming): launch, 30 s, Insert
+  (the overlay), Enter, F (Continue), Up, F (Yes), 40 s, F (chapter card). Recorded once and replayed 3 of 3 times.
+- **Pictures with other windows on top:** a screen grab of the window's place shows whatever covers it. PrintWindow
+  on the game's own window (flag 3, full content) gives the real game picture, flat, even when covered.
+- **In the shop screens the keyboard's Cancel is the RIGHT MOUSE BUTTON** (the hint shows a mouse). Esc and Backspace do
+  nothing there; a right click sent as a window message is ignored (the game reads the mouse raw). The virtual Xbox pad
+  works instead: B backs out (rows -> column -> cards), the left stick held about 0.15 s moves between the cards, A picks.
+  Keyboard Down / F move and choose inside the Gunsmithy.
+- After backing out of the Gunsmithy the lit card is the middle one; two pushes right from there reach "Every Setting"
+  (REFramework's full menu), which closes the shop and opens the overlay (Insert closes it).
+- The Gunsmithy's column: `lastIndex` follows the lit gun, in the column and in the rows; `currentWeaponIndex` stayed 0.
+  The column shows `MaxListRows` = 6 guns on this save; the gun's name and kind are the screen's `nameText` /
+  `categoryText`.
