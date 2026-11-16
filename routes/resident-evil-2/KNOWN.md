@@ -77,3 +77,9 @@ Read before the game starts; add what is learned.
 ## Tool ideas
 
 - 2026-11-12: REFramework's menu is taller than the simulator-sized window and does not scroll there, so Reset scripts cannot be clicked; a small always-loaded script that reloads test scripts on a command file would save a full restart.
+
+## Moving the player by script (2026-11-16)
+- `Transform.set_Position` on the player, a small step each `UpdateBehavior` frame, moves her and she stays there; the
+  game's collision stops her at walls (she slides along them). The player: `app.ropeway.PlayerManager` `get_CurrentPlayer()`.
+- `app.ropeway.HitPointController` `set_Invincible(bool)` takes and reads back.
+

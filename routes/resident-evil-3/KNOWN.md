@@ -56,3 +56,10 @@ Read before the game starts; add what is learned.
 - A gun mesh's materials and their values: `Mesh.get_MaterialNum`, `getMaterialName(i)`, `getMaterialVariableName(i, v)`,
   `setMaterialFloat4(i, v, colour)`. The MGL: material 1 is every round's, value 0 its BaseColor.
 
+## Closing from gameplay, and reading the dodge (2026-11-16)
+- `CloseMainWindow` right after SetForegroundWindow was ignored once from gameplay (simulator); restoring the window first
+  (ShowWindow 9), foreground, a 2 s wait, then `CloseMainWindow` closed it in 6 s.
+- The dodge on the simulator: VR Bench left stick pushed (0.3 s first), then the right `stick_click` (0.15 s) = a dodge that
+  way (our layout patch). The player's motion layer 0 then plays bank 0 / id 1035; `offline.HitPointController`
+  `get_TrackEmergencyDodge` is true for its first ~0.23 s.
+
