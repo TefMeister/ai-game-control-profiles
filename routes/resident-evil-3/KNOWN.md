@@ -58,7 +58,8 @@ Read before the game starts; add what is learned.
 
 ## Closing from gameplay, and reading the dodge (2026-11-16)
 - `CloseMainWindow` right after SetForegroundWindow was ignored once from gameplay (simulator); restoring the window first
-  (ShowWindow 9), foreground, a 2 s wait, then `CloseMainWindow` closed it in 6 s.
+  (ShowWindow 9), foreground, a 2 s wait, then `CloseMainWindow` closed it in 6 s. Seen twice the same day: after play on the
+  simulator the FIRST close is ignored even so, the second one works; send it twice.
 - The dodge on the simulator: VR Bench left stick pushed (0.3 s first), then the right `stick_click` (0.15 s) = a dodge that
   way (our layout patch). The player's motion layer 0 then plays bank 0 / id 1035; `offline.HitPointController`
   `get_TrackEmergencyDodge` is true for its first ~0.23 s.
