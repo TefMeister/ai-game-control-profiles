@@ -63,4 +63,6 @@ Read before the game starts; add what is learned.
 - The dodge on the simulator: VR Bench left stick pushed (0.3 s first), then the right `stick_click` (0.15 s) = a dodge that
   way (our layout patch). The player's motion layer 0 then plays bank 0 / id 1035; `offline.HitPointController`
   `get_TrackEmergencyDodge` is true for its first ~0.23 s.
-
+- The usual save starts Jill at the save typewriter: right A there opens the SAVE screen, which neither B (VR Bench) nor Esc
+  closed on the simulator (2026-11-16); a restart did. Walk back 2 s (left stick down) before testing anything on A.
+- Since b023 (our roll off) right A in open floor opens the inventory (camera type 7), as in RE2.
