@@ -65,4 +65,5 @@ Read before the game starts; add what is learned.
   `get_TrackEmergencyDodge` is true for its first ~0.23 s.
 - The usual save starts Jill at the save typewriter: right A there opens the SAVE screen, which neither B (VR Bench) nor Esc
   closed on the simulator (2026-11-16); a restart did. Walk back 2 s (left stick down) before testing anything on A.
-- Since b023 (our roll off) right A in open floor opens the inventory (camera type 7), as in RE2.
+- Backing up 2 s from the typewriter puts Jill at a WALL MAP: right A there opens the map (`openInventoryMapMode`, camera type 7).
+  Not the inventory button. X (left A, Cancel) closes it; Y (left B) opens the inventory. Since b024 A in open floor does nothing.
