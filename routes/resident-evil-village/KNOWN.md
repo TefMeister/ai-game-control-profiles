@@ -52,6 +52,13 @@ this page is the short, growing list of what works, read before the game starts.
   launch into play by itself (2026-11-08, once).
 - Numpad keys reach the game and its plugins by scancode WITHOUT the extended flag (0x4E = numpad +, 0x48 = numpad 8; with the
   flag the same codes are the arrows). Checked 2026-11-06: numpad + froze a scope frame on the simulator.
+- **A VR Bench controller held perfectly still counts as asleep (2026-11-18):** a mod that lowers sleeping controllers'
+  hands (as Visceral RE8 does after 20 unchanged frames) drops the hand to the hip during a still-pose test. Keep the pose
+  alive with a tiny wobble, rewritten every 10 ms.
+- **World rays (`via.physics.System.castRay`) (2026-11-18):** layer `Terrain` (1) hits nothing here, not even the floor
+  under the player; `Bullet` (12) and `Default` (0) do. `getContactCollidable(i)` answers with the hit's owner (walls by
+  their area name, e.g. `st10_167_MausoleumArea_Etc`; gate leaves are `Door` under the gate's object).
+- **The Duke's gate opens by itself as you walk up to it** (the game's own push, about 8 then 51 degrees): no A needed.
 - **Number keys 1-4 take out the quick-slot guns** in VR too (this save: 1 W870, 2 LEMI, 3 M1897, 4 F2). The in-headset
   quick-slot gesture (left thumb rest + right stick) cannot be done through VR Bench (no thumb-rest touch).
 - VR Bench hand poses: the gun follows the controller; a controller pitched about 35-60 degrees up holds a long gun level.
