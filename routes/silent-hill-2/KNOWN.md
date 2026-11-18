@@ -232,3 +232,20 @@ Only game facts: no paths, machine names or people.
 - The connector's `quit` console command closed the game cleanly in 9 s; no injector window was left this time.
 - New Game, START GAME and the opening cutscene did not change the save folder (checked by comparing every file).
 - 2026-11-15 (later): correction to the line above: the 0.1.1 and 0.1.2 folders inject byte-identical UEVR; the start crash is an occasional one (4 times since 11-12, 22-25 s after the start). Either folder is fine; start again after it.
+
+## Learned 2026-11-18
+
+- Continue loads the newest save by its slot file. No reflected function loads a chosen slot (the save manager shows
+  none). To start an unattended run somewhere else: with the game closed, back up the save folder, copy the wanted
+  slot file over the newest slot file, run, then put the folder back and compare it by hash.
+- A Continue save standing among enemies ends an unattended run within a minute (the character dies, the camera
+  moves several metres): check where the newest save stands before driving from it. The prison armory save is calm
+  and has every weapon.
+- The weapon manager's RequestEquipWeapon("Pistol", true) answered true in the armory but a melee weapon was in hand
+  afterwards (the plugin reported melee). Read GetEquippedWeaponName after asking; not followed up.
+- The OpenXR Simulator's pose sweep (a slow head sway) works while the game plays and makes every frame's eye place
+  different, which per-frame matching needs; switch it off before closing.
+- Hand poses sent to the simulator are taken about 35 times a second: a swung hand moves in small jumps.
+- One start in five died about 22 s in with an access violation in the game's own code (the known occasional start
+  crash with UEVR); the next start was fine. A crash reporter window stays up: close it before relaunching.
+
