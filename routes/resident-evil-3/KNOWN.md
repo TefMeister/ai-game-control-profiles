@@ -67,3 +67,23 @@ Read before the game starts; add what is learned.
   closed on the simulator (2026-11-16); a restart did. Walk back 2 s (left stick down) before testing anything on A.
 - Backing up 2 s from the typewriter puts Jill at a WALL MAP: right A there opens the map (`openInventoryMapMode`, camera type 7).
   Not the inventory button. X (left A, Cancel) closes it; Y (left B) opens the inventory. Since b024 A in open floor does nothing.
+
+## The M3's pump hold on the simulator (2026-11-19)
+- The M3 into Jill's hand: `visceral-re3-vr` `dev-archive/native/tools/sim/q_give_m3.lua` through `rv.py -f` (it walks the
+  slots, slot 4 in the usual save; ask it until it says "the M3 is in hand").
+- Step back first: at the typewriter desk a long gun held forward meets the desk, the walls feature turns the gun away
+  (the log: "the gun turned at the wrist, away from a wall") and every hand measurement is off. `tools/sim/walk.py 2`
+  (left stick back 2 s, 2.2 m) puts Jill in open floor.
+- RE2's `pump_hold.py` and `q_pump_hold.lua` work on RE3 as they are. Since b027 the M3's hold is 7 cm further forward
+  than the W-870's: left controller at (0.13, 1.29, -0.43) docks ("0.119 m from the socket"); the robot's left arm is then
+  at full stretch and the drawn wrist stops about 2.7 cm short of the hold.
+- The M3's joints from the gun's root, along the barrel: `_01` (the fore-end) 0.425 m, `_03` 0.070, `_04` 0.170, `_05` 0.216.
+- `tools/sim/pump_stroke.py`: one pump by hand (LG, then LG + LT, 9 cm back and home); the log says
+  "rack: WP1000 pump done".
+- Changing the hold's numbers (the tuning file) while the hand is docked makes the hand let go and the gun swing: move the
+  controller by the same amount.
+- Head pose for a side view of the fore-end, hand docked first: (-0.45, 1.38, -0.45), yaw -75, pitch -10 (RE2's; fine
+  here twice). (-0.5, 1.32, -0.38), yaw -90 broke the dock.
+- The window close (`wins.py <pid> via`, the window in front, 2 s wait) closed the game on the FIRST try, twice today.
+- ⚠️ `shot.py` (Village's sim tools) runs on any argument, `--help` too, and presses Insert in the game: do not call it to
+  read its usage (on the fault list).
