@@ -249,3 +249,34 @@ Only game facts: no paths, machine names or people.
 - One start in five died about 22 s in with an access violation in the game's own code (the known occasional start
   crash with UEVR); the next start was fine. A crash reporter window stays up: close it before relaunching.
 
+
+## Learned 2026-11-19 (simulator, VR Bench playing the hands)
+
+- With VR Bench switched on, the hand file left by the last run (even another game's) is still obeyed: the simulator's
+  own controller presses then never reach the game. PRESS ANY BUTTON TO PLAY does not pass (the eyes stay black, a dark
+  panel with a small white mark at its lower right), the pawn exists, and the game refuses every weapon. Take VR
+  Bench's input file away before the start (the mod repo's `toplay.sh` does), or press with VR Bench itself.
+- That prompt passes on one VR trigger pull; Enter and the connector's pad B did not pass it. Extra Enter presses while
+  it is up do nothing useful.
+- The game's own window shows only the left two thirds of the floating menu panel in VR: the main menu's CONTINUE (a
+  red bar) is visible in it, a prompt at the panel's lower right is not. The OpenXR Simulator's capture shows it all.
+- The main menu has a LOAD GAME line under NEW GAME: a way to start from a chosen save (not recorded as a route yet).
+- Weapons with VR Bench: the mod's holster spots are measured from the headset (default head 0, 1.7, 0): the right hand
+  at the right shoulder spot (0.15, 1.60, 0.10 in the room) with a 0.4 s right grip draws the shotgun; the same again
+  puts it back. A right hand resting at (0.15, 1.30, -0.20) counts as "in the right hip spot" (12 cm): never close
+  the right grip there unless a pistol draw is meant.
+- Two hands on a long gun with VR Bench: right controller level at (0.15, 1.30, -0.20), left at (0.13, 1.32, -0.58),
+  then close the left grip (the press edge starts it; the log says "TWO HANDS", 33 cm, 19 degrees off the barrel).
+- The held gun's turn against the hand is readable through the connector: the weapon actor's `Mesh` component
+  (SkeletalMeshComponent), field `RelativeRotation`; in one hand the shotgun reads pitch 0, yaw -115, roll 180.
+- The connector's web address for one value: `/api/explorer/field?address=<0x...>&fieldName=<name>`; a search:
+  `/api/explorer/search?query=<text>&limit=<n>`.
+- DLSS Balanced from the start (set in the game's settings file) runs normally with the frame warp on; `r.ScreenPercentage`
+  then reads 58 (Quality: 66.7).
+- The start crash about 20 s after the injection came 2 times in 5 starts; the injector's last log line is `Scene state
+  passed to FSceneView constructor is null`. Close the crash reporter window, start again.
+- `quit` through the connector closed the game cleanly every time (about 10 s), no injector window left.
+
+## Tool ideas
+- 2026-11-19: a recorded route for LOAD GAME (choose a save by number) would replace swapping save files.
+- 2026-11-19: VR Bench's `start` should clear the last run's hand file by itself (raised for the Keeper).
