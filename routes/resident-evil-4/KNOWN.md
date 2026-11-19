@@ -76,3 +76,4 @@ pass-through `dinput8.dll` beside the exe).
 ## What failed
 
 - 2026-11-19: Reaching the new game's first door (the lodge) by small pictures and timed walking, 2026-11-19: stuck twice by the signpost, given up after about ten moves.
+- 2026-11-19: State-o-matiC did not use the taught main_menu screen for three sessions: states.json named its window 're4.exe' while every watch asked for 'Resident Evil 4', so nothing matched. Corrected 2026-11-19 (window 'Resident Evil 4', exe 're4.exe'); a gameplay screen is still to be taught at the next launch.

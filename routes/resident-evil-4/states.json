@@ -1,7 +1,7 @@
 {
  "schema": "menu-o-matic/1",
- "game": "",
- "window": "re4.exe",
+ "game": "resident-evil-4",
+ "window": "Resident Evil 4",
  "route": "states",
  "steps": [],
  "checkpoints": {
@@ -1043,5 +1043,6 @@
    "note": "Main menu list",
    "state": "main_menu"
   }
- }
+ },
+ "exe": "re4.exe"
 }
