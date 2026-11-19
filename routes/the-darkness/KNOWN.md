@@ -178,3 +178,22 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
   after pair (only ~0.5 % of the pixels around a hand change between two pictures with nothing changed).
 - A finger turn is easiest to see as all four knuckles at once: one finger at the size of a small hand in view did not
   show clearly.
+
+## Learned 2026-11-19 (the main menu on the pretend headset, b034)
+
+- **The main menu is up when the game's command log shows `cg_rootmenu('MainMenu')`** (start with `DK_CMD_LOG=1`).
+  `dk_sim_menu.py <build folder>` (the game repo's build-scripts) starts the VR build, clears VR Bench's old hand
+  file, presses START and then A only until that line shows, and stops ON the main menu. Pressing A blindly a few
+  more times picks CONTINUE and loads the level (it did once today).
+- From b034 the main menu reads CONTINUE / NEW GAME / CHECKPOINTS / EXTRA CONTENT / OPTIONS / QUIT. The left stick
+  moves the highlight one line per push (0.25 s push, 1 s apart); A picks; B goes back and the highlight stays where
+  it was. QUIT -> stick down -> A on YES ends the game.
+- `dk_vb_press.py <a|b|x|y|menu|up|down|left|right> [seconds] [r|l]` makes one VR Bench press.
+- The game's own QUIT -> YES leaves a crash record on the way out (heap corruption, seen again today); closing by the
+  window (`dk_close.py`) leaves none. Use the window close between test runs.
+- The bridge's own picture (`shot`, half scale or less) shows the menus in the VR build; the window grab does not.
+- State-o-matiC on the game's window says "menu or loading screen" on the save notice (a little of the picture
+  moves); it has no taught screens for this game yet.
+
+### Tool ideas
+- 2026-11-19: teach State-o-matiC the main menu from the bridge's picture instead of the window grab.
