@@ -47,6 +47,9 @@ pass-through `dinput8.dll` beside the exe).
 - NEW GAME sits two rows under CONTINUE; a new game's autosaves would replace the player's own. Look before Space.
 - On a screen set to 200 % scaling a capture tool that is not told about the scaling sees only the top-left quarter
   of a fullscreen game. (Our tools: run them with `__COMPAT_LAYER=HighDpiAware` until they handle it themselves.)
+- A remote-desktop picture (RustDesk) was black after the session that ran the game fullscreen once; the PC itself was
+  fine, and reconnecting the remote desktop brought the picture back (2026-11-19, n=1; the fullscreen run as the cause
+  is a guess). The game runs windowed since.
 
 ## Tool ideas
 
