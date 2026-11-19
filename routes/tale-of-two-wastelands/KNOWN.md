@@ -15,6 +15,7 @@ Only game facts: no paths, machine names or people.
 - 2026-11-13: 2026-11-13: the console opens with the grave/tilde key (scancode 0x29) once a save has loaded; typed with SendInput scancodes at ~0.1 s per key it works (faster drops keys). player.moveto SpringvaleElementaryMapMarker puts the player outside Springvale school. Windows may refuse to bring the game to the front: an Alt tap first, then SetForegroundWindow (tools/console_type.py in the bridge repo).
 - 2026-11-19: console commands that work typed into the VR game on the simulator: `tll` hides the far land AND the far water, `tws` hides all water, `set gamehour to 4` + `set timescale to 120` runs a dawn in about two minutes (put the timescale back to 30). With the pretend head tilted up 35 degrees the upper half of the eye picture is sky.
 - 2026-11-19: flat main menu, keyboard by SendInput scancodes: Down moves the highlight (the first Down lights Continue; six Downs reach Quit) and Enter HELD about 0.12 s selects it. The quick Enter tap of 2026-11-09 was too short. Look at the highlight before Enter: New sits two rows under Continue.
+- 2026-11-19 (later): on the Load page of the flat main menu neither Esc nor Tab (SendInput scancodes) goes back, with the list's stock menu layout as well (n=1 each); the mouse on BACK does. On the Load page Enter LOADS the lit save: never press Enter after an Esc without a look (done once by mistake; the game was closed at once, nothing was saved).
 
 ## Save spot
 
@@ -32,6 +33,7 @@ Only game facts: no paths, machine names or people.
 - 2026-11-13: 2026-11-13: after a crashed start Steam's overlay starter (x64launcher.exe) can stay up with no window; Mod Organizer then never closes and the next run never starts. Only /F ends it (harmless once the game is gone).
 - 2026-11-19: the VR mod re-writes 33 graphics settings into the game every frame (water reflections, ripples and depth haze off among them), so setting them from the console or the INI does nothing.
 - 2026-11-19: the leftmost ~40 pixels of the simulator's eye picture show a stale strip of an older frame: crop it off before measuring anything.
+- 2026-11-19: the game's lists cut off whatever hangs outside their box (clipwindow): a font whose letters sit lower in the row loses the bottom of the last word. A font's two placing numbers in its .fnt (the line height at the start and each letter's 'top above the line') move a line of text up when raised.
 
 ## What failed
 
@@ -42,6 +44,7 @@ Only game facts: no paths, machine names or people.
 - 2026-11-11: in the simulator the VR mod's pictures follow the head but are black in the world. Suspect: Virtual Desktop's body memory (VirtualDesktop.BodyState) exists, empty, whenever the Virtual Desktop Streamer runs, and the mod then skips its own body solver. Not yet tested with the Streamer quit.
 - 2026-11-12: the frozen 3D world of 2026-11-10 / 11 in the OpenXR Simulator is explained and stepped around. With DLSS on, the VR mod has its helper program draw each eye straight into the headset runtime's own pictures through an old-style shared handle; the simulator's pictures are plain, so the mod silently repeated the previous picture. Our own desk-test add-on makes those pictures shareable (old kind, flag 0x2; the newer kind 0x802 does not work) and also answers "no Virtual Desktop body memory", so the Virtual Desktop Streamer may keep running. With it the eye is live at 90 a second.
 - 2026-11-13: 2026-11-13: TTWVR 1.0.0's command file NVVR-cmd.txt beside TTWVR.log (direct write and rename) was never taken by the running game in the simulator, n=2, though the DLL has the code.
+- 2026-11-19: Enter on the flat main menu worked on every fresh start with the game in front all along, and failed several times after the game's window had lost the front to another window and got it back (arrows still worked) `[hypothesis: the focus change, not tested apart]`. The polite close request is the fallback.
 
 ## Tool ideas
 
