@@ -50,6 +50,7 @@ pass-through `dinput8.dll` beside the exe).
 - A remote-desktop picture (RustDesk) was black after the session that ran the game fullscreen once; the PC itself was
   fine, and reconnecting the remote desktop brought the picture back (2026-11-19, n=1; the fullscreen run as the cause
   is a guess). The game runs windowed since.
+- 2026-11-19: The main menu is drawn about a second before it takes keys: a key sent the moment the picture matches is lost (2026-11-19, n=2: once on the way into play, once on the way out). The routes that start at the main menu now begin with a 2 s wait.
 
 ## Tool ideas
 
