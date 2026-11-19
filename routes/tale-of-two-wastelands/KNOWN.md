@@ -6,6 +6,7 @@ Only game facts: no paths, machine names or people.
 ## Menus
 
 - 2026-11-09: Main menu: Continue / New / Load / Settings / Credits / Quit on the right; TTW's own self-check shows boxes here when a requirement is missing (ShowOff, JohnnyGuitar, falloutcustom.ini).
+- 2026-11-19: the main menu's background is the file textures/interface/main/main_background.dds (1920 x 1080; a 16:9 picture is stretched sideways on a 21:9 screen) and its music is Music/Special/MainTitle.mp3; the highest mod in the list that carries each one wins. The menu overhaul (MAPMO) sets the menu music volume itself (fMainTitleMusicSound in its config), over fMainMenuMusicVolume in the INI: a silent MainTitle.mp3 is what keeps the menu quiet. Quit on the main menu closes the game at once, no question.
 
 ## Controls
 
@@ -13,6 +14,7 @@ Only game facts: no paths, machine names or people.
 - 2026-11-12: in VR with the pretend hands: Activate (a door, an item) is the A button on the hand that points at it, and it has to be HELD about one second; a short tap only shows the prompt. The walk stick (left, forward) and the turn stick (right) work as on a real controller.
 - 2026-11-13: 2026-11-13: the console opens with the grave/tilde key (scancode 0x29) once a save has loaded; typed with SendInput scancodes at ~0.1 s per key it works (faster drops keys). player.moveto SpringvaleElementaryMapMarker puts the player outside Springvale school. Windows may refuse to bring the game to the front: an Alt tap first, then SetForegroundWindow (tools/console_type.py in the bridge repo).
 - 2026-11-19: console commands that work typed into the VR game on the simulator: `tll` hides the far land AND the far water, `tws` hides all water, `set gamehour to 4` + `set timescale to 120` runs a dawn in about two minutes (put the timescale back to 30). With the pretend head tilted up 35 degrees the upper half of the eye picture is sky.
+- 2026-11-19: flat main menu, keyboard by SendInput scancodes: Down moves the highlight (the first Down lights Continue; six Downs reach Quit) and Enter HELD about 0.12 s selects it. The quick Enter tap of 2026-11-09 was too short. Look at the highlight before Enter: New sits two rows under Continue.
 
 ## Save spot
 
@@ -55,3 +57,4 @@ Only game facts: no paths, machine names or people.
 - 2026-11-19: the simulator's eye picture is only 569 pixels wide: too small to judge smear on bushes; a full-size capture would let the desk see what Tefa sees. A console tool that can READ the game's answer (e.g. the game hour) would save guessing.
 - 2026-11-19 (later): a bigger eye picture IS possible: the simulator's capture photographs its preview window, so window_width 3400, window_height 1400, zoom_scale 2.6 in its settings (game closed; put them back after) gives 1468 x 1209 per eye. A shrunken 8-bit picture shows one-level bands for any gentle fade: judge rings and noise only at full size.
 - 2026-11-19 (later still): the game's final brightness step is the shader ISHDRBLENDINSHADER (three variants); a replacement .pso in Shaders/Loose of a mod placed above the others is taken by Shader Loader, and a change there shows in the VR picture after the upscaler (a dither added there cured the sky's rings on the simulator).
+- 2026-11-19: a loudness reading of what the PC plays (silent / sounding, with the game closed first as the control) settles 'is the menu music off' without ears; State-o-matiC has no sound sign yet. A recorded 'quit from the main menu' route (six Downs, check, held Enter) is still to be made in Menu-o-matiC, whose key presses may be too short for this game.
