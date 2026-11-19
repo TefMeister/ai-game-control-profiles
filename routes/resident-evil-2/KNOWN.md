@@ -83,3 +83,22 @@ Read before the game starts; add what is learned.
   game's collision stops her at walls (she slides along them). The player: `app.ropeway.PlayerManager` `get_CurrentPlayer()`.
 - `app.ropeway.HitPointController` `set_Invincible(bool)` takes and reads back.
 
+
+## The pump shotgun on the simulator (2026-11-19)
+- The W-870 in hand whoever the save's character is: `visceral-re2-vr` `tools/sim/q_give_w870.lua` through `rv.py -f` (memory only).
+- `tools/sim/pump_hold.py <seconds>` holds it level (RG held) with the left controller on the fore-end and LG held; then
+  `rv.py -f q_pump_hold.lua` says where the drawn left hand sits in the gun's own axes (+X is the gun's LEFT, +Y up, +Z muzzle).
+- The drawn hand snaps onto the hold only when the controller is within 15 cm of it (our REFramework's limit); further out
+  the plugin still grips, with the hand left at the controller. The loader's log line says the distance
+  ("controller hand 0.180 m from the socket").
+- Moving the simulator's HEAD moves the body and breaks reach and the grab: dock first with the head at its default spot,
+  THEN move the head for a side view (head -0.45, 1.38, -0.45, yaw -75, pitch -10 shows the fore-end from the left).
+  The game's own window is black in VR (only REFramework's menu shows): pictures come from the simulator's capture.
+- The simulator's preview shrinks to 580 px and captures come out tiny: `tools/sim/sim_window.py` puts it back (no click).
+- Two programs writing VR Bench's controllers at once make one stop silently (a shared temporary file): one writer at a time.
+- A reading taken right after a relaunch can be the free hand, not the dock: check the log's "left hand: ... has it" line
+  and the loader's distance line before believing a number.
+- The quit route (`quit_from_gameplay.json`) worked twice today from play with REFramework's menu open; closed in 6 s after it.
+
+## Tool ideas
+- 2026-11-19: a `--front` that does not need Village's pid file (rv.py reads `pid.txt` from the Village tools folder).
