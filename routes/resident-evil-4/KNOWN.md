@@ -51,13 +51,27 @@ pass-through `dinput8.dll` beside the exe).
   fine, and reconnecting the remote desktop brought the picture back (2026-11-19, n=1; the fullscreen run as the cause
   is a guess). The game runs windowed since.
 - 2026-11-19: The main menu is drawn about a second before it takes keys: a key sent the moment the picture matches is lost (2026-11-19, n=2: once on the way into play, once on the way out). The routes that start at the main menu now begin with a 2 s wait.
+- 2026-11-19: From the Chapter 1 save the village gate stands open and the villagers attack within a minute of walking in; standing still there means death in about 30 s (2026-11-19). In a new game's forest the character twice walked into something by the signpost and stood still for a minute while W was held: walk that path once with Tefa and record it.
+- 2026-11-19: State-o-matiC calls ordinary play 'loading' in this game (it streams from disk at 170 to 180 MB/s while walking): do not trust that verdict here; teach a gameplay screen first (2026-11-19, n=2).
 
 ## Tool ideas
 
 - 2026-11-19: Menu-o-matiC and State-o-matiC should make themselves aware of display scaling at start.
 - 2026-11-19: a `--key KEY` for `menu_o_matic.py add`, so a key step can be put into a route without pressing it.
+- 2026-11-19: sheet.py / bright.py of the third live session (several small looks tiled into one picture, optionally brightened for dark scenes) saved many pictures: worth a 'looks --sheet' in Menu-o-matiC.
 
 
 ## Controls
 
 - 2026-11-19: In play (2026-11-19): W A S D walk, Tab opens the attache case and Tab closes it again, Esc opens the pause menu. Move-o-matiC's mouse turn may not reach the game (two pictures after a turn looked alike; not examined). A turn to the left must be written after a double dash (turn WINDOW -- -300,0), or the tool reads it as an option.
+- 2026-11-19: The mouse turn of Move-o-matiC DOES reach the game (2026-11-19, pictures before and after turn 400,0 in the lane); in the dark forest of a new game the same numbers turned the view far less (not examined). Left click swings the knife and breaks a yellow-marked crate; F picks up what falls out (Pesetas x200 from the crate under the first shed in the village, n=1). Numpad keys did nothing visible in the menus or in play (our mod uses them).
+
+
+## Menus
+
+- 2026-11-19: A cutscene: Esc pauses it and shows Tab = Skip Cutscene; Tab skips at once (n=1, the new game's opening). NEW GAME (third row under MAIN STORY) asks the game mode (ASSISTED, STANDARD, HARDCORE; the mouse pointer may sit on a row: press Up twice and look before Space), then plays the opening; after the skip Chapter 1 starts in a dark forest. YOU ARE DEAD: CONTINUE is the first row, Space reloads the last save in about 25 s.
+
+
+## What failed
+
+- 2026-11-19: Reaching the new game's first door (the lodge) by small pictures and timed walking, 2026-11-19: stuck twice by the signpost, given up after about ten moves.

@@ -2095,5 +2095,12 @@
  },
  "exe": "re4.exe",
  "from": "closed",
- "to": "main_menu"
+ "to": "main_menu",
+ "window_confirmed": {
+  "date": "2026-11-19",
+  "window": [
+   1306,
+   791
+  ]
+ }
 }

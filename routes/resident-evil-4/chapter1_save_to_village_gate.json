@@ -1,0 +1,71 @@
+{
+ "schema": "menu-o-matic/1",
+ "game": "resident-evil-4",
+ "window": "Resident Evil 4",
+ "route": "chapter1_save_to_village_gate",
+ "steps": [
+  {
+   "hold": [
+    "w"
+   ],
+   "seconds": 4.0
+  },
+  {
+   "hold": [
+    "w"
+   ],
+   "seconds": 4.0
+  },
+  {
+   "turn": [
+    -250,
+    0
+   ]
+  },
+  {
+   "hold": [
+    "w"
+   ],
+   "seconds": 3.0
+  },
+  {
+   "hold": [
+    "w"
+   ],
+   "seconds": 3.0
+  },
+  {
+   "hold": [
+    "w"
+   ],
+   "seconds": 3.0
+  },
+  {
+   "turn": [
+    300,
+    0
+   ]
+  },
+  {
+   "hold": [
+    "w"
+   ],
+   "seconds": 3.0
+  },
+  {
+   "hold": [
+    "w"
+   ],
+   "seconds": 3.0
+  },
+  {
+   "hold": [
+    "w"
+   ],
+   "seconds": 3.0
+  }
+ ],
+ "checkpoints": {},
+ "from": "gameplay",
+ "to": "village_gate"
+}
