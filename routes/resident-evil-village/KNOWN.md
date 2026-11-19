@@ -305,3 +305,16 @@ this page is the short, growing list of what works, read before the game starts.
 - The Gunsmithy's column: `lastIndex` follows the lit gun, in the column and in the rows; `currentWeaponIndex` stayed 0.
   The column shows `MaxListRows` = 6 guns on this save; the gun's name and kind are the screen's `nameText` /
   `categoryText`.
+
+## 2026-11-19 (simulator)
+- **Doors:** walking near a door starts the game's own open (a sensor 1-3 m out); a door's state is a hash of its name
+  (Closed 474011919, LittleOpened 171654102, Opened 3232296810, Push 396010129, Closing 3360157036, Locked 3401490761).
+  With our mod (b143 on) doors open only when a hand touches them or on A.
+- **Pretend controllers are in ROOM space**, not head space: to push a hand forward along the view, turn the push by the
+  simulator head's yaw (`tools/sim/hand_push.py <head yaw>`).
+- **Turning toward a target:** new head yaw = old head yaw + the walker's "deg off the view".
+- **The straight-line walker cannot reach the shaman's house door** from the Duke's gate (15 m, 3 m lower): it needs a
+  recorded route. Tool idea: record the way (gate -> steps down -> the house door) as a Move-o-matiC path.
+- The stone wall by the Duke's gate (60 deg left of the gate's approach, 1.3 m) is a good flat-enough wall for hand tests;
+  the "wall" 0.7 m from the save spot exists only on collision layer 2, not on the bullet layer the hand rays use.
+- A leftover game lock from a session that never ended blocks VR Bench's start: `clash.py status`, then `clash.py release live`.
