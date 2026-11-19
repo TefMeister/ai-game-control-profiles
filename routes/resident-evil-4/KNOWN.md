@@ -56,3 +56,8 @@ pass-through `dinput8.dll` beside the exe).
 
 - 2026-11-19: Menu-o-matiC and State-o-matiC should make themselves aware of display scaling at start.
 - 2026-11-19: a `--key KEY` for `menu_o_matic.py add`, so a key step can be put into a route without pressing it.
+
+
+## Controls
+
+- 2026-11-19: In play (2026-11-19): W A S D walk, Tab opens the attache case and Tab closes it again, Esc opens the pause menu. Move-o-matiC's mouse turn may not reach the game (two pictures after a turn looked alike; not examined). A turn to the left must be written after a double dash (turn WINDOW -- -300,0), or the tool reads it as an option.
