@@ -12,11 +12,13 @@ Only game facts: no paths, machine names or people.
 - 2026-11-10: 2026-11-10: in VR with the pretend hands (VR Bench layer, 32-bit): Y opens the pause menu, B closes it; on the main menu A presses the highlighted Continue. With Stewie's Tweaks setting bAutoContinueGame = 1 (our own override file in a desk-test mod) the newest save loads from the start menu with no press at all.
 - 2026-11-12: in VR with the pretend hands: Activate (a door, an item) is the A button on the hand that points at it, and it has to be HELD about one second; a short tap only shows the prompt. The walk stick (left, forward) and the turn stick (right) work as on a real controller.
 - 2026-11-13: 2026-11-13: the console opens with the grave/tilde key (scancode 0x29) once a save has loaded; typed with SendInput scancodes at ~0.1 s per key it works (faster drops keys). player.moveto SpringvaleElementaryMapMarker puts the player outside Springvale school. Windows may refuse to bring the game to the front: an Alt tap first, then SetForegroundWindow (tools/console_type.py in the bridge repo).
+- 2026-11-19: console commands that work typed into the VR game on the simulator: `tll` hides the far land AND the far water, `tws` hides all water, `set gamehour to 4` + `set timescale to 120` runs a dawn in about two minutes (put the timescale back to 30). With the pretend head tilted up 35 degrees the upper half of the eye picture is sky.
 
 ## Save spot
 
 - 2026-11-12: the rung-1 test save stands inside Springvale Elementary School beside its double door, which is on the left (90 degrees). Pointing the right hand at it and holding A for a second loads the Capital Wasteland outside in about 10 s. The game writes an autosave on the way: put the save folder back after a run (the desk check does it by itself with --outside).
 - 2026-11-13: 2026-11-13: the auto-load (Stewie's bAutoContinueGame) takes the NEWEST save; a person's own later save then wins. Desk runs must make the test save newest for the run and put its date back (rung_simcheck --save).
+- 2026-11-19: 'Save 4' (The Capital Wasteland, on the rock above the lake) is the look-out for picture faults: the water is at about x 150-510, y 280-360 of the simulator's 569x604 left-eye picture with the head straight. A desk run left running (`--stay`) keeps the test save's date bumped: put it back afterwards (the file's creation date is the real one).
 
 ## Hazards
 
@@ -26,6 +28,8 @@ Only game facts: no paths, machine names or people.
 - 2026-11-12: after a polite close the game can take over a minute to go; wait until no FalloutNV.exe and no Mod Organizer is left before the next start. One start in nine today crashed 5 s in (rung 5, an error in the C runtime) and passed on the next try.
 - 2026-11-13: 2026-11-13: in an OpenXR Simulator run the simulator reads W/A/S/D/Q/E/I/J/K/L (and its own view keys) off the keyboard while the game's window is in front (input_polling 'app'): typing into the game's console moved the pretend head and changed the preview. Set input_polling to 'preview' in the simulator's settings.json (game closed) for a run that types, and back after. The simulator's preview window is in the game's own program: check the WINDOW, not only the program, before typing.
 - 2026-11-13: 2026-11-13: after a crashed start Steam's overlay starter (x64launcher.exe) can stay up with no window; Mod Organizer then never closes and the next run never starts. Only /F ends it (harmless once the game is gone).
+- 2026-11-19: the VR mod re-writes 33 graphics settings into the game every frame (water reflections, ripples and depth haze off among them), so setting them from the console or the INI does nothing.
+- 2026-11-19: the leftmost ~40 pixels of the simulator's eye picture show a stale strip of an older frame: crop it off before measuring anything.
 
 ## What failed
 
@@ -48,3 +52,4 @@ Only game facts: no paths, machine names or people.
 - 2026-11-12 (Tefa): in rung 1's save the 10mm pistol's spare ammo sits on the LEFT CHEST; the pistol is probably empty, so firing needs a magazine from there first.
 - 2026-11-12 (simulator, rung 1): reload-and-fire NOT shown yet. Tried: LG at the left chest (room -0.12, 1.42, -0.06; Tefa: "LG on the left chest grabs the ammo"), the hand under the pistol and let go (4 spots), the rack with LT on the slide pulled back 7 cm (3 spots; Tefa: "LT racks it i think"), then RT: no change in the pictures above the still-to-still noise. Two blind spots: the left Pip-Boy forearm hides the left hand from the eye, and the drawn arm does not reach far-out hand positions; and a shot has no picture signal we can catch reliably. Next time: a "did it fire" signal first (the console's item count of 10mm rounds, or turn the head down so the hand is seen), then the reload spots.
 - 2026-11-12 (Tefa): the magazine goes in at the BOTTOM OF THE GRIP, like a real pistol; the slide still needs PULLING BACK (LT on it, then pull) `[reported]`.
+- 2026-11-19: the simulator's eye picture is only 569 pixels wide: too small to judge smear on bushes; a full-size capture would let the desk see what Tefa sees. A console tool that can READ the game's answer (e.g. the game hour) would save guessing.
