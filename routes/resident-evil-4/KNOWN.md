@@ -53,6 +53,7 @@ pass-through `dinput8.dll` beside the exe).
 - 2026-11-19: The main menu is drawn about a second before it takes keys: a key sent the moment the picture matches is lost (2026-11-19, n=2: once on the way into play, once on the way out). The routes that start at the main menu now begin with a 2 s wait.
 - 2026-11-19: From the Chapter 1 save the village gate stands open and the villagers attack within a minute of walking in; standing still there means death in about 30 s (2026-11-19). In a new game's forest the character twice walked into something by the signpost and stood still for a minute while W was held: walk that path once with Tefa and record it.
 - 2026-11-19: State-o-matiC calls ordinary play 'loading' in this game (it streams from disk at 170 to 180 MB/s while walking): do not trust that verdict here; teach a gameplay screen first (2026-11-19, n=2).
+- 2026-11-19: Quitting to the menu from play can land on the TITLE screen (START GAME) instead of the main menu (2026-11-19, n=1, after a pause-menu quit in the village with enemies near): gameplay_to_closed then reports 'lost' at its main_menu wait. Press Enter and carry on; the route should accept either screen.
 
 ## Tool ideas
 
