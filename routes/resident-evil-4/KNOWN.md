@@ -81,3 +81,5 @@ pass-through `dinput8.dll` beside the exe).
 
 - 2026-11-19: Reaching the new game's first door (the lodge) by small pictures and timed walking, 2026-11-19: stuck twice by the signpost, given up after about ten moves.
 - 2026-11-19: State-o-matiC did not use the taught main_menu screen for three sessions: states.json named its window 're4.exe' while every watch asked for 'Resident Evil 4', so nothing matched. Corrected 2026-11-19 (window 'Resident Evil 4', exe 're4.exe'); a gameplay screen is still to be taught at the next launch.
+- 2026-11-20: in play, by SendInput (visceral-re4-vr `tools/re4_key.py`): right mouse button held = aim, left button = fire, R = reload, a relative mouse move turns / tilts the view (10 small steps). The chapter 1 save starts with the handgun's magazine EMPTY (0/21): reload before any firing test (n=1).
+- 2026-11-20: spent casings are too small to judge in the dark leaf litter from the over-the-shoulder camera; a casing-lifetime check needs a bright, flat floor or a reading from the game's data.
