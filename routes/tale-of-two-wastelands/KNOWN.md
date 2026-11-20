@@ -23,6 +23,9 @@ Only game facts: no paths, machine names or people.
 - 2026-11-20: Save 4 does not always load to the same view in flat desk runs when someone moves the mouse during the run; with nobody touching the mouse it did, run after run (n=6). A desk check that compares pictures should find the view's shift first.
 - 2026-11-20: the idle third-person 'vanity' camera that swings round after standing still is switched off by bDisableAutoVanityMode=1 in [General] of the profile's Fallout.ini (the name is in the game program; not in Stewie's Tweaks). Checked over a 6-minute run standing still: first person throughout. `[verified-live, n=1]`
 - 2026-11-20: a clean 24-hour timelapse from one spot: console tgm, tcai, set timescale to 240 (one game day in 6 minutes), then tm (HUD off, typed last so the console is shut); afterwards tm and set timescale to 30, and do not save. A named save first (save <name>) gives the second run the same spot and hour.
+- 2026-11-20: `set timescale to 1` from the console crashes this list a few seconds later (Stewie's Tweaks' low-actor update, the same call trace twice); 240 and 30 are fine. `[verified-live, n=2]`
+- 2026-11-20: when the game crashes while console lines are being typed, keys sent with SendInput go to whatever window comes to the front: check the game is in front before EVERY key (console_type.py does since).
+- 2026-11-20: JIP script-runner files (Data/NVSE/Plugins/Scripts/ln_*.txt, every load and new game): a variable named like an existing form ('rC') stops the whole file ('Form with that Editor ID already exists', in nvse.log); an inline function in brackets is capped at 512 characters, so longer ones go in Data/NVSE/user_defined_functions/<folder>/<name>.gek and are registered with SetGameMainLoopCallback (CompileScript "<folder>\<name>.gek") 1 30 1. GetClimateTraitNumeric <climate> 0..3 gives sunrise begin/end and sunset begin/end in MINUTES (5:00 = 300).
 
 ## Save spot
 
