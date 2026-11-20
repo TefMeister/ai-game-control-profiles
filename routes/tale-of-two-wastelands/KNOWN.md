@@ -26,6 +26,7 @@ Only game facts: no paths, machine names or people.
 - 2026-11-20: `set timescale to 1` from the console crashes this list a few seconds later (Stewie's Tweaks' low-actor update, the same call trace twice); 240 and 30 are fine. `[verified-live, n=2]`
 - 2026-11-20: when the game crashes while console lines are being typed, keys sent with SendInput go to whatever window comes to the front: check the game is in front before EVERY key (console_type.py does since).
 - 2026-11-20: JIP script-runner files (Data/NVSE/Plugins/Scripts/ln_*.txt, every load and new game): a variable named like an existing form ('rC') stops the whole file ('Form with that Editor ID already exists', in nvse.log); an inline function in brackets is capped at 512 characters, so longer ones go in Data/NVSE/user_defined_functions/<folder>/<name>.gek and are registered with SetGameMainLoopCallback (CompileScript "<folder>\<name>.gek") 1 30 1. GetClimateTraitNumeric <climate> 0..3 gives sunrise begin/end and sunset begin/end in MINUTES (5:00 = 300).
+- 2026-11-20: water placement: the near water's tiles are one cell each from their own corner (local 0..4096) and are placed by WATER001.vso, the far water by WATER000.vso; a 1-pixel gap where they meet shows the lake bed as a dark line. Clip w in the water's vertex shaders is in game units but is depth straight ahead (about 0.57 of the distance at the edge of an ultrawide view).
 
 ## Save spot
 
