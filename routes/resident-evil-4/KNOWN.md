@@ -58,19 +58,22 @@ pass-through `dinput8.dll` beside the exe).
 - 2026-11-19: From the Chapter 1 save the village gate stands open and the villagers attack within a minute of walking in; standing still there means death in about 30 s (2026-11-19). In a new game's forest the character twice walked into something by the signpost and stood still for a minute while W was held: walk that path once with Tefa and record it.
 - 2026-11-19: State-o-matiC calls ordinary play 'loading' in this game (it streams from disk at 170 to 180 MB/s while walking): do not trust that verdict here; teach a gameplay screen first (2026-11-19, n=2).
 - 2026-11-19: Quitting to the menu from play can land on the TITLE screen (START GAME) instead of the main menu (2026-11-19, n=1, after a pause-menu quit in the village with enemies near): gameplay_to_closed then reports 'lost' at its main_menu wait. Press Enter and carry on; the route should accept either screen.
+- 2026-11-20: Writing game memory from OUTSIDE while the game draws (a test poke of a render setting) stopped the frame loop for good within a second (n=1); the window kept answering, so State-o-matiC says "still", not "hung". Try such a setting through our own frame step, not from outside.
+- 2026-11-20: A debugger attached in debug mode (Ghidrust) that does not really let go keeps a force-closed game alive (exit code set, process kept) until the debugger program ends. Check `CheckRemoteDebuggerPresent` before closing.
+- 2026-11-20: Our connector's pipe takes ONE client at a time: a sampler left running (or hung) makes every other ask fail with "nothing is listening". Stop it first.
 
 ## Tool ideas
 
 - 2026-11-19: Menu-o-matiC and State-o-matiC should make themselves aware of display scaling at start.
 - 2026-11-19: a `--key KEY` for `menu_o_matic.py add`, so a key step can be put into a route without pressing it.
 - 2026-11-19: sheet.py / bright.py of the third live session (several small looks tiled into one picture, optionally brightened for dark scenes) saved many pictures: worth a 'looks --sheet' in Menu-o-matiC.
-
+- 2026-11-20: visceral-re4-vr `tools/re4_sample.py` (read connector values again and again, one line per look; `where:type` prints a type name) and `tools/re4_poke.py` (a one-off outside write, prints old values): candidates for the bridge's own tools.
 
 ## Controls
 
 - 2026-11-19: In play (2026-11-19): W A S D walk, Tab opens the attache case and Tab closes it again, Esc opens the pause menu. Move-o-matiC's mouse turn may not reach the game (two pictures after a turn looked alike; not examined). A turn to the left must be written after a double dash (turn WINDOW -- -300,0), or the tool reads it as an option.
 - 2026-11-19: The mouse turn of Move-o-matiC DOES reach the game (2026-11-19, pictures before and after turn 400,0 in the lane); in the dark forest of a new game the same numbers turned the view far less (not examined). Left click swings the knife and breaks a yellow-marked crate; F picks up what falls out (Pesetas x200 from the crate under the first shed in the village, n=1). Numpad keys did nothing visible in the menus or in play (our mod uses them).
-
+- 2026-11-20: A grab on demand: from the Chapter 1 save, `chapter1_save_to_village_gate` then W held 4 s; a villager grabs Leon about 60 s later (n=1) and a second grab followed; the second killed him (YOU ARE DEAD, CONTINUE with Space reloads the save in about 25 s).
 
 ## Menus
 
