@@ -19,6 +19,10 @@ pass-through `dinput8.dll` beside the exe).
 
 - Main menu, EXIT (Up once from MAIN STORY), Space. "Close the game?" opens with **No** highlighted: Up, then Space.
   The process ends about 2 s later.
+- 2026-11-20: at 200 % display scaling Menu-o-matiC's and State-o-matiC's window pictures are the top-left quarter, so `launch_to_main_menu` gets lost at the title. Run them through a wrapper that switches display-scaling awareness on first (visceral-re4-vr `tools/mom_dpi.py`, `tools/som_dpi.py`): every route then runs through (n=3 launches).
+- 2026-11-20: taught screens in states.json: `gameplay` (Leon's back, lower left of centre: the HUD hides at rest) and `pause_menu` (its word list, left). The pause menu's blurred scene also matches gameplay's sign, so `pause_menu` must stay listed BEFORE `gameplay` (State-o-matiC takes the first match). `teach` takes the states FILE and grabs the picture itself.
+- 2026-11-20: MAIN STORY opens CONTINUE / LOAD GAME / NEW GAME / RESULTS; NEW GAME asks GAME MODE (ASSISTED / STANDARD / HARDCORE; the mouse pointer resting in the middle lights HARDCORE: Up once for STANDARD), then the opening cutscene starts at once. In a cutscene Esc pauses it (Skip Cutscene, Photo Mode, Back); a paused cutscene shows a frozen blurred frame.
+- 2026-11-20: a NEW GAME started for a test can be left without an autosave: a polite close request (taskkill without /F) from the paused opening cutscene closes the game in seconds; the save slots stayed as they were, so CONTINUE still loads the old save (n=1).
 
 ## Settings
 
