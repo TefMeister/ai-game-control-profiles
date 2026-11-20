@@ -21,6 +21,8 @@ Only game facts: no paths, machine names or people.
 - 2026-11-20: after a desk run on the OpenXR Simulator left running (--stay), switching the VR Bench hands off makes the game show 'The Xbox 360 Controller has been disconnected ... Ok'; the game does not close behind it (a polite close waited over 2 minutes). Enter (its only button) and it closes in seconds. `[verified-live, n=1]`
 - 2026-11-20: the flat game's Print Screen picture goes where SScreenShotBaseName ([Display], Fallout.ini and FalloutPrefs.ini of the profile) points; a full path with a folder works (the folder must exist). The counter iScreenShotIndex is per profile, so give each profile its own name in the base name, or two profiles overwrite each other's numbers in one folder. `[verified-live, n=1]`
 - 2026-11-20: Save 4 does not always load to the same view in flat desk runs when someone moves the mouse during the run; with nobody touching the mouse it did, run after run (n=6). A desk check that compares pictures should find the view's shift first.
+- 2026-11-20: the idle third-person 'vanity' camera that swings round after standing still is switched off by bDisableAutoVanityMode=1 in [General] of the profile's Fallout.ini (the name is in the game program; not in Stewie's Tweaks). Checked over a 6-minute run standing still: first person throughout. `[verified-live, n=1]`
+- 2026-11-20: a clean 24-hour timelapse from one spot: console tgm, tcai, set timescale to 240 (one game day in 6 minutes), then tm (HUD off, typed last so the console is shut); afterwards tm and set timescale to 30, and do not save. A named save first (save <name>) gives the second run the same spot and hour.
 
 ## Save spot
 
