@@ -277,6 +277,16 @@ Only game facts: no paths, machine names or people.
   passed to FSceneView constructor is null`. Close the crash reporter window, start again.
 - `quit` through the connector closed the game cleanly every time (about 10 s), no injector window left.
 
+## Learned 2026-11-21 (simulator, a frame-time test)
+
+- `SH2VR.exe play --sim --no-install` must be the RELEASE folder's copy (it has `uevr\` beside it). The copy in the
+  game repo's `dev-archive/launcher/build/Release/` has no `uevr\`: it says "UEVR file missing ... openxr_loader.dll"
+  and the game comes up flat with nothing injected. Close that one by its window.
+- Swap the save BEFORE the launch (`saveswap.py start 3` for the armory, game closed); `end` after the game closes.
+- The early start crash (about 10 to 25 s after UEVR loads, the injector's last line "Scene state passed to
+  FSceneView constructor is null") hit 1 of 1 starts today; it needs no input to happen. Close the crash dialog, put
+  the saves back, start again.
+
 ## Tool ideas
 - 2026-11-19: a recorded route for LOAD GAME (choose a save by number) would replace swapping save files.
 - 2026-11-19: VR Bench's `start` should clear the last run's hand file by itself (raised for the Keeper).
