@@ -36,7 +36,34 @@ Only game facts: no paths, machine names or people.
   folder written, and the session only noticed when it tried to close it. Next time: a State-o-matiC verdict right after the
   attach, and attach only once the warning screen is up.
 
+## Learned 2026-11-21 (evening, simulator, The Optimizer's first run)
+
+- Into play with the connector alone (no VR trigger, no window focus script): Enter at the warning (a press during the
+  splash before it is lost; the main menu widget `MainMenuWidget_BP_C /Engine/Transient` exists only once the warning has
+  passed, so search for it to know), `uevr_invoke_method` ContinueGame on it (`{"Movie": null, "NonSkippableLen": 0}`),
+  wait until `uevr_get_player` names `SHCharacterPlay_BP_C`, then Enter at PRESS ANY BUTTON TO PLAY: the first came a
+  moment too early, the second passed it `[verified-live 2026-11-21, n=1]`. A stray Enter in play did not open the save
+  menu (`GameplaySaveMenu_Widget_C` IsVisible stayed false) at the armory save point.
+- The connector cannot pull a VR trigger: `uevr_vr_input` only reads the controllers.
+- The console's `god` does nothing: the controller's CheatManager is null and `EnableCheats` creates none; the
+  character's bCanBeDamaged stays true `[verified-live 2026-11-21, n=1]`. No god mode for unattended runs.
+- The injector line `Scene state passed to FSceneView constructor is null` is also written in starts that do NOT crash
+  (once about 1 s after the injection, the game ran on). It is not a crash sign by itself; `[Exception Handler]` is.
+- The connector answers only once UEVR has loaded (about 10 s after the window): calls before that fail with an HTTP
+  transport failure. Wait and try again; it is not a dead connector.
+- The connector's cvar address `/api/console/cvar?name=<cvar>` and `/api/console/command` (POST `{"command": ...}`)
+  answer on port 8899. DLSS Balanced: r.ScreenPercentage reads 58.
+- Frame times under the frame warp: the game's own frame time is what an OpenXR frame meter sees (one OpenXR frame per
+  game frame; the warp makes up the other eye inside that frame, it adds no frames). The plugin's `alive: ... ms avg`
+  line agrees with such a meter within 0.1 ms `[measured 2026-11-21, n=2 runs]`. In the armory on the simulator: about
+  65 frames a second (15.4 ms), the slowest 1% at 19.8 ms, the graphics card about 60% busy.
+- UEVR's sync mode in the profile is 2 (Very Late) and the rendering method 3; the 2026-11-05 lines above saying Early
+  are out of date.
+- The occasional start crash hit again (about 9 s after the injection, a 404 ms stall just before). A crash reporter
+  window stays up afterwards and does not close on a plain close request.
+
 ## Tool ideas
+- 2026-11-21: The Optimizer (or the mod's launcher) should close a leftover crash reporter window before a relaunch.
 - 2026-11-06: State-o-matiC should treat a UEVR plugin heartbeat in the profile log as 'alive' and not call the window frozen.
 - The game can rewrite its own window setting to exclusive fullscreen 1920x1080 between launches (seen 2026-10-24,
   after the previous run was closed with the console `quit` command). Fix with the game closed, in
