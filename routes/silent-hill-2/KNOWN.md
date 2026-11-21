@@ -71,6 +71,10 @@ Only game facts: no paths, machine names or people.
 - 2026-11-21 (real headset, Tefa watching): during a run the game's own window stayed on the "compiling shaders" screen, flickering
   rapidly, while the mod's log said the character was in play in the town. Do not judge a headset run by the flat window.
 
+- 2026-11-22 (real headset, 31 menu starts): the occasional start crash came only with Window View's OpenXR layer on (8 in
+  19 starts); with that layer switched off in the OpenXR implicit-layer list, 12 of 12 starts were clean. For unattended
+  runs, start without it until it is fixed.
+
 ## Tool ideas
 - 2026-11-21: The Optimizer (or the mod's launcher) should close a leftover crash reporter window before a relaunch.
 - 2026-11-06: State-o-matiC should treat a UEVR plugin heartbeat in the profile log as 'alive' and not call the window frozen.
