@@ -62,6 +62,12 @@ Only game facts: no paths, machine names or people.
 - The occasional start crash hit again (about 9 s after the injection, a 404 ms stall just before). A crash reporter
   window stays up afterwards and does not close on a plain close request.
 
+- With the real headset (Virtual Desktop, 72 Hz), about 60 `Failed to initialize Framework on DirectX 12` lines in the
+  first second are normal; "Got first valid poses" follows 2 s later. Only lines that go on and on mean no headset.
+- Enter pressed every 10 s at the warning also presses CONTINUE on the main menu as soon as it shows: the menu widget is
+  then gone before a search finds it. Check for the pawn (`SHCharacterPlay_BP_C`) after each Enter as well
+  `[verified-live 2026-11-21, real headset, n=1]`.
+
 ## Tool ideas
 - 2026-11-21: The Optimizer (or the mod's launcher) should close a leftover crash reporter window before a relaunch.
 - 2026-11-06: State-o-matiC should treat a UEVR plugin heartbeat in the profile log as 'alive' and not call the window frozen.
