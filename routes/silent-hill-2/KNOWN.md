@@ -68,6 +68,9 @@ Only game facts: no paths, machine names or people.
   then gone before a search finds it. Check for the pawn (`SHCharacterPlay_BP_C`) after each Enter as well
   `[verified-live 2026-11-21, real headset, n=1]`.
 
+- 2026-11-21 (real headset, Tefa watching): during a run the game's own window stayed on the "compiling shaders" screen, flickering
+  rapidly, while the mod's log said the character was in play in the town. Do not judge a headset run by the flat window.
+
 ## Tool ideas
 - 2026-11-21: The Optimizer (or the mod's launcher) should close a leftover crash reporter window before a relaunch.
 - 2026-11-06: State-o-matiC should treat a UEVR plugin heartbeat in the profile log as 'alive' and not call the window frozen.
