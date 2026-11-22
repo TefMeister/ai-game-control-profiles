@@ -8,6 +8,8 @@ Only game facts: no paths, machine names or people.
 - 2026-11-09: Main menu: Continue / New / Load / Settings / Credits / Quit on the right; TTW's own self-check shows boxes here when a requirement is missing (ShowOff, JohnnyGuitar, falloutcustom.ini).
 - 2026-11-19: the main menu's background is the file textures/interface/main/main_background.dds (1920 x 1080; a 16:9 picture is stretched sideways on a 21:9 screen) and its music is Music/Special/MainTitle.mp3; the highest mod in the list that carries each one wins. The menu overhaul (MAPMO) sets the menu music volume itself (fMainTitleMusicSound in its config), over fMainMenuMusicVolume in the INI: a silent MainTitle.mp3 is what keeps the menu quiet. Quit on the main menu closes the game at once, no question.
 
+- 2026-11-22 (It Never Gets Old VR list): the main menu's words stand in ONE ROW along the bottom. Up/Down, Left and Right (Right through the list's own plugin) walk it; Enter opens the lit word. Settings > a sub-page (Controls etc.): Esc and Tab do NOT go back and the keys only walk the page's own list; BACK sits outside it. Way out: steer the game's arrow onto BACK and click (`menu_mouse_go.py <dx> <dy>` from the bottom-right corner, look, then `--click`; on 3440x1440 dx -612, dy -63 put it on BACK). Never let a click or Enter land on DEFAULTS, just above BACK: it resets the controls.
+
 ## Controls
 
 - 2026-11-10: 2026-11-10: in VR with the pretend hands (VR Bench layer, 32-bit): Y opens the pause menu, B closes it; on the main menu A presses the highlighted Continue. With Stewie's Tweaks setting bAutoContinueGame = 1 (our own override file in a desk-test mod) the newest save loads from the start menu with no press at all.
