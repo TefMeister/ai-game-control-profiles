@@ -360,3 +360,10 @@ Only game facts: no paths, machine names or people.
 - Menu-o-matiC / State-o-matiC: a "paused or a box is up" verdict for this game (the pause widget exists and is
   visible, or the picture stopped changing) before any recording test.
 - A `sim-fullsize` helper in the toolkit: window on top at full size, record N seconds, give back per-eye frames.
+
+- 2026-11-22 (late): save slots by place: 0 and 1 the town start, 2 the first encounter (the plank), 3, 4 and 6 the
+  prison gun room (every weapon), 5 the room after the garage. A launcher that swaps one slot over all the others
+  makes the other saves look gone while the game runs; they come back when it closes.
+- The traversal-stutter fix mod (a version.dll loader with a script) is installed and on; stalls of 115-170 ms still
+  come about every 80 s while running around the town (33 in 45 minutes).
+- The game shows a red edge on the picture after a hit (its hurt effect).
