@@ -72,10 +72,15 @@ Only game facts: no paths, machine names or people.
   rapidly, while the mod's log said the character was in play in the town. Do not judge a headset run by the flat window.
 
 - 2026-11-22 (real headset, 31 menu starts): the occasional start crash came only with Window View's OpenXR layer on (8 in
-  19 starts); with that layer switched off in the OpenXR implicit-layer list, 12 of 12 starts were clean. For unattended
-  runs, start without it until it is fixed.
+  19 starts); with that layer switched off in the OpenXR implicit-layer list, 12 of 12 starts were clean. **Disproved
+  2026-11-22:** with the layer off, 3 of 11 simulator menu starts still crashed (25-32 s after the launch, each after a
+  ~400-480 ms stall line and "Scene state passed to FSceneView constructor is null"). The crash follows UEVR's Ghosting
+  Fix setting (it keeps a scene state the game frees during that stall). Expect about 1 start in 4 to crash; a crash
+  leaves a CrashReportClient window per crash, close them before the next start. A clean start reaches the main menu
+  in 67-75 s on the simulator.
 
 ## Tool ideas
+- 2026-11-22: a menu-start counter (launch, Enter through the warning by the connector, stop at `MainMenuWidget_BP_C /Engine/Transient`, read the crash sign and the dump, console quit, repeat N times) was written as a one-off script; worth a `starts N` command in the mod's launcher or The Optimizer. UEVR writes a fresh log.txt per start: read it whole, not from the old size.
 - 2026-11-21: The Optimizer (or the mod's launcher) should close a leftover crash reporter window before a relaunch.
 - 2026-11-06: State-o-matiC should treat a UEVR plugin heartbeat in the profile log as 'alive' and not call the window frozen.
 - The game can rewrite its own window setting to exclusive fullscreen 1920x1080 between launches (seen 2026-10-24,
