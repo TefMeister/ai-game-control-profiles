@@ -337,3 +337,26 @@ Only game facts: no paths, machine names or people.
 ## Tool ideas
 - 2026-11-19: a recorded route for LOAD GAME (choose a save by number) would replace swapping save files.
 - 2026-11-19: VR Bench's `start` should clear the last run's hand file by itself (raised for the Keeper).
+
+## Learned 2026-11-22 (evening, simulator and real headset)
+
+- "Your controller has been disconnected" comes up on the simulator when its hands are moved far or parked low. Enter
+  hides the box and leaves the pause menu (RESUME highlighted). The pause menu did not close on Enter or on the
+  connector's pad A (the game window was not in front); calling `ReturnToGame()` on the live
+  `InGameMenuWidget_BP_C /Engine/Transient...` object closes it at once `[verified-live 2026-11-22, n=3]`.
+  A test that records the picture must check it is moving first: a batch was once measured on this paused screen.
+- Full-size pictures of what the headset gets: the simulator's own captures are 160 px wide, but its window can be
+  made 3440 x 1440 and kept on top; each eye is then 1712 x 1381 on screen and the screen can be recorded at 60 a
+  second (the mod's `dev-archive/recon/2026-11-22-hands-lines-shimmer-fog/` scripts).
+- The simulator moves a hand only 20-34 times a second (jumps of a few cm): harsher than a real hand.
+- Starts into play this evening: 7 of 7 on the simulator, 2 of 2 on the real headset, 100-116 s each.
+- The UEVR profile's config.txt holds the mod's live switches after every quit (`VR_GhostingFix=true`,
+  `VR_RenderingMethod=3`); both must be put back (false, 0) before the next start.
+- Engine values read in play: `r.NGX.DLSS.Preset` 5, `r.ScreenPercentage` 58, `r.Tonemapper.Sharpen` 0.25,
+  `r.ViewTextureMipBias.Offset` -0.3, `r.VolumetricFog.GridPixelSize` 8, `GridSizeZ` 148, `HistoryWeight` 0.9,
+  `r.Tonemapper.GrainQuantization` 1, `r.FilmGrain` 0, the eye pictures 8 bits a colour.
+
+## Tool ideas (2026-11-22)
+- Menu-o-matiC / State-o-matiC: a "paused or a box is up" verdict for this game (the pause widget exists and is
+  visible, or the picture stopped changing) before any recording test.
+- A `sim-fullsize` helper in the toolkit: window on top at full size, record N seconds, give back per-eye frames.
