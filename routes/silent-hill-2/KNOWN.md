@@ -75,7 +75,7 @@ Only game facts: no paths, machine names or people.
   19 starts); with that layer switched off in the OpenXR implicit-layer list, 12 of 12 starts were clean. **Disproved
   2026-11-22:** with the layer off, 3 of 11 simulator menu starts still crashed (25-32 s after the launch, each after a
   ~400-480 ms stall line and "Scene state passed to FSceneView constructor is null"). The crash follows UEVR's Ghosting
-  Fix setting (it keeps a scene state the game frees during that stall). Expect about 1 start in 4 to crash; a crash
+  Fix setting (it keeps a scene state the game frees during that stall). With `VR_GhostingFix=false` in the UEVR profile's config.txt: 20 of 20 clean (2026-11-22 afternoon). With it on, expect about 1 start in 4 to crash; a crash
   leaves a CrashReportClient window per crash, close them before the next start. A clean start reaches the main menu
   in 67-75 s on the simulator.
 
