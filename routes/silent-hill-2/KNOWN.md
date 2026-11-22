@@ -80,6 +80,7 @@ Only game facts: no paths, machine names or people.
   in 67-75 s on the simulator.
 
 ## Tool ideas
+- 2026-11-22 (Tefa, after a headset crash in The Optimizer's tour): **State-o-matiC should see a crash**: a verdict "crashed" when the game's window is gone or hung AND an Unreal crash reporter (`CrashReportClient.exe`) window is up, or when the profile log's last lines carry the crash sign (`[Exception Handler]`), or a new `Saved/Crashes/UECC-*` folder appeared since the launch (this game writes it under `%LOCALAPPDATA%\SilentHill2\Saved\Crashes`; in 2 of 4 crashes the handler line was never written, the folder always was). A relaunch while that reporter window is still up failed: the game did not start in 3 minutes (12:57, the tour's first retry); close the reporter first.
 - 2026-11-22: a menu-start counter (launch, Enter through the warning by the connector, stop at `MainMenuWidget_BP_C /Engine/Transient`, read the crash sign and the dump, console quit, repeat N times) was written as a one-off script; worth a `starts N` command in the mod's launcher or The Optimizer. UEVR writes a fresh log.txt per start: read it whole, not from the old size.
 - 2026-11-21: The Optimizer (or the mod's launcher) should close a leftover crash reporter window before a relaunch.
 - 2026-11-06: State-o-matiC should treat a UEVR plugin heartbeat in the profile log as 'alive' and not call the window frozen.
