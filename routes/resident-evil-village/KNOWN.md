@@ -344,3 +344,22 @@ this page is the short, growing list of what works, read before the game starts.
 - A hand held perfectly still "sleeps" (see 2026-11-18): the mod's `tools/sim/keep.py` rewrites the pose with a wobble.
 - A gun taken out by name: `equip ri3046` in `reframework/data/finger_rec/command.txt` still works; guns given by script
   arrive empty.
+
+## 2026-11-23 (afternoon): a start-up hang that is the loader's, and more robot facts
+
+- **REFramework's own start-up can deadlock: a black window that does not answer Windows.** Seen once in about ten starts
+  `[verified-live 2026-11-23, n=1]`. Signature: `re2_framework_log.txt` stops growing seconds after launch, its last lines are
+  `[Thread.cpp:42] Suspending <id>` after `Initializing WindowsMessageHook` / `Locking loader lock...`, with far fewer
+  `Resuming` lines than `Suspending` ones (62 against 17; a good start has them equal, 76 and 76), no
+  `textures have been setup`, memory about 1.3 GB instead of 4. It is before any plugin or script of ours loads. State-o-matiC
+  says `frozen` ("the window does not answer Windows"). The window's own close cannot work: end the process, start again.
+  The mod's `tools/sim/drive_real_slot.sh` checks for it and restarts once by itself.
+- The jacket hides the hands from every angle a headset lying on the desk has. For pictures (testing only) the player's body
+  mesh can be switched off, material by material (`via.render.Mesh.setMaterialsEnable(i, false)` on `pl1000`); the hands are
+  their own meshes (`pl1000HandL` / `pl1000HandR`) and stay. The mod's `tools/sim/q_sleeve.lua`.
+- The GM 79's rounds: item 1927571624 (explosive), 1583016682 (flash); a gun says its own with
+  `WeaponGunCore.getBulletItemID(Int32 index)`.
+- A gun with no kept two-handed grip spot cannot be gripped at the front by a hand that is not aiming: hold the left
+  controller where the hand should sit and write `grip keep 1` into `reframework/data/re_scope_cmd.txt`.
+- The Wolfsbane's cover takes the right hand within 10 cm of where it held the grip (bring the right controller back there,
+  RG held, rounds in it).
