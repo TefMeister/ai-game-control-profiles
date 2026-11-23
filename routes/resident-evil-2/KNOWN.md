@@ -102,3 +102,17 @@ Read before the game starts; add what is learned.
 
 ## Tool ideas
 - 2026-11-19: a `--front` that does not need Village's pid file (rv.py reads `pid.txt` from the Village tools folder).
+
+## 2026-11-23: the real headset on the desk, robot hands; a save by script
+- Two Frame Sequential (`VR_RenderingTechnique_V2=1`) with a headset streaming and nobody wearing it: the desktop window
+  repaints (pictures work). VR Bench works through the real runtime: start `re2.exe` with `SteamAppId=883710`, no
+  `XR_RUNTIME_JSON`; A, A, A reached the last save (the RPD main hall).
+- In headset mode the window's close message DOES close the game from gameplay (about 4 s).
+- **Saving by script works and the game lists it:** `app.ropeway.gamemastering.SaveDataManager`
+  `requestSaveGameData(getSaveModeFromCurrentScenarioType(), <slot>)`; `getSaveFileDetail(mode, slot)` is nil for a free slot
+  (this PC: 0 = auto, 1, 2, 4, 5, 6 used before; 7 written). About 5 s; `get_IsSaveBusy` says when it is done.
+- `InventoryManager.addAndEquipMainWeapon(WeaponType, 1, 0)` took ten guns in one go on Claire's save (Matilda 1, SLS 60 10,
+  JMB Hp3 3, M19 2, W-870 11, GM 79 42, MQ 11 21, LE 5 23, Chemical Flamethrower 43, Spark Shot 44); Quickdraw Army 4, MUP 8,
+  Broom Hc 9, ATM-4 45 and the Anti-tank Rocket 49 were not taken (with four slots free). `hasWeapon(WeaponType)` answers.
+  Then `Slot.set_BulletID` per gun (handgun 15, shotgun 16 guessed, SMG 17, magnum 18, acid rounds 22, fuel 25).
+- The item box is not an inventory in `InventoryManager.Inventories` (one entry: the player's 20 slots); not found yet.

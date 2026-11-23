@@ -87,3 +87,14 @@ Read before the game starts; add what is learned.
 - The window close (`wins.py <pid> via`, the window in front, 2 s wait) closed the game on the FIRST try, twice today.
 - ⚠️ `shot.py` (Village's sim tools) runs on any argument, `--help` too, and presses Insert in the game: do not call it to
   read its usage (on the fault list).
+
+## 2026-11-23: the real headset on the desk, robot hands; a save by script
+- As RE2: Two Frame Sequential repaints the desktop window with a headset streaming; VR Bench works through the real runtime
+  (`re3.exe`, `SteamAppId=952060`, no `XR_RUNTIME_JSON`); four presses of A reached the last save.
+- **Saving by script works and the game lists it:** `offline.gamemastering.SaveDataManager`
+  `requestSaveGameData(getSaveModeFromCurrentScenarioType(), <slot>)` (this PC: 0 = auto, 1 used before; 2 written).
+- ⚠️ **The MGL (WeaponType 42) given with ammo id 0 FREEZES the game** a few seconds later (REFramework's log then repeats
+  "Hooked DirectX 12" every 20 s, the window still "answers", the close message does nothing: the process has to be ended).
+  3 of 3. With its ammo id (`addAndEquipMainWeapon(42, 1, 35)`) it is fine.
+- Jill's save took the CQBR (21) and the Lightning Hawk (31) the plain way; types 2, 3, 4, 22, 32, 49, 50, 12, 23, 43, 44, 45
+  were not taken. Give guns one per call, a few seconds apart, and ask the game something after each.
