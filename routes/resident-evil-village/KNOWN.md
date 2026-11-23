@@ -363,3 +363,24 @@ this page is the short, growing list of what works, read before the game starts.
   controller where the hand should sit and write `grip keep 1` into `reframework/data/re_scope_cmd.txt`.
 - The Wolfsbane's cover takes the right hand within 10 cm of where it held the grip (bring the right controller back there,
   RG held, rounds in it).
+
+## 2026-11-23 (evening): the desk headset asleep, the options window over the title, the save list's cursor
+
+- **A launch with the headset not streaming comes up flat** (the loader's log: `Could not create openxr system:
+  XR_ERROR_FORM_FACTOR_UNAVAILABLE`; `vrmod:is_hmd_active()` false; the robot's stick and buttons do nothing). The mod's
+  `tools/sim/headset_up.py [wait seconds]` asks the PC's OpenXR runtime for a headset with no game running (UP / DOWN);
+  `drive_real_slot.sh` asks it first. The headset lying on the desk dropped out once after the game before had closed and
+  was back by itself two minutes later.
+- **Started flat, the Visceral options window (the Emporium) stands open over the title and keeps REFramework's overlay
+  open**: Insert does not close it (five presses, `reframework:is_drawing_ui()` stayed true). `{"cmd": "close"}` in
+  `reframework/data/visceral_re8/emporium_cmd.json` closes it; then one Insert closes the overlay.
+- **Load Game list: the 30 ms stick steps do not all land** (6 sent: 2 landed, another launch 3). Always look at the slot
+  picture; step the rest and look again. Slot 6 is the row dated 2026-11-23, "Village - Altar".
+- Tool idea (2026-11-23): the save-list step should ask the game which row is lit and step until it is the wanted one,
+  instead of counting stick flicks.
+- A picture of the gun hand from its OUTER side cannot tell a fist from a flat hand (the first finger bones point along the
+  grip either way): the mod's `tools/sim/q_late.lua` gives how closed each hand is as drawn (cm, wrist to the middle
+  finger's last joint: about 11.8 a fist, 16 flat), read after every writer of the frame.
+- `tools/sim/landtest.py <ri id> [long] [toward=0.3]`: does LG at each grip zone's middle (from three sides, and part-way
+  toward the neighbouring zone) give that part. The robot's placement is about 3 cm loose: judge by the mod's own
+  `LG pressed ... the hand X m from it` lines.
