@@ -318,3 +318,29 @@ this page is the short, growing list of what works, read before the game starts.
 - The stone wall by the Duke's gate (60 deg left of the gate's approach, 1.3 m) is a good flat-enough wall for hand tests;
   the "wall" 0.7 m from the save spot exists only on collision layer 2, not on the bullet layer the hand rays use.
 - A leftover game lock from a session that never ended blocks VR Bench's start: `clash.py status`, then `clash.py release live`.
+
+## 2026-11-23: the real headset lying on the desk, robot hands (no simulator)
+
+- **The desktop window repaints in headset mode on Two Frame Sequential** (`VR_RenderingTechnique_V2=1`); on Single Frame
+  Multipass it stays frozen. So with a headset streaming and nobody wearing it, pictures of the game window work.
+- VR Bench's hands, buttons and sticks work through the real runtime too: switch the layer on, start `re8.exe` with
+  `SteamAppId=1196590` and no `XR_RUNTIME_JSON`. Its room numbers are the same space as REFramework's `vrmod:get_transform`,
+  and the drawn hands sit on the controllers (on the simulator they were 40-50 cm off).
+- The mod's `tools/sim/drive_real.sh` drives from launch into play (A, A, left stick up, A, 32 s, A); wait until the title
+  really shows before the first A (a picture's brightness): an early press once ended in a new game's black intro.
+- **Menu rows by robot stick: push for 30 ms.** A 0.1 s push moved two rows on the main menu (Continue -> New Game).
+  The mod's `tools/sim/flick.py <up|down> [n]` does one row per flick.
+- Main menu rows from the top: New Game, Load Game, Continue. Load Game: flick to it, A, the list ("Traveler Records":
+  Auto Save, then slots 1..), flick down to the slot, A, "Load selected saved data?" Yes is lit, A, about 35 s, A.
+- "Continue" loads the autosave, not the newest slot.
+- A save loaded from a typewriter save starts at that typewriter with the Save prompt up: A opens the slot list (the cursor
+  started three rows below where it was expected: look before choosing), A on a slot saves at once.
+- VR Bench's B did not back out of the New Game difficulty screen; closing the window from there confirmed nothing.
+- **Saving by script does not make a save the game lists:** `app.SaveLoadManager` `StartSave(Object, type, slot, false,
+  false)` (type = `app.SaveLoadType.GameSlotHash`) + `SaveAppSlotPrepare()` + `SaveAppSlotRequest()` writes
+  `data00NSlot.bin`, but the list shows NO DATA for it (the slot's header is missing). Use a typewriter.
+- The headset cannot look down, so the arm hides the hand in most holds. A gun held across the view at 0.3 m shows its
+  side; rolled 70 degrees it shows the grip from below with the left palm under it.
+- A hand held perfectly still "sleeps" (see 2026-11-18): the mod's `tools/sim/keep.py` rewrites the pose with a wobble.
+- A gun taken out by name: `equip ri3046` in `reframework/data/finger_rec/command.txt` still works; guns given by script
+  arrive empty.
