@@ -384,3 +384,13 @@ this page is the short, growing list of what works, read before the game starts.
 - `tools/sim/landtest.py <ri id> [long] [toward=0.3]`: does LG at each grip zone's middle (from three sides, and part-way
   toward the neighbouring zone) give that part. The robot's placement is about 3 cm loose: judge by the mod's own
   `LG pressed ... the hand X m from it` lines.
+
+## 2026-11-23 (late evening): the save list's steps, the gun's trigger part, the frame rate while driven
+
+- **Load Game list: 2 s between the 30 ms stick steps lands every step** (three of three, twice); 0.4-1.2 s between them
+  landed one of three or four.
+- Every gun has a `Trigger` joint (its pivot; the blade hangs below it): a right index finger can be measured against it
+  (the mod's `tools/sim/trigfit.py`).
+- While a robot drives the game through the desk headset (VR Bench, many live questions a second) it runs at about
+  10 frames a second, about 30 at rest: anything timed in seconds (a finger ease) cannot be judged for smoothness then.
+- Lua's `os.clock()` in REFramework on Windows is wall time since the process started (the C runtime's clock), not CPU time.
