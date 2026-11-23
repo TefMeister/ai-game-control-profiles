@@ -116,3 +116,12 @@ Read before the game starts; add what is learned.
   Broom Hc 9, ATM-4 45 and the Anti-tank Rocket 49 were not taken (with four slots free). `hasWeapon(WeaponType)` answers.
   Then `Slot.set_BulletID` per gun (handgun 15, shotgun 16 guessed, SMG 17, magnum 18, acid rounds 22, fuel 25).
 - The item box is not an inventory in `InventoryManager.Inventories` (one entry: the player's 20 slots); not found yet.
+- 2026-11-23 (afternoon): a gun is put in the hand by script with `Inventory.equipMainSlot(app.ropeway.inventory.Slot)` (the
+  slot object from `InventoryManager.<CurrentInventory>._Slots`); it changes about 3 s later, the window in front.
+  `equipSlot(Int32)` is accepted and does nothing. `addItemCount(app.ropeway.gamemastering.Item.ID, Int32)` with 16 gave
+  shotgun shells. The mod's log tag is `[visceral-native]`; it names the gun (`weapon: WP0000 Matilda`), the left hand's owner
+  (`left hand: the slide / fore-end has it`), every magazine state and each rack (`rack: WP0000 slide done`).
+- The gun's joints by Lua: `_00` the root (the magazine well is 0 to 3 cm from it), `_01` the slide or fore-end (`_02` on the
+  LE 5), `_04` the magazine (it travels with a magazine that is out). The robot tools for it are in visceral-re8-vr
+  `dev-archive/native/tools/sim/` (`re_go.py`, `re_seek.py`, `re_pistol.sh`), used with `RV_GAME_DIR`.
+- The window's own close closed the game from play in under 10 s again.
