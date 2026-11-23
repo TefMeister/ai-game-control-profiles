@@ -98,3 +98,13 @@ Read before the game starts; add what is learned.
   3 of 3. With its ammo id (`addAndEquipMainWeapon(42, 1, 35)`) it is fine.
 - Jill's save took the CQBR (21) and the Lightning Hawk (31) the plain way; types 2, 3, 4, 22, 32, 49, 50, 12, 23, 43, 44, 45
   were not taken. Give guns one per call, a few seconds apart, and ask the game something after each.
+
+## 2026-11-23 (afternoon): the desk headset, robot hands
+- **Three presses of A reach play on the all-weapons save (slot 2); a fourth opens the typewriter's save list** (the save
+  stands at the Sewer Manager's Office typewriter), with "Overwrite saved data" under the lit slot: do not press A there.
+  VR Bench's B did not leave the list; the keyboard's Escape did. Look at a picture after the third press.
+- A gun is put in the hand by script as in RE2: `Inventory.equipMainSlot(<namespace>.inventory.Slot)` (types seen in the
+  save: 1 G19, 21 CQBR, 11 M3, 31 Lightning Hawk, 42 MGL, 47 the knife). `addItemCount(<namespace>.gamemastering.Item.ID,
+  Int32)` with 37 gave explosive rounds for the MGL.
+- The MGL's joints: `_02` the drum (LG + LT there opens it), `_06` to `_11` the chambers.
+- The window's own close closed the game from play in under 10 s.
