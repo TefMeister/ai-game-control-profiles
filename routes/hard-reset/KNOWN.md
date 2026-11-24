@@ -42,6 +42,7 @@ Only game facts: no paths, machine names or people.
 
 - 2026-10-17: Keys typed for the console while the game had lost focus landed in the pause menu instead and opened the Load game panel, which has a Delete button. Escape backed out; nothing was deleted. Make sure the game is in front before typing, or use a mod that keeps it active.
 - 2026-10-17: Sending the window a close message (WM_CLOSE) removes the window but leaves the game running with no window, so only a force-close ends it. Quit through the console instead.
+- 2026-11-24: An admin window in front (Task Manager) blocks every synthetic click and cursor move (SetCursorPos fails): the game must be in front, or the window under the click must not be an admin one.
 
 ## What failed
 
