@@ -16,6 +16,8 @@ Only game facts: no paths, machine names or people.
 
 ## Controls
 
+- 2026-11-24: Window: the game rewrites r_win_width / r_win_height from r_fullscreen_modes at start; set r_fullscreen_modes "1280x720" too (game closed) or it comes back at 1920x1080.
+
 - 2026-10-23: With the Hard Reset VR add-on's d3d9_bridge.txt on, the game answers MCP Game Bridge over a named pipe: keys, mouse, console lines, in-game pictures (both eyes) and its log, with another window in front (121 frames in 2 s behind Notepad, keys still taken).
 - 2026-10-17: Music volume: `s_sound_musicvolume "0"` in the profile's config.cfg (written while the game is closed). Sound effects: `s_sound_volume`.
 - 2026-10-17: Window: `r_fullscreen "0"`, `r_win_pos_x/y`, 1280x720 client, measured windowed.
@@ -29,6 +31,8 @@ Only game facts: no paths, machine names or people.
 
 ## Hazards
 
+- 2026-11-24: An administrator window in front (Task Manager) blocks every synthetic click and cursor move: SetCursorPos fails. The game must be in front, or the window under the click must not be an administrator one.
+
 - 2026-10-17: The game pauses whenever its window loses focus.
 - 2026-10-17: With a mod that steers the mouse (aiming by the controller) switched on, the menus cannot be clicked: the cursor is moved away 100+ times a second. Switch such aiming on only once in play. (Fixed later the same day in the Hard Reset VR mod: its aim goes quiet when the camera stops answering and puts the pointer back.)
 - 2026-10-17: When the window loses focus the game opens its pause menu (Escape closes it).
@@ -40,6 +44,8 @@ Only game facts: no paths, machine names or people.
 - 2026-10-17: Sending the window a close message (WM_CLOSE) removes the window but leaves the game running with no window, so only a force-close ends it. Quit through the console instead.
 
 ## What failed
+
+- 2026-11-24: Main-menu clicks did nothing while the mod's controller aim (d3d9_aim.txt) was on, again (the 10-17 "aim goes quiet in menus" fix did not hold on this build). The bridge command `switch aim off`, then the click, worked first time; turn it back on once in play.
 
 - 2026-10-17: Clicking "Resume game" while the controller aim was steering the mouse: no effect, many times.
 - 2026-10-17: Clicking "Resume game" right after the main menu appeared: no effect; the same click a few seconds later worked.
