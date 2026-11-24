@@ -4,6 +4,9 @@ Read this before launching. Full detail with confidence tags: `profiles/mad-max.
 
 ## Getting to gameplay
 
+- 2026-11-24: **Window by command line** (the exe's own help text): `MadMax.exe /windowed /widthW=1280 /heightW=720 /motionblur=0` gave a 1280x720 client window, measured. Without a settings.ini the game starts fullscreen at the desktop size. Other switches: /fullscreen /borderless /width= /height= /posteffects=b /heathaze=b /ssao=b /fxaa=b /edgefade=b.
+- 2026-11-24: settings.ini keys are boost ini paths: [Display] Fullscreen WindowedWidth WindowedHeight; [Audio] Music SFX Dialog Cutscenes; [Graphics] MotionBlur HQDof Heathaze PostEffects SSAO. A main-menu click on SETTINGS did nothing; Down x3 (verify SETTINGS highlighted) then Enter worked; inside Settings the keys stopped landing after a few presses.
+
 1. Launch through Steam. The window appears after ~5-20 s; the legal screen (logos, spinner) runs ~50-80 s.
 2. **Screenshot before pressing anything at the title.** A press during a slow legal screen is swallowed.
    Title reads PRESS ANY BUTTON: Enter.
