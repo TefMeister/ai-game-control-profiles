@@ -452,3 +452,9 @@ So the person can keep using the PC while a session drives the game. All of this
   moving = 1,100-3,700 pixels changed, frozen = 0-411. REFramework's start-up freeze struck about 1 launch in 6 that evening; the
   test ends a hung game and tries once more. The kept pretend pad (`bgpadd.py serve` / `send`) avoids Steam's "Controller
   Connected" pop-up and the Windows device sound on every press.
+
+## The prologue (2026-11-26, a new game, played in VR)
+
+- A new game opens on a storybook scene, then control starts with Ethan already carrying Rose. Walking is slow while he carries her.
+- On the stairs a short scene plays by itself (he pats her). The carry ends at the crib upstairs: put her down, a short scene, then walking is faster.
+- After a fresh install the game shows its Initial Settings first, and the music is at its default volume again (the mute lived in the system save).
