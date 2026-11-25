@@ -197,3 +197,15 @@ Read this before launching. The game reads only an Xbox pad; keyboard and mouse 
 
 ### Tool ideas
 - 2026-11-19: teach State-o-matiC the main menu from the bridge's picture instead of the window grab.
+
+## 2026-11-25: launched and driven OFF the screen, the person's window kept in front (flat, PC1, build b034)
+
+`[verified-live 2026-11-25, n=1 run]`: a pretend Xbox pad (ViGEm) plugged in BEFORE the start and kept for the whole run
+(the game pauses when its pad disappears), a watcher started before the program that moved its window past the left
+edge of all screens 4 s after the start (SetWindowPos, no activate, not minimized) and handed the front back to the
+person's window every time the game took it (at 4 s, 65 s and 66 s: three times in this run). Off-screen it keeps
+drawing; PrintWindow (PW_RENDERFULLCONTENT) gives the real picture (1280x720). START (the first press, before PRESS
+START showed, was lost) > A on the save notice > A on CONTINUE > the opening car ride. In the car ride the right stick
+did not turn the view, also not in a control with the game window given the focus for 2 s: that ride does not take the
+look on the flat build, so it says nothing about input from behind. Walking in a level from behind is still to be
+checked. The window close (WM_CLOSE by message) ended it within 1 s.
