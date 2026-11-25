@@ -43,7 +43,9 @@ this page is the short, growing list of what works, read before the game starts.
 - **Full drive on the simulator, nobody at the PC (2026-11-01, worked):** switch the VR Bench layer on for re8.exe; launch; wait
   about 30 s past "d3d12 textures have been setup"; A (title), A (Continue), LEFT STICK UP (keyboard Up only sometimes
   works), A (Yes), wait about 28 s, A (chapter card). VR Bench writes the A button and the sticks.
-- **The game pauses whenever its window is not in front**: bring it forward before every press or screenshot.
+- ~~**The game pauses whenever its window is not in front**~~ **Flat: disproved 2026-11-25** (see "Driving it from behind
+  other windows" below): it was the keyboard presses that needed the window in front, not the game. On the simulator not
+  re-checked yet.
 - **REFramework's overlay on the simulator acts where the REAL mouse pointer is** (2026-11-08): clicks sent by message to a spot
   in the window toggled whatever row the pointer happened to sit on, and the `reset-scripts` route reloaded nothing. The desktop
   picture of the overlay can also lag behind. A new autorun script is loaded by restarting the game instead (about 2 minutes
@@ -394,3 +396,23 @@ this page is the short, growing list of what works, read before the game starts.
 - While a robot drives the game through the desk headset (VR Bench, many live questions a second) it runs at about
   10 frames a second, about 30 at rest: anything timed in seconds (a finger ease) cannot be judged for smoothness then.
 - Lua's `os.clock()` in REFramework on Windows is wall time since the process started (the C runtime's clock), not CPU time.
+
+## 2026-11-25: driving it from behind other windows (flat, PC1)
+
+So the person can keep using the PC while a session drives the game. All of this with the game window NOT in front
+`[verified-live 2026-11-25, n=3]`, flat (no OpenXR runtime):
+- **Launched, the game did not take the front**: the window the person was using stayed in front.
+- **It keeps running behind**: frames kept coming (about 160 a second), and the player walked 2.6 m in 2 s on a pretend
+  Xbox pad (ViGEm) with `via.Application.get_Active()` reading **false** the whole time. Forcing `set_Active(true)` before
+  every application entry made no difference (it is reset to false at once otherwise). The one walk that moved 0 m was
+  straight after the chapter card, when the controls are still locked.
+- **The pretend pad works from behind for everything**: title (A), main menu (Up / Down, A), "Load most recent saved
+  data?" (Up = Yes, A), chapter card (A), walking (left stick).
+- **REFramework's overlay closes with Insert sent as window messages** (WM_KEYDOWN / WM_KEYUP to the `via` window), no
+  real key, no focus.
+- **Pictures from behind**: PrintWindow with PW_CLIENTONLY | PW_RENDERFULLCONTENT on the `via` window gives the real game
+  picture while other windows cover it (not when minimized).
+- The Lua eval files answer from behind too.
+- Not checked yet: VR or the OpenXR Simulator (VR Bench poses were seen doing nothing behind other windows on 2026-11-11,
+  which may be the OpenXR session losing focus rather than the game); keyboard keys sent as messages for the game itself
+  (quick slots, the numpad hotkeys); the pad's d-pad quick slots from behind.
