@@ -416,3 +416,19 @@ So the person can keep using the PC while a session drives the game. All of this
 - Not checked yet: VR or the OpenXR Simulator (VR Bench poses were seen doing nothing behind other windows on 2026-11-11,
   which may be the OpenXR session losing focus rather than the game); keyboard keys sent as messages for the game itself
   (quick slots, the numpad hotkeys); the pad's d-pad quick slots from behind.
+- **Second run, launch to play fully from behind (2026-11-25 17:08, /lm, flat)** `[verified-live 2026-11-25, n=2 with the
+  first day]`: the window watcher (`bgaway.py watch re8.exe`, started before the launch) moved the window off the screen
+  3.7 s after start; REFramework's overlay closed by Insert sent as window messages (`bgkey.py <pid> insert`, in
+  visceral-re8-vr's tools/sim); then the pretend pad only: A (title), A (Continue, checked lit first), Up (Yes, checked lit),
+  A, about 40 s, A (chapter card). Nothing came to the front.
+- **Objects we make at run time** (`via.GameObject.create` + `createComponent(via.render.Mesh)`): `setMesh` and
+  `set_Material` take the HOLDER (`sdk.create_resource(kind, path):add_ref():create_holder(kind .. "Holder")`), not the
+  resource; a bare resource is refused. A material file's first load takes some seconds and the mesh shows the engine's
+  dark checker pattern until it is in. On the title screen the guns' textures (and even the GM 79's own mesh from the pak)
+  never became ready: test such objects in play.
+- **Item ids are the name hash of short names** (murmur3_32, UTF-16LE, seed 0xFFFFFFFF): the ammo is `ri20xx`
+  (ri2010 1179972000 handgun ammo, ri2042 1927571624 the GM 79's explosive round, ri2020, ri2040, ri2041, ri2043, ri2050);
+  the GM 79 is ri3023 (2576167331). A gun's spec lists the rounds it takes: inventory item
+  `<spec>k__BackingField.Weapon.IncludableItems` (the GM 79: 1927571624 explosive, 1583016682 flash). The inventory is
+  `app.InventoryManager` -> `get_activeInventory()` -> `<items>k__BackingField` (each `<work>k__BackingField`: ItemID,
+  StackSize, IncludeItemID = what the gun is loaded with). The REFramework connector's inventory call fails on this game.
