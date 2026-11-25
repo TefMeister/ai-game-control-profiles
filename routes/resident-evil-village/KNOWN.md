@@ -447,3 +447,8 @@ So the person can keep using the PC while a session drives the game. All of this
   right): 0.7 for 0.6 s turned about 90 degrees left in Duke's shop.
 - **Duke's shop on the lift, Heisenberg's Factory**: the player starts facing the shop; Duke is about 2 m to the left; the lift's
   way out is to the right, about 4 m (Tefa).
+- **The lift test (2026-11-25)**: visceral-re8-vr `tools/sim/lifttest.sh` launches the game flat on screen, loads the newest save
+  (only while it is the lift save, slot 11: Duke's shop in Heisenberg's Factory), and compares Duke's part of the frame over 6 s:
+  moving = 1,100-3,700 pixels changed, frozen = 0-411. REFramework's start-up freeze struck about 1 launch in 6 that evening; the
+  test ends a hung game and tries once more. The kept pretend pad (`bgpadd.py serve` / `send`) avoids Steam's "Controller
+  Connected" pop-up and the Windows device sound on every press.
