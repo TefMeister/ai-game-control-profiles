@@ -8,7 +8,8 @@ Read before the game starts; add what is learned.
 - Start it by its exe with `XR_RUNTIME_JSON` pointed at the simulator's json and `SteamAppId=883710`.
 - VR Bench gives the controller buttons. To gameplay: A (title "START GAME"), A ("Story"), A ("Continue"): straight into
   the last save, no "load?" question. About 10 s from the title.
-- The game pauses whenever its window is not in front (as Village): bring it forward before each press or screenshot.
+- ~~The game pauses whenever its window is not in front (as Village)~~ **Flat: disproved 2026-11-25**, see "Driving it from
+  behind other windows" below. Simulator / VR not re-checked.
 - Visceral RE2's holster spots are measured from the head: on the simulator (head at 0, 1.7, 0, facing -Z) the right
   hip is at (0.20, 1.08, -0.02), left hip (-0.20, 1.08, -0.02), right shoulder (0.28, 1.48, 0.08), left shoulder
   (-0.28, 1.48, 0.08), room metres. The right hand there + RG takes that slot's gun out, or puts it away if it is the
@@ -125,3 +126,12 @@ Read before the game starts; add what is learned.
   LE 5), `_04` the magazine (it travels with a magazine that is out). The robot tools for it are in visceral-re8-vr
   `dev-archive/native/tools/sim/` (`re_go.py`, `re_seek.py`, `re_pistol.sh`), used with `RV_GAME_DIR`.
 - The window's own close closed the game from play in under 10 s again.
+
+## 2026-11-25: driving it from behind other windows (flat, PC1)
+
+The whole run with the game window NOT in front, the person's window kept in front `[verified-live 2026-11-25, n=1 run]`:
+started (it did not take the front), REFramework's menu closed by Insert sent as window messages, pretend Xbox pad
+(ViGEm) A (title) > A (Story) > A (Continue) into play in about 3 s, the player walked 2.3 m forward and 1.9 m back
+on the left stick, pause by Start, Quit = Down x4 then A, the "Quit the game?" box has No highlighted: Up, A; back at
+the title the window close ended the game. Pictures from behind with PrintWindow (PW_RENDERFULLCONTENT). The Lua eval
+files answer from behind. The window came up 1920x1080 on this flat start.
