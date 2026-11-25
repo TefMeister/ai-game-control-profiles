@@ -432,3 +432,18 @@ So the person can keep using the PC while a session drives the game. All of this
   `<spec>k__BackingField.Weapon.IncludableItems` (the GM 79: 1927571624 explosive, 1583016682 flash). The inventory is
   `app.InventoryManager` -> `get_activeInventory()` -> `<items>k__BackingField` (each `<work>k__BackingField`: ItemID,
   StackSize, IncludeItemID = what the gun is loaded with). The REFramework connector's inventory call fails on this game.
+- **On screen, not off it (2026-11-25, Tefa: "i do prefer if you have the games running on the screen, so i can see what you are
+  doing, i just need to be able to use the pc at the same time")**: launch with `bgaway.py watch re8.exe <secs> --on-screen`
+  (the window stays where it is; the front goes back to the person's window whenever the game takes it). Stop the watcher before
+  the person launches the game themselves (it would take the front from their own run).
+- **REFramework's start-up deadlock happened on a flat launch (2026-11-25 18:12)**: the log stops on `Suspending` lines (54
+  against 17 `Resuming`), no picture, the window answers nothing; tools that touch the window then hang too (bgaway.py now
+  moves windows asynchronously). Only ending the process gets out; the next launch was clean (81 / 81).
+- **Putting a gun in hand from the eval script**: `rawget(_G, "__re8_holster_equip_item")(itemCore, "why")`, the ItemCore from
+  `app.InventoryManager` -> `get_activeInventory()` -> `<items>k__BackingField`. The held gun in flat: the player's
+  `app.PlayerUpdaterFPS` -> `get_playerGun()` -> `get_equipWeaponObject()` (`re8vr.weapon` is empty without the headset). In
+  Duke's area the game keeps guns away: one equipped there comes out as the player steps out.
+- **Turning the camera from behind**: the pretend pad's right stick (visceral-re8-vr tools/sim `bgturn.py`-style, x -1 left .. 1
+  right): 0.7 for 0.6 s turned about 90 degrees left in Duke's shop.
+- **Duke's shop on the lift, Heisenberg's Factory**: the player starts facing the shop; Duke is about 2 m to the left; the lift's
+  way out is to the right, about 4 m (Tefa).
