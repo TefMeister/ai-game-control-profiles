@@ -78,3 +78,18 @@ Only game facts: no paths, machine names or people.
 - 2026-11-19 (later): a bigger eye picture IS possible: the simulator's capture photographs its preview window, so window_width 3400, window_height 1400, zoom_scale 2.6 in its settings (game closed; put them back after) gives 1468 x 1209 per eye. A shrunken 8-bit picture shows one-level bands for any gentle fade: judge rings and noise only at full size.
 - 2026-11-19 (later still): the game's final brightness step is the shader ISHDRBLENDINSHADER (three variants); a replacement .pso in Shaders/Loose of a mod placed above the others is taken by Shader Loader, and a change there shows in the VR picture after the upscaler (a dither added there cured the sky's rings on the simulator).
 - 2026-11-19: a loudness reading of what the PC plays (silent / sounding, with the game closed first as the control) settles 'is the menu music off' without ears; State-o-matiC has no sound sign yet. A recorded 'quit from the main menu' route (six Downs, check, held Enter) is still to be made in Menu-o-matiC, whose key presses may be too short for this game.
+
+## 2026-11-25: launched and run OFF the screen (flat list, profile "rung-05 interface flat", PC1)
+
+`[verified-live 2026-11-25, n=1 run]`: watchers started before Mod Organizer moved Mod Organizer's windows (13 s) and
+the game's window (26 s) past the left edge of all screens (SetWindowPos, no activate, not minimized) and handed the
+front back once. With **bAlwaysActive=1** added at the top of [General] in the profile's Fallout.ini (backup
+`fallout.ini.bak-2026-11-25-alwaysactive` beside it) the game keeps drawing while not in front (clouds moved between
+grabs; before, with another window in front, it stopped redrawing). PrintWindow (PW_RENDERFULLCONTENT) gives the real
+picture (3440x1440, the borderless add-on's size). A pretend Xbox pad (ViGEm, kept plugged in for the whole run) moves
+the main menu's highlight from behind (the first Right lit CONTINUE, the next NEW; Left back) and A on CONTINUE loaded
+the newest save. **In play the pad's sticks did almost nothing from behind** (4 s of full right stick: picture change
+0.7, the clouds alone give about 0.5); the control with the game given the focus could not be made (Windows refused the
+focus), and this profile has no bGamepadEnable line, so it is open whether the pad is off for play in this list or the
+game ignores it while not in front. The window close (WM_CLOSE by message) in play ended the game within seconds,
+nothing saved; Mod Organizer closed by itself after it.
