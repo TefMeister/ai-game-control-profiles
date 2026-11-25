@@ -86,3 +86,13 @@ pass-through `dinput8.dll` beside the exe).
 - 2026-11-19: State-o-matiC did not use the taught main_menu screen for three sessions: states.json named its window 're4.exe' while every watch asked for 'Resident Evil 4', so nothing matched. Corrected 2026-11-19 (window 'Resident Evil 4', exe 're4.exe'); a gameplay screen is still to be taught at the next launch.
 - 2026-11-20: in play, by SendInput (visceral-re4-vr `tools/re4_key.py`): right mouse button held = aim, left button = fire, R = reload, a relative mouse move turns / tilts the view (10 small steps). The chapter 1 save starts with the handgun's magazine EMPTY (0/21): reload before any firing test (n=1).
 - 2026-11-20: spent casings are too small to judge in the dark leaf litter from the over-the-shoulder camera; a casing-lifetime check needs a bright, flat floor or a reading from the game's data.
+
+## 2026-11-25: launched and driven OFF the screen, the person's window kept in front (flat, PC1)
+
+`[verified-live 2026-11-25, n=1 run]`, no REFramework in this install: a watcher started before `steam://rungameid/2050650`
+moved the game window past the left edge of all screens 5.5 s after the start (SetWindowPos, no activate, not
+minimized). ⚠️ Started through Steam, the game DID take the keyboard focus even off-screen: the watcher now hands the
+front back to the person's window. Off-screen and not in front it keeps drawing, PrintWindow (PW_RENDERFULLCONTENT)
+gives the real picture (1280x720), and a pretend Xbox pad (ViGEm) drives it: A (title) > A (MAIN STORY) > A (CONTINUE,
+the first row; NEW GAME is two below) > in play about 35 s later; left stick forward 2.5 s walked Leon toward the
+village gate. The window close (WM_CLOSE by message) from play ended the game within seconds.
