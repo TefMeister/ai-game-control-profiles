@@ -108,3 +108,13 @@ Read before the game starts; add what is learned.
   Int32)` with 37 gave explosive rounds for the MGL.
 - The MGL's joints: `_02` the drum (LG + LT there opens it), `_06` to `_11` the chambers.
 - The window's own close closed the game from play in under 10 s.
+
+## 2026-11-25: driving it from behind other windows and OFF the screen (flat, PC1)
+
+`[verified-live 2026-11-25, n=1 run]`: the game window moved past the left edge of all screens (SetWindowPos, no
+activate, not minimized) keeps drawing (about 400 frames a second at the title), PrintWindow (PW_RENDERFULLCONTENT) still
+gives the real picture, REFramework's menu closes by Insert sent as window messages, and a pretend Xbox pad (ViGEm) drives
+it: A (title; the first press after the start was ignored, as the notes above say), A (Story), A (Continue), in play;
+the player walked 2.1 m and 2.0 m on the left stick. Close: Start, Down x4 (Quit), A, the box has No highlighted: Up, A;
+at the title the window close (WM_CLOSE by message) ended the game within 15 s, while it was NOT in front (the line above
+said it was ignored behind: that was from gameplay, this was from the title). The window came up 1920x1200.
