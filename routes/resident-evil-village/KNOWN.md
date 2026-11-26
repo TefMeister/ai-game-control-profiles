@@ -136,6 +136,12 @@ this page is the short, growing list of what works, read before the game starts.
 - WM_CLOSE to the main window: gone in about 2 s, process exits about 12 s later. Wait for the process to leave before
   relaunching, or Steam just focuses the dying one.
 
+- 2026-11-26, with the headset in use (Quest 3, Virtual Desktop): the window's own close message closes the
+  game cleanly here too; the process leaves within a minute. Three times in one session, no hang.
+- 2026-11-26: a motion controller that is put down keeps reporting its spot for about 6 s, then reports the
+  position 0 0 0 until it is picked up, while the VR layer still counts the controllers as in use: the hand
+  jumps to the face. Anything that reads controller positions should treat 0 0 0 as "asleep".
+
 ## What failed
 
 - The menu cut-outs did not match at a 1920x1080 window (`screen None` all the way), yet the driver's Enter nudges alone
