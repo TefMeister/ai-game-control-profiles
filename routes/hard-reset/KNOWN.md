@@ -15,6 +15,7 @@ Only game facts: no paths, machine names or people.
 - 2026-10-17: 2026-10-17: If the main menu is already up after three Enters, a fourth Enter opens New game, then the difficulty list (New campaign). Look after the third Enter. Back out with the Back item at the bottom of each list (Escape did not).
 
 - 2026-11-27: With the Hard Reset VR add-on's HUD panel on (d3d9_hud.txt), the main menu is drawn small on a floating panel and mouse hover did not reach it. What worked: the bridge's `switch aim off` and `switch hud off`, bring the game window to the front, then a real click at 0.497, 0.322 of the client area for "Resume game". The bridge's `in click` and `in move` did not move the game's menu pointer, nor did the cursor moved with the window behind. Arrow keys do not move the main-menu highlight.
+- 2026-11-27: 2026-11-27: Main menu after a restart: three Enters, then the first Resume game click about 2 s after the menu appears was ignored again; a second click about 3 min later loaded the level at once. Click, look, click again.
 
 ## Controls
 
@@ -28,6 +29,7 @@ Only game facts: no paths, machine names or people.
 - 2026-10-17: VR (simulator, VR Bench, mod controls on): the picture follows the head (turns, tilt, lean); the left hand follows the controller left, right, up and down.
 - 2026-10-17: VR buttons through the mod: right trigger fire, left trigger alt fire, A jump, B switch gun, X weapon mode back, Y weapon mode on, menu the pause menu (press again to close), left stick forward walks (W, with the mod's keyboard walking), right stick sideways snaps the view 30 degrees.
 - 2026-10-17: The game never asked for a game pad while being played (0 asks a second), so walking through a virtual pad does nothing; keyboard walking works.
+- 2026-11-27: 2026-11-27: Through the Hard Reset VR add-on's bridge, the weapon-mode keys go in as key codes: in tap 0xdd (next mode, ]) and in tap 0xdb (previous, [); the bridge has no names for the bracket keys. A mode change shows in the add-on log within a second; the morph animation swaps parts at about 0.9 s.
 
 ## Save spot
 
