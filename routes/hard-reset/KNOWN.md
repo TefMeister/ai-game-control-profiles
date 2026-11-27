@@ -14,7 +14,11 @@ Only game facts: no paths, machine names or people.
 - 2026-10-17: Quit: the console (Ctrl + ~), then `quit` and Enter. The console can catch a stray character from the ~ key ("quit?" is then unknown): Backspace a few times and type it again. Closing the window instead can leave the process running.
 - 2026-10-17: 2026-10-17: If the main menu is already up after three Enters, a fourth Enter opens New game, then the difficulty list (New campaign). Look after the third Enter. Back out with the Back item at the bottom of each list (Escape did not).
 
+- 2026-11-27: With the Hard Reset VR add-on's HUD panel on (d3d9_hud.txt), the main menu is drawn small on a floating panel and mouse hover did not reach it. What worked: the bridge's `switch aim off` and `switch hud off`, bring the game window to the front, then a real click at 0.497, 0.322 of the client area for "Resume game". The bridge's `in click` and `in move` did not move the game's menu pointer, nor did the cursor moved with the window behind. Arrow keys do not move the main-menu highlight.
+
 ## Controls
+
+- 2026-11-27: Default keys: F switches gun (CLN / NRG), [ and ] step the weapon mode back and on. The dial beside health shows the mode's name (RIFLE, PLASMA). A first-level "Resume game" save has only the first mode of each gun.
 
 - 2026-11-24: Window: the game rewrites r_win_width / r_win_height from r_fullscreen_modes at start; set r_fullscreen_modes "1280x720" too (game closed) or it comes back at 1920x1080.
 
