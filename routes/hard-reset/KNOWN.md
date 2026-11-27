@@ -16,6 +16,7 @@ Only game facts: no paths, machine names or people.
 
 - 2026-11-27: With the Hard Reset VR add-on's HUD panel on (d3d9_hud.txt), the main menu is drawn small on a floating panel and mouse hover did not reach it. What worked: the bridge's `switch aim off` and `switch hud off`, bring the game window to the front, then a real click at 0.497, 0.322 of the client area for "Resume game". The bridge's `in click` and `in move` did not move the game's menu pointer, nor did the cursor moved with the window behind. Arrow keys do not move the main-menu highlight.
 - 2026-11-27: 2026-11-27: Main menu after a restart: three Enters, then the first Resume game click about 2 s after the menu appears was ignored again; a second click about 3 min later loaded the level at once. Click, look, click again.
+- 2026-11-27: 2026-11-27: The main menu panel sits right of centre: its items are at x 0.586 of the window; New game y 0.28, Resume game y 0.319, Load game 0.36, Profile 0.40; Back in the submenus at x 0.586, y 0.55. A click at x 0.497 can land on the wrong item.
 
 ## Controls
 
@@ -49,6 +50,7 @@ Only game facts: no paths, machine names or people.
 - 2026-10-17: Keys typed for the console while the game had lost focus landed in the pause menu instead and opened the Load game panel, which has a Delete button. Escape backed out; nothing was deleted. Make sure the game is in front before typing, or use a mod that keeps it active.
 - 2026-10-17: Sending the window a close message (WM_CLOSE) removes the window but leaves the game running with no window, so only a force-close ends it. Quit through the console instead.
 - 2026-11-24: An admin window in front (Task Manager) blocks every synthetic click and cursor move (SetCursorPos fails): the game must be in front, or the window under the click must not be an admin one.
+- 2026-11-27: 2026-11-27: The console command start_level <level> typed at the main menu crashes the game (an 'internal application error' box; the game then exits by itself). Back up the saves before trying level commands.
 
 ## What failed
 
