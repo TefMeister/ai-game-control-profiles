@@ -15,6 +15,9 @@ Read this before launching. Full detail with confidence tags: `profiles/mad-max.
 
 ## Controls that work (keyboard, scancode SendInput)
 
+- 2026-11-27: Direct start with `/windowed /widthW=1280 /heightW=720 /motionblur=0`: the title came up within ~60 s; Enter at PRESS ANY BUTTON, then RESUME GAME was already highlighted (orange) and Enter loaded the world in under 90 s. R got Max out of the buggy onto his feet. A normal window close message ended the game in under 6 s.
+- 2026-11-27: Max's world position (his feet) is readable at fixed two-step pointer chains from the exe (see the mod's notes); his whole-body box is about 2.4 m tall with margin, the eye about 1.65-1.70 m above the feet.
+
 - W/A/S/D move; V switches the car to the cockpit camera; R enters a vehicle.
 - Hold keys 250-300 ms; shorter taps can be missed.
 - **Driving with the OpenXR simulator running: use a virtual pad.** W/A/S/D also move the simulator's own head, and
@@ -39,6 +42,8 @@ same route gave about 157.
 - Menu route: Esc, Down x3 to EXIT TO MAIN MENU (verify), Enter, Enter; then Down x7 to EXIT GAME (verify), Enter.
 
 ## Hazards
+
+- 2026-11-27: One launch went past the title straight into LOAD GAME's autosave list with no key sent by us (the mouse pointer was resting over the menu from earlier work). On that list F = DELETE SAVE GAME. Esc backed out safely. Move the pointer off the game window before the title, and screenshot before every key there.
 
 - The car is the save spot's starting state; nothing hostile nearby.
 - Window is 784x561 client area, desktop untouched.
